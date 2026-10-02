@@ -1,6 +1,7 @@
 import type { Account, Role } from './types'
 import type { Notification } from '../notifications/types'
 import type { Animal } from '../animals/types'
+import type { AssignmentOptions, Lot, Presentation } from '../transfers/types'
 
 const roles: Role[] = ['PRODUCCION', 'TRANSPORTE', 'RECEPCION', 'ADMIN']
 export const demoAccounts: Account[] = roles.map((role, index) => ({
@@ -14,6 +15,9 @@ let session: Account | null = null
 let expiresAt = 0
 const notifications = new Map<string, Notification[]>()
 const animals: Animal[] = []
+const demoLots: Lot[] = [{ id: '11111111-1111-4111-8111-111111111111', code: 'DEMO-LOTE-01', center_id: 'center-demo', product_id: 'milk-demo', produced_litres: '23.500', unlinked_litres: '23.500', confirmed: true }]
+const demoPresentation: Presentation = { id: '22222222-2222-4222-8222-222222222222', product_id: 'milk-demo', name: 'Bolsa de 1 L', content_base: '1.000', admits_fraction: false, active: true }
+const demoOptions: AssignmentOptions = { destinations: [{ id: 'destination-demo', name: 'Punto de venta demo' }], drivers: [{ id: demoAccounts[1].id, name: demoAccounts[1].name }], receivers: [{ id: demoAccounts[2].id, name: demoAccounts[2].name }], defaults: { destination_id: 'destination-demo', driver_id: demoAccounts[1].id, receiver_id: demoAccounts[2].id } }
 export function seedDemoNotifications(accountId: string, items: Notification[]) { notifications.set(accountId, structuredClone(items)) }
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
 const error = (code: string, message: string, status: number) => json({ code, message, field_errors: {}, retryable: false }, status)
@@ -75,6 +79,15 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     if (animals.some(animal => animal.id !== item.id && animal.code.toLowerCase() === String(data.code).toLowerCase())) return error('VALIDATION_ERROR', 'El código ya existe.', 422)
     item.code = data.code; item.name = data.name || null; item.status = data.status
     return json(item)
+  }
+  if (path === '/lots' && method === 'GET') {
+    if (!['PRODUCCION', 'ADMIN'].includes(session.assignments[0].role)) return error('PERMISSION_DENIED', 'Sin acceso a lotes.', 403)
+    return json({ results: demoLots.filter(lot => session!.assignments[0].scope === 'GLOBAL' || lot.center_id === session!.assignments[0].location_id), next: null, count: 1 })
+  }
+  if (path === '/presentations' && method === 'GET') return json({ results: [demoPresentation], next: null, count: 1 })
+  if (path === '/assignment-options' && method === 'GET') {
+    if (!['PRODUCCION', 'ADMIN'].includes(session.assignments[0].role)) return error('PERMISSION_DENIED', 'Sin acceso a opciones.', 403)
+    return json(demoOptions)
   }
   if (path === '/devices' && method === 'POST') return json({ device_id: data.device_id, prepared_until: new Date(Date.now() + 7 * 86400000).toISOString() })
   if (path === '/sync/bootstrap') return json({ cursor: 'demo-1', prepared_until: new Date(Date.now() + 7 * 86400000).toISOString(), copies: [], tombstones: [] })

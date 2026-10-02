@@ -12,6 +12,7 @@ import { SyncPanel } from './offline/SyncPanel'
 import { InboxPage } from './notifications/Inbox'
 import { AnimalsPage } from './animals/AnimalsPage'
 import { MilkingDraftPage } from './milk/MilkingDraftPage'
+import { PreparePage } from './transfers/PreparePage'
 
 export function App() {
   return <>
@@ -30,6 +31,7 @@ export function App() {
             <Route path="/avisos" element={<InboxPage />} />
             <Route element={<RequireRole roles={['PRODUCCION']} />}>
               <Route path="/produccion" element={<MilkingDraftPage />} />
+              <Route path="/entregas/preparar" element={<PreparePage />} />
               <Route path="/vacas" element={<AnimalsPage />} />
               <Route path="/historial" element={<PendingFeature title="Historial" />} />
             </Route>

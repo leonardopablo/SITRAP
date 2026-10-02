@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { api, apiMode } from '../api/client'
 import type { Page } from '../api/types'
@@ -120,6 +120,6 @@ export function MilkingDraftPage() {
     </section>}
     {draft && !draft.confirm_event_id && <Notice tone="warning">Borrador guardado en este teléfono. Pendiente de enviar. Evento {draft.last_event_id}. No confirmado en el sistema.</Notice>}
     {draft?.confirm_event_id && confirmation?.status !== 'APLICADA' && <Notice tone="warning">Confirmación guardada solo en este teléfono. Evento {draft.confirm_event_id}. El lote {draft.lot_id} todavía no existe en el servidor; no puedes enviar una entrega a otra persona hasta recibir acuse.</Notice>}
-    {confirmation?.status === 'APLICADA' && <Notice tone="success">Producción confirmada por el servidor. Lote {draft?.lot_id}. La preparación de la entrega se incorpora en F16.</Notice>}
+    {confirmation?.status === 'APLICADA' && <Notice tone="success">Producción confirmada por el servidor. Lote {draft?.lot_id}. <Link to="/entregas/preparar">Preparar entrega</Link></Notice>}
   </section>
 }

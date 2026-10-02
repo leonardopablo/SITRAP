@@ -27,8 +27,9 @@
 | F12 | Implementado con mock limitado | `a91c7aa` | Bandeja/contador/leer no confirma; polling 10 s visible, online/foco/manual; build y 19 pruebas | B18; DTO de avisos, paginación y detalle vigente cuando existan F17/F21 |
 | F13 | Implementado con mock limitado | `8998933` | Alta, lista, detalle y edición/desactivación; guardas de rol/centro; build y 20 pruebas | B12: IDs de especie, estancias, paginación real; prueba de permisos central |
 | F14 | Implementado localmente | `2e84526` | Vacío/0, suma exacta en ml, borrador y cadena de eventos; build y 22 pruebas | B13; turno/catálogo/ediciones reales; requiere preparar dispositivo; mock no envía |
-| F15 | Implementado localmente | `feat: confirmar produccion` | Revisión, total positivo, lote UUID una vez, cadena y estado local; build/pruebas | B14 acuse central/versión/lote; mock no crea lote en servidor ni habilita entrega |
-| F16–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F15 | Implementado localmente | `fcee64e` | Revisión, total positivo, lote UUID una vez, cadena y estado local; build y 23 pruebas | B14 acuse central/versión/lote; mock no crea lote en servidor ni habilita entrega real |
+| F16 | Implementado localmente con fixture demo | `feat: preparar entrega` | Opciones válidas, bolsa entera, disponibilidad y borrador local; build/pruebas | B11/B17: lote confirmado real, disponibilidad y presentación, participantes actuales. Fixture de lote solo en mock |
+| F17–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -43,7 +44,8 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 - F13: DTO provisional animal `{id,code,name,species_id,sex,status,center_id,center_name}`; POST y PATCH exigen conexión. `bovina-demo` es identificador de simulación, no ID de catálogo real. Antes de conectar B12 cargar especie y estancias autorizadas desde catálogo/bootstrap. Mock guarda solo en memoria, se pierde al recargar.
 - F14: payload supuesto `MILKING_CREATE/UPDATE`: `{center_id,date,shift_id,version_id,details:[{animal_id,litros:string|null}]}`. `diario-demo` es turno de muestra, se debe reemplazar por `/turns`. Borrador local tiene UUID independiente y dependencia explícita para ediciones; `expected_version` local calculada debe contrastarse con B13. No afirmar aceptación remota ni crear lote en frontend.
 - F15: payload supuesto `MILKING_CONFIRM`: `{version_id,lot_id}`, `expected_version` del borrador y dependencia sobre último guardado; UUID lote es intención cliente, no existencia central. Acuse B14 debe aportar lote/versión final y habilitar F16 solo después de `APLICADA`.
+- F16: DTO supuestos GET `/lots` paginado (`id,code,center_id,product_id,produced_litres,unlinked_litres,confirmed`), `/presentations` paginado (`id,product_id,name,content_base,admits_fraction,active`) y `/assignment-options?origin_id=` (`destinations,drivers,receivers,defaults`). Payload supuesto TRANSFER_CREATE `{version_id,lot_id,presentation_id,units_presentation,origin_id,destination_id,driver_id,receiver_id}`. Los IDs y lote DEMO no existen en Django: botón solo crea borrador local, nunca solicitud remota.
 
 ## Continuación
 
-Siguiente: F16. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F17. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.

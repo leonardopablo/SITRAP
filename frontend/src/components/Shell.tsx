@@ -69,6 +69,7 @@ export function TodayPage() {
   return <section className="card"><h1>{assignment?.role === 'ADMIN' ? 'Resumen administrativo' : 'Hoy'}</h1>
     <p>{new Intl.DateTimeFormat('es-PE', { dateStyle: 'full', timeZone: 'America/Lima' }).format(new Date())}</p>
     <Notice>{assignment ? `Espacio de ${roleLabels[assignment.role].toLowerCase()} preparado. Las tareas operativas se incorporarán en los siguientes incrementos.` : 'No tienes asignaciones activas. Contacta al administrador.'}</Notice>
+    {assignment?.role === 'PRODUCCION' && apiMode === 'mock' && <p><Link to="/entregas/preparar">Explorar preparación con lote de demostración (sin envío real)</Link></p>}
   </section>
 }
 export function PendingFeature({ title }: { title: string }) {
