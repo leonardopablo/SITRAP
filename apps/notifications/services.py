@@ -46,5 +46,9 @@ def notify(
             str(getattr(notification, key)) != str(value) for key, value in content.items()
         ):
             raise DomainError("IDEMPOTENCY_CONFLICT", "El aviso ya existe con otro contenido.")
+        if created:
+            from .outbox import enqueue
+
+            enqueue(notification)
         result.append(notification)
     return result

@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B31**. Siguiente elegible: **B32**.
+Última tarea terminada: **B32**. Siguiente elegible: **B33**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -52,7 +52,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B30 | `4de471b` | 19 pruebas pertinentes; luego 5 de sesión/límites. Caducidad, CSRF, otra cuenta, revocación de rol/dispositivo, preparación vencida y expiración absoluta. |
 
-| B31 | `feat: suscribir avisos al telefono (B31)` (este commit) | Suite completa: 117 pruebas. Suscripción/propiedad/replay, HTTPS, claves, logout/baja, secretos, cifrado real local; pip check y descarga con hashes correctos. |
+| B31 | `56b50e5` | Suite completa: 117 pruebas. Suscripción/propiedad/replay, HTTPS, claves, logout/baja, secretos, cifrado real local; pip check y descarga con hashes correctos. |
+
+| B32 | `feat: encolar notificaciones push (B32)` (este commit) | 23 pruebas pertinentes: 11 tipos de aviso, destinatarios/suscripciones activos, deduplicación, rollback conjunto y regresión de flujos/contrato. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
@@ -76,7 +78,7 @@ Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
 ## Bloqueos
 
 No hay bloqueo funcional actual. Remoto autorizado: https://github.com/leonardopablo/SITRAP.git.
-B01-B30 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
+B01-B31 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
 
 ## Decisiones que afectan al frontend
 
@@ -97,7 +99,7 @@ B01-B30 publicados y rama local sigue origin/agente-backend. No se ha verificado
 
 ## Pendientes y reanudación
 
-**B32–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B33–B39 pendientes**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -109,7 +111,7 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B32, sin rehacer B01–B31.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B33, sin rehacer B01–B32.
 
 B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
 X-Device-ID. El sobre de comandos está implementado en servicios internos,
@@ -264,3 +266,8 @@ VAPID deshabilitado por defecto; claves persistentes fuera de Git. Sin envíos r
 pywebpush 2.5.0 fijado con dependencias/hashes. scripts/compile_locked.py reutiliza
 SHA-256 del índice Simple, con cálculo normal si falta; descarga local validada
 contra el lock. Evita descargar cientos de ruedas ajenas solo para recalcular hashes.
+
+B32: cada aviso nuevo crea un PushDelivery por suscripción activa dentro de la
+transacción de negocio. Replay no reencola ni crea envíos retroactivos para nuevas
+suscripciones. Payload genérico con notification_id/tag y url=/; abrir requiere
+consultar la bandeja autenticada y estado actual. B33 habilita el procesamiento.

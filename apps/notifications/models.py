@@ -2,6 +2,7 @@ import uuid
 
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class Notification(models.Model):
@@ -38,3 +39,40 @@ class PushSubscription(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     revoked_at = models.DateTimeField(null=True)
+
+
+class PushDelivery(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    notification = models.ForeignKey(
+        Notification, on_delete=models.PROTECT, related_name="deliveries"
+    )
+    subscription = models.ForeignKey(PushSubscription, on_delete=models.PROTECT)
+    state = models.CharField(
+        max_length=24,
+        choices=[
+            (v, v)
+            for v in [
+                "PENDIENTE",
+                "PROCESANDO",
+                "ACEPTADO_PROVEEDOR",
+                "REINTENTABLE",
+                "FALLIDO",
+                "DESCARTADO",
+            ]
+        ],
+        default="PENDIENTE",
+    )
+    attempts = models.PositiveIntegerField(default=0)
+    next_attempt_at = models.DateTimeField(default=timezone.now)
+    lease_until = models.DateTimeField(null=True)
+    lease_token = models.UUIDField(null=True)
+    last_error = models.CharField(max_length=80, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["notification", "subscription"], name="one_push_per_subscription_event"
+            )
+        ]
+        indexes = [models.Index(fields=["state", "next_attempt_at"])]

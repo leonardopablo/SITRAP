@@ -40,3 +40,7 @@ Biblioteca fijada: [pywebpush 2.5.0](https://pypi.org/project/pywebpush/2.5.0/);
 contrato de envío y VAPID consultado en el [repositorio oficial](https://github.com/web-push-libs/pywebpush).
 B32 agrega outbox transaccional; B33 agrega worker y reintentos. Se verificó cifrado/descifrado aes128gcm y carga de clave VAPID con la biblioteca
 fijada. No se han realizado envíos reales a teléfonos; la aceptación por un proveedor no prueba lectura.
+
+B32: outbox durable PushDelivery, UNIQUE(notification,subscription), creada con
+el hecho y aviso. Payload genérico: notification_id/tag estable, title, body, url=/.
+El Service Worker muestra el aviso; no confirma recogida, recepción ni corrección.
