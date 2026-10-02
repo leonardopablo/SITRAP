@@ -13,8 +13,9 @@
 
 | Tarea | Estado frontend | Commit | Verificación | Pendiente real |
 |---|---|---|---|---|
-| F01 | Implementado | `chore: iniciar frontend` | `npm test` (navegación y ruta desconocida), `npm run build` | B01/API base |
-| F02–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F01 | Implementado | `aab838b` | 2 pruebas navegación; build OK | B01/API base |
+| F02 | Implementado | `feat: crear base visual` | 4 pruebas acumuladas; build; contraste calculado de pares de texto | Validación Android y auditoría completa F38 |
+| F03–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -23,4 +24,4 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 
 ## Continuación
 
-Siguiente: F02 (tokens y componentes), luego F03/F04 y F05. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F03/F04 y F05. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
