@@ -1,0 +1,7570 @@
+openapi: 3.0.3
+info:
+  title: SITRAP API
+  version: 0.1.0
+  description: Piloto de trazabilidad de leche. Solo rutas implementadas.
+paths:
+  /api/v1/animals:
+    get:
+      operationId: animals_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - animals
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAnimalList'
+          description: ''
+    post:
+      operationId: animals_create
+      tags:
+      - animals
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnimalCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AnimalCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AnimalCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/animals/{id}:
+    get:
+      operationId: animals_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - animals
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+          description: ''
+    patch:
+      operationId: animals_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - animals
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAnimalUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAnimalUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAnimalUpdateRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/animals/{id}/stays:
+    get:
+      operationId: animals_stays_list
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - animals
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStayList'
+          description: ''
+    post:
+      operationId: animals_stays_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - animals
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StayInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StayInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StayInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stay'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/assignment-options:
+    get:
+      operationId: assignment_options_retrieve
+      parameters:
+      - in: query
+        name: destination_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: origin_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - assignment-options
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OptionsResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/auth/change-password:
+    post:
+      operationId: auth_change_password_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/auth/csrf:
+    get:
+      operationId: auth_csrf_retrieve
+      tags:
+      - auth
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CSRF'
+          description: ''
+  /api/v1/auth/login:
+    post:
+      operationId: auth_login_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/auth/logout:
+    post:
+      operationId: auth_logout_create
+      parameters:
+      - in: header
+        name: X-Device-ID
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/auth/me:
+    get:
+      operationId: auth_me_retrieve
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/center-products:
+    get:
+      operationId: center_products_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - center-products
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCenterProductInputList'
+          description: ''
+    post:
+      operationId: center_products_create
+      tags:
+      - center-products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CenterProductInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CenterProductInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CenterProductInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CenterProductInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/center-products/{id}:
+    patch:
+      operationId: center_products_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - center-products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCenterProductInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCenterProductInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCenterProductInputRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CenterProductInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/corrections:
+    get:
+      operationId: corrections_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - corrections
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCorrectionList'
+          description: ''
+  /api/v1/corrections/{id}:
+    get:
+      operationId: corrections_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - corrections
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Correction'
+          description: ''
+  /api/v1/corrections/{id}/accept:
+    post:
+      operationId: corrections_accept_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - corrections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CorrectionAcceptCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CorrectionAcceptCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CorrectionAcceptCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CorrectionDecisionReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+  /api/v1/corrections/{id}/reject:
+    post:
+      operationId: corrections_reject_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - corrections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CorrectionRejectCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CorrectionRejectCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CorrectionRejectCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CorrectionDecisionReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+  /api/v1/corrections/{id}/withdraw:
+    post:
+      operationId: corrections_withdraw_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - corrections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CorrectionWithdrawCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CorrectionWithdrawCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CorrectionWithdrawCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CorrectionDecisionReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+  /api/v1/devices:
+    post:
+      operationId: devices_create
+      tags:
+      - devices
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DeviceInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DeviceInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/devices/current:
+    get:
+      operationId: devices_current_retrieve
+      parameters:
+      - in: header
+        name: X-Device-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - devices
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/health:
+    get:
+      operationId: health_retrieve
+      tags:
+      - health
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+          description: ''
+  /api/v1/locations:
+    get:
+      operationId: locations_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - locations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLocationInputList'
+          description: ''
+    post:
+      operationId: locations_create
+      tags:
+      - locations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LocationInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LocationInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/locations/{id}:
+    patch:
+      operationId: locations_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - locations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationInputRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/lots:
+    get:
+      operationId: lots_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - lots
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLotList'
+          description: ''
+  /api/v1/lots/{id}:
+    get:
+      operationId: lots_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - lots
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lot'
+          description: ''
+  /api/v1/metrics/milk:
+    get:
+      operationId: metrics_milk_retrieve
+      parameters:
+      - in: query
+        name: animal_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: date_from
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: date_to
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: product_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: turn_id
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - metrics
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkMetrics'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/metrics/overview:
+    get:
+      operationId: metrics_overview_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: date_from
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: date_to
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: product_id
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - metrics
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Overview'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/metrics/transfers:
+    get:
+      operationId: metrics_transfers_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: date_from
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: date_to
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: destination_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: product_id
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - metrics
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferMetrics'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/milkings:
+    get:
+      operationId: milkings_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - milkings
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMilkingList'
+          description: ''
+    post:
+      operationId: milkings_create
+      tags:
+      - milkings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MilkingCreateCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MilkingCreateCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MilkingCreateCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+  /api/v1/milkings/{id}:
+    get:
+      operationId: milkings_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - milkings
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milking'
+          description: ''
+    patch:
+      operationId: milkings_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - milkings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMilkingUpdateCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMilkingUpdateCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMilkingUpdateCommandRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+  /api/v1/milkings/{id}/confirm:
+    post:
+      operationId: milkings_confirm_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - milkings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MilkingConfirmCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MilkingConfirmCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MilkingConfirmCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+  /api/v1/milkings/{id}/rectify:
+    post:
+      operationId: milkings_rectify_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - milkings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MilkingRectifyCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MilkingRectifyCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MilkingRectifyCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+  /api/v1/milkings/{id}/void:
+    post:
+      operationId: milkings_void_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - milkings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MilkingVoidCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MilkingVoidCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MilkingVoidCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+  /api/v1/notifications:
+    get:
+      operationId: notifications_retrieve
+      tags:
+      - notifications
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPage'
+          description: ''
+  /api/v1/notifications/{id}/read:
+    post:
+      operationId: notifications_read_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/v1/presentations:
+    get:
+      operationId: presentations_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - presentations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPresentationInputList'
+          description: ''
+    post:
+      operationId: presentations_create
+      tags:
+      - presentations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresentationInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PresentationInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PresentationInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresentationInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/presentations/{id}:
+    patch:
+      operationId: presentations_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - presentations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPresentationInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPresentationInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPresentationInputRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresentationInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/products:
+    get:
+      operationId: products_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - products
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProductInputList'
+          description: ''
+    post:
+      operationId: products_create
+      tags:
+      - products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/products/{id}:
+    patch:
+      operationId: products_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProductInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProductInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProductInputRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/push/config:
+    get:
+      operationId: push_config_retrieve
+      tags:
+      - push
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushConfig'
+          description: ''
+  /api/v1/push/subscriptions:
+    get:
+      operationId: push_subscriptions_retrieve
+      parameters:
+      - in: header
+        name: X-Device-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - push
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionsPage'
+          description: ''
+    post:
+      operationId: push_subscriptions_create
+      tags:
+      - push
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubscriptionInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubscriptionInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/push/subscriptions/{id}:
+    delete:
+      operationId: push_subscriptions_destroy
+      parameters:
+      - in: header
+        name: X-Device-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - push
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/reports/overview.pdf:
+    get:
+      operationId: reports_overview.pdf_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: date_from
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: date_to
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: product_id
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - reports
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          description: PDF con datos sincronizados al corte del servidor.
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/reports/production.pdf:
+    get:
+      operationId: reports_production.pdf_retrieve
+      parameters:
+      - in: query
+        name: animal_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: date_from
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: date_to
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: product_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: turn_id
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - reports
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          description: PDF con datos sincronizados al corte del servidor.
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/reports/receptions.pdf:
+    get:
+      operationId: reports_receptions.pdf_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: date_from
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: date_to
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: destination_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: product_id
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - reports
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          description: PDF con datos sincronizados al corte del servidor.
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/reports/transfers.pdf:
+    get:
+      operationId: reports_transfers.pdf_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: date_from
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: date_to
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: destination_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: product_id
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - reports
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          description: PDF con datos sincronizados al corte del servidor.
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/role-assignments:
+    get:
+      operationId: role_assignments_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - role-assignments
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRoleAssignmentAdminList'
+          description: ''
+    post:
+      operationId: role_assignments_create
+      tags:
+      - role-assignments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAssignmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateAssignmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateAssignmentRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleAssignmentAdmin'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/role-assignments/{id}:
+    patch:
+      operationId: role_assignments_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - role-assignments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateAssignmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateAssignmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateAssignmentRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleAssignmentAdmin'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/species:
+    get:
+      operationId: species_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - species
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSpeciesInputList'
+          description: ''
+    post:
+      operationId: species_create
+      tags:
+      - species
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpeciesInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SpeciesInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SpeciesInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpeciesInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/species/{id}:
+    patch:
+      operationId: species_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - species
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSpeciesInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSpeciesInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSpeciesInputRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpeciesInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/sync/bootstrap:
+    get:
+      operationId: sync_bootstrap_retrieve
+      parameters:
+      - in: header
+        name: X-Device-ID
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: cursor
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 100
+      - in: query
+        name: page
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      tags:
+      - sync
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnapshotResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '410':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/sync/changes:
+    get:
+      operationId: sync_changes_retrieve
+      parameters:
+      - in: header
+        name: X-Device-ID
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: cursor
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 100
+      - in: query
+        name: page
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      tags:
+      - sync
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnapshotResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '410':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/sync/events:
+    post:
+      operationId: sync_events_create
+      tags:
+      - sync
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfflineBatchInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfflineBatchInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfflineBatchInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/transfers:
+    get:
+      operationId: transfers_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - transfers
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTransferList'
+          description: ''
+    post:
+      operationId: transfers_create
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferCreateCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransferCreateCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransferCreateCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+  /api/v1/transfers/{id}:
+    get:
+      operationId: transfers_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transfer'
+          description: ''
+    patch:
+      operationId: transfers_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTransferUpdateCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTransferUpdateCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTransferUpdateCommandRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+  /api/v1/transfers/{id}/cancel:
+    post:
+      operationId: transfers_cancel_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferCancelCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransferCancelCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransferCancelCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+  /api/v1/transfers/{id}/corrections:
+    post:
+      operationId: transfers_corrections_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CorrectionCreateCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CorrectionCreateCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CorrectionCreateCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CorrectionCreateReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+  /api/v1/transfers/{id}/pickup:
+    post:
+      operationId: transfers_pickup_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferPickupCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransferPickupCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransferPickupCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+  /api/v1/transfers/{id}/reassign-receiver:
+    post:
+      operationId: transfers_reassign_receiver_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReceiverReassignmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReceiverReassignmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReceiverReassignmentRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transfer'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/transfers/{id}/receive:
+    post:
+      operationId: transfers_receive_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferReceiveCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransferReceiveCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransferReceiveCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+  /api/v1/transfers/{id}/revise:
+    post:
+      operationId: transfers_revise_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferReviseCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransferReviseCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransferReviseCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+  /api/v1/transfers/{id}/send:
+    post:
+      operationId: transfers_send_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferSendCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransferSendCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransferSendCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+  /api/v1/transfers/{id}/timeline:
+    get:
+      operationId: transfers_timeline_list
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - transfers
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTimelineList'
+          description: ''
+  /api/v1/turns:
+    get:
+      operationId: turns_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - turns
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTurnInputList'
+          description: ''
+    post:
+      operationId: turns_create
+      tags:
+      - turns
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TurnInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TurnInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TurnInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurnInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/turns/{id}:
+    patch:
+      operationId: turns_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - turns
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTurnInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTurnInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTurnInputRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurnInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/units:
+    get:
+      operationId: units_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - units
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUnitInputList'
+          description: ''
+    post:
+      operationId: units_create
+      tags:
+      - units
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnitInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UnitInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UnitInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/units/{id}:
+    patch:
+      operationId: units_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - units
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUnitInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUnitInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUnitInputRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/users:
+    get:
+      operationId: users_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserAdminList'
+          description: ''
+    post:
+      operationId: users_create
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAdmin'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/users/{id}:
+    patch:
+      operationId: users_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateUserRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAdmin'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/users/{id}/reset-password:
+    post:
+      operationId: users_reset_password_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAdmin'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+components:
+  schemas:
+    Animal:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        code:
+          type: string
+          maxLength: 32
+        species_id:
+          type: string
+          format: uuid
+        sex:
+          $ref: '#/components/schemas/SexEnum'
+        name:
+          type: string
+          maxLength: 100
+        status:
+          $ref: '#/components/schemas/AnimalStatusEnum'
+      required:
+      - code
+      - id
+      - sex
+      - species_id
+    AnimalCreateRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        species_id:
+          type: string
+          format: uuid
+        sex:
+          $ref: '#/components/schemas/SexEnum'
+        name:
+          type: string
+          default: ''
+          maxLength: 100
+        status:
+          allOf:
+          - $ref: '#/components/schemas/AnimalStatusEnum'
+          default: ACTIVO
+        stay_id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        starts_on:
+          type: string
+          format: date
+      required:
+      - center_id
+      - code
+      - id
+      - sex
+      - species_id
+      - starts_on
+      - stay_id
+    AnimalMetric:
+      type: object
+      properties:
+        animal_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        recorded_days:
+          type: integer
+        days_present:
+          type: integer
+        days_without_record:
+          type: integer
+        average_per_recorded_day:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+          nullable: true
+      required:
+      - animal_id
+      - average_per_recorded_day
+      - code
+      - days_present
+      - days_without_record
+      - liters
+      - name
+      - recorded_days
+    AnimalStatusEnum:
+      enum:
+      - ACTIVO
+      - INACTIVO
+      type: string
+      description: |-
+        * `ACTIVO` - Activo
+        * `INACTIVO` - Inactivo
+    Assignment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        role:
+          type: string
+        scope:
+          $ref: '#/components/schemas/ScopeEnum'
+        location_id:
+          type: string
+          format: uuid
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - id
+      - location_id
+      - role
+      - scope
+    BatchOperationResult:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/BatchOperationStatusEnum'
+        entity_id:
+          type: string
+          format: uuid
+        lock_version:
+          type: integer
+          nullable: true
+        result:
+          type: object
+          additionalProperties: {}
+        error:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        server_received_at:
+          type: string
+          format: date-time
+        persisted:
+          type: boolean
+        http_status:
+          type: integer
+      required:
+      - entity_id
+      - error
+      - event_id
+      - http_status
+      - lock_version
+      - persisted
+      - result
+      - server_received_at
+      - status
+    BatchOperationStatusEnum:
+      enum:
+      - APLICADA
+      - RECHAZADA
+      - ESPERA_DEPENDENCIA
+      - NO_PROCESADA
+      type: string
+      description: |-
+        * `APLICADA` - APLICADA
+        * `RECHAZADA` - RECHAZADA
+        * `ESPERA_DEPENDENCIA` - ESPERA_DEPENDENCIA
+        * `NO_PROCESADA` - NO_PROCESADA
+    BatchResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchOperationResult'
+        reprocessed:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchOperationResult'
+      required:
+      - reprocessed
+      - results
+    CSRF:
+      type: object
+      properties:
+        csrf_token:
+          type: string
+      required:
+      - csrf_token
+    Capability:
+      type: object
+      properties:
+        code:
+          type: string
+        location_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - code
+      - location_id
+    CenterProductInput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        enabled:
+          type: boolean
+          default: true
+      required:
+      - center_id
+      - id
+      - product_id
+    CenterProductInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        enabled:
+          type: boolean
+          default: true
+      required:
+      - center_id
+      - id
+      - product_id
+    CenterSummary:
+      type: object
+      properties:
+        center_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        produced_liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        picked_up_liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        received_liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+      required:
+      - center_id
+      - name
+      - picked_up_liters
+      - produced_liters
+      - received_liters
+    Correction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        transfer_id:
+          type: string
+          format: uuid
+        transfer_lock_version:
+          type: integer
+        state:
+          $ref: '#/components/schemas/CorrectionStateEnum'
+        lock_version:
+          type: integer
+        requester_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+        transport_approver_id:
+          type: string
+          format: uuid
+        reception_approver_id:
+          type: string
+          format: uuid
+        original_version:
+          $ref: '#/components/schemas/TransferVersion'
+        proposed_version:
+          $ref: '#/components/schemas/TransferVersion'
+        created_at:
+          type: string
+          format: date-time
+        finished_at:
+          type: string
+          format: date-time
+          nullable: true
+        decisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Decision'
+        pending_approvers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PendingApprover'
+        capabilities:
+          type: array
+          items:
+            type: string
+      required:
+      - capabilities
+      - created_at
+      - decisions
+      - finished_at
+      - id
+      - lock_version
+      - original_version
+      - pending_approvers
+      - proposed_version
+      - reason
+      - reception_approver_id
+      - requester_id
+      - state
+      - transfer_id
+      - transfer_lock_version
+      - transport_approver_id
+    CorrectionAcceptCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/CorrectionAcceptCommandTypeEnum'
+          default: CORRECTION_ACCEPT
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/VersionPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    CorrectionAcceptCommandTypeEnum:
+      enum:
+      - CORRECTION_ACCEPT
+      type: string
+      description: '* `CORRECTION_ACCEPT` - CORRECTION_ACCEPT'
+    CorrectionCreateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/CorrectionCreateCommandTypeEnum'
+          default: CORRECTION_CREATE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/CorrectionPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    CorrectionCreateCommandTypeEnum:
+      enum:
+      - CORRECTION_CREATE
+      type: string
+      description: '* `CORRECTION_CREATE` - CORRECTION_CREATE'
+    CorrectionCreateReceipt:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/OperationStateEnum'
+        entity_id:
+          type: string
+          format: uuid
+        lock_version:
+          type: integer
+          nullable: true
+        result:
+          $ref: '#/components/schemas/CorrectionCreated'
+        error:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        server_received_at:
+          type: string
+          format: date-time
+      required:
+      - entity_id
+      - error
+      - event_id
+      - lock_version
+      - result
+      - server_received_at
+      - status
+    CorrectionCreated:
+      type: object
+      properties:
+        transfer_id:
+          type: string
+          format: uuid
+        lock_version:
+          type: integer
+        correction:
+          $ref: '#/components/schemas/Correction'
+      required:
+      - correction
+      - lock_version
+      - transfer_id
+    CorrectionDecisionReceipt:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/OperationStateEnum'
+        entity_id:
+          type: string
+          format: uuid
+        lock_version:
+          type: integer
+          nullable: true
+        result:
+          $ref: '#/components/schemas/Correction'
+        error:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        server_received_at:
+          type: string
+          format: date-time
+      required:
+      - entity_id
+      - error
+      - event_id
+      - lock_version
+      - result
+      - server_received_at
+      - status
+    CorrectionPayloadRequest:
+      type: object
+      properties:
+        correction_id:
+          type: string
+          format: uuid
+        version_id:
+          type: string
+          format: uuid
+        line_id:
+          type: string
+          format: uuid
+        units:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - correction_id
+      - line_id
+      - reason
+      - units
+      - version_id
+    CorrectionRejectCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/CorrectionRejectCommandTypeEnum'
+          default: CORRECTION_REJECT
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/RejectPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    CorrectionRejectCommandTypeEnum:
+      enum:
+      - CORRECTION_REJECT
+      type: string
+      description: '* `CORRECTION_REJECT` - CORRECTION_REJECT'
+    CorrectionStateEnum:
+      enum:
+      - PENDIENTE
+      - APLICADA
+      - RECHAZADA
+      - RETIRADA
+      type: string
+      description: |-
+        * `PENDIENTE` - PENDIENTE
+        * `APLICADA` - APLICADA
+        * `RECHAZADA` - RECHAZADA
+        * `RETIRADA` - RETIRADA
+    CorrectionWithdrawCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/CorrectionWithdrawCommandTypeEnum'
+          default: CORRECTION_WITHDRAW
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/ReasonPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    CorrectionWithdrawCommandTypeEnum:
+      enum:
+      - CORRECTION_WITHDRAW
+      type: string
+      description: '* `CORRECTION_WITHDRAW` - CORRECTION_WITHDRAW'
+    CowDetail:
+      type: object
+      properties:
+        animal_id:
+          type: string
+          format: uuid
+        liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+          nullable: true
+      required:
+      - animal_id
+      - liters
+    CowDetailRequest:
+      type: object
+      properties:
+        animal_id:
+          type: string
+          format: uuid
+        liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+          nullable: true
+      required:
+      - animal_id
+      - liters
+    CreateAssignmentRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        scope:
+          $ref: '#/components/schemas/ScopeEnum'
+        location_id:
+          type: string
+          format: uuid
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - id
+      - location_id
+      - role
+      - scope
+      - starts_at
+      - user_id
+    CreateUserRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+          minLength: 1
+          maxLength: 150
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        temporary_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 1024
+      required:
+      - id
+      - name
+      - temporary_password
+      - username
+    Decision:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        function:
+          $ref: '#/components/schemas/FunctionEnum'
+        user_id:
+          type: string
+          format: uuid
+        decision:
+          $ref: '#/components/schemas/DecisionEnum'
+        reason:
+          type: string
+        decided_at:
+          type: string
+          format: date-time
+        registered_at:
+          type: string
+          format: date-time
+      required:
+      - decided_at
+      - decision
+      - function
+      - id
+      - reason
+      - registered_at
+      - user_id
+    DecisionEnum:
+      enum:
+      - ACEPTAR
+      - RECHAZAR
+      type: string
+      description: |-
+        * `ACEPTAR` - ACEPTAR
+        * `RECHAZAR` - RECHAZAR
+    Device:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        active:
+          type: boolean
+          readOnly: true
+        prepared_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        preparation_expires_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        preparation_valid:
+          type: boolean
+          readOnly: true
+        last_contact_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - active
+      - id
+      - last_contact_at
+      - name
+      - preparation_expires_at
+      - preparation_valid
+      - prepared_at
+    DeviceInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+      - id
+      - name
+    DraftPayloadRequest:
+      type: object
+      properties:
+        version_id:
+          type: string
+          format: uuid
+        line_id:
+          type: string
+          format: uuid
+        lot_id:
+          type: string
+          format: uuid
+        presentation_id:
+          type: string
+          format: uuid
+        units:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        destination_id:
+          type: string
+          format: uuid
+        driver_id:
+          type: string
+          format: uuid
+        receiver_id:
+          type: string
+          format: uuid
+      required:
+      - destination_id
+      - driver_id
+      - line_id
+      - lot_id
+      - presentation_id
+      - receiver_id
+      - units
+      - version_id
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        field_errors:
+          type: object
+          additionalProperties: {}
+        retryable:
+          type: boolean
+      required:
+      - code
+      - field_errors
+      - message
+      - retryable
+    FunctionEnum:
+      enum:
+      - TRANSPORTE
+      - RECEPCION
+      type: string
+      description: |-
+        * `TRANSPORTE` - TRANSPORTE
+        * `RECEPCION` - RECEPCION
+    Health:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/HealthStatusEnum'
+      required:
+      - status
+    HealthStatusEnum:
+      enum:
+      - ok
+      type: string
+      description: '* `ok` - ok'
+    Line:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        lot_id:
+          type: string
+          format: uuid
+        presentation_id:
+          type: string
+          format: uuid
+        units:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        content_base_snapshot:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+      required:
+      - content_base_snapshot
+      - id
+      - lot_id
+      - presentation_id
+      - quantity
+      - units
+    LocationInput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          maxLength: 32
+        name:
+          type: string
+          maxLength: 150
+        kind:
+          $ref: '#/components/schemas/LocationInputKindEnum'
+        active:
+          type: boolean
+          default: true
+      required:
+      - code
+      - id
+      - kind
+      - name
+    LocationInputKindEnum:
+      enum:
+      - CENTRO
+      - PUNTO_VENTA
+      type: string
+      description: |-
+        * `CENTRO` - CENTRO
+        * `PUNTO_VENTA` - PUNTO_VENTA
+    LocationInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        kind:
+          $ref: '#/components/schemas/LocationInputKindEnum'
+        active:
+          type: boolean
+          default: true
+      required:
+      - code
+      - id
+      - kind
+      - name
+    LocationSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        code:
+          type: string
+          maxLength: 32
+        name:
+          type: string
+          maxLength: 150
+        kind:
+          $ref: '#/components/schemas/LocationSummaryKindEnum'
+      required:
+      - code
+      - id
+      - kind
+      - name
+    LocationSummaryKindEnum:
+      enum:
+      - CENTRO
+      - PUNTO_VENTA
+      type: string
+      description: |-
+        * `CENTRO` - Centro
+        * `PUNTO_VENTA` - Punto Venta
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 1024
+      required:
+      - password
+      - username
+    Lot:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        production_id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        responsible_id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        turn_id:
+          type: string
+          format: uuid
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        production_state:
+          $ref: '#/components/schemas/ProductionStateEnum'
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - center_id
+      - code
+      - created_at
+      - date
+      - id
+      - product_id
+      - production_id
+      - production_state
+      - quantity
+      - responsible_id
+      - turn_id
+    Me:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        name:
+          type: string
+          maxLength: 150
+        password_change_required:
+          type: boolean
+        session_expires_at:
+          type: string
+          format: date-time
+          readOnly: true
+        assignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Assignment'
+          readOnly: true
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationSummary'
+          readOnly: true
+        capabilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Capability'
+          readOnly: true
+      required:
+      - assignments
+      - capabilities
+      - id
+      - locations
+      - name
+      - session_expires_at
+      - username
+    MilkDay:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+          nullable: true
+        recorded_animals:
+          type: integer
+      required:
+      - date
+      - liters
+      - recorded_animals
+    MilkMetrics:
+      type: object
+      properties:
+        date_from:
+          type: string
+          format: date
+        date_to:
+          type: string
+          format: date
+        cutoff:
+          type: string
+          format: date-time
+        timezone:
+          type: string
+        synchronized_only:
+          type: boolean
+        liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        recorded_days:
+          type: integer
+        average_per_recorded_day:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+          nullable: true
+        animals:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnimalMetric'
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/MilkDay'
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/MilkRecord'
+      required:
+      - animals
+      - average_per_recorded_day
+      - cutoff
+      - date_from
+      - date_to
+      - days
+      - liters
+      - recorded_days
+      - records
+      - synchronized_only
+      - timezone
+    MilkRecord:
+      type: object
+      properties:
+        milking_id:
+          type: string
+          format: uuid
+        version_id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        turn_id:
+          type: string
+          format: uuid
+        animal_id:
+          type: string
+          format: uuid
+        liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+      required:
+      - animal_id
+      - center_id
+      - date
+      - liters
+      - milking_id
+      - product_id
+      - turn_id
+      - version_id
+    Milking:
+      type: object
+      properties:
+        replaces_id:
+          type: string
+          format: uuid
+          nullable: true
+        voided_at:
+          type: string
+          format: date-time
+          nullable: true
+        lot_id:
+          type: string
+          format: uuid
+          nullable: true
+        id:
+          type: string
+          format: uuid
+        production_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        responsible_id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        turn_id:
+          type: string
+          format: uuid
+        state:
+          $ref: '#/components/schemas/ProductionStateEnum'
+        lock_version:
+          type: integer
+        version_id:
+          type: string
+          format: uuid
+        version_number:
+          type: integer
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductionHistory'
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CowDetail'
+        complete:
+          type: boolean
+        capabilities:
+          type: array
+          items:
+            type: string
+      required:
+      - capabilities
+      - center_id
+      - complete
+      - date
+      - details
+      - id
+      - lock_version
+      - lot_id
+      - product_id
+      - production_id
+      - quantity
+      - replaces_id
+      - responsible_id
+      - state
+      - turn_id
+      - version_id
+      - version_number
+      - versions
+      - voided_at
+    MilkingCommandError:
+      oneOf:
+      - $ref: '#/components/schemas/OperationResult'
+      - $ref: '#/components/schemas/Error'
+    MilkingConfirmCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/MilkingConfirmCommandTypeEnum'
+          default: MILKING_CONFIRM
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/MilkingConfirmPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    MilkingConfirmCommandTypeEnum:
+      enum:
+      - MILKING_CONFIRM
+      type: string
+      description: '* `MILKING_CONFIRM` - MILKING_CONFIRM'
+    MilkingConfirmPayloadRequest:
+      type: object
+      properties:
+        version_id:
+          type: string
+          format: uuid
+        lot_id:
+          type: string
+          format: uuid
+      required:
+      - lot_id
+      - version_id
+    MilkingCreateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/MilkingCreateCommandTypeEnum'
+          default: MILKING_CREATE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/MilkingCreatePayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+    MilkingCreateCommandTypeEnum:
+      enum:
+      - MILKING_CREATE
+      type: string
+      description: '* `MILKING_CREATE` - MILKING_CREATE'
+    MilkingCreatePayloadRequest:
+      type: object
+      properties:
+        replaces_id:
+          type: string
+          format: uuid
+          nullable: true
+        production_id:
+          type: string
+          format: uuid
+        version_id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        turn_id:
+          type: string
+          format: uuid
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CowDetailRequest'
+      required:
+      - center_id
+      - date
+      - details
+      - product_id
+      - production_id
+      - turn_id
+      - version_id
+    MilkingReceipt:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/OperationStateEnum'
+        entity_id:
+          type: string
+          format: uuid
+        lock_version:
+          type: integer
+          nullable: true
+        result:
+          $ref: '#/components/schemas/Milking'
+        error:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        server_received_at:
+          type: string
+          format: date-time
+      required:
+      - entity_id
+      - error
+      - event_id
+      - lock_version
+      - result
+      - server_received_at
+      - status
+    MilkingRectifyCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/MilkingRectifyCommandTypeEnum'
+          default: MILKING_RECTIFY
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/RectifyPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    MilkingRectifyCommandTypeEnum:
+      enum:
+      - MILKING_RECTIFY
+      type: string
+      description: '* `MILKING_RECTIFY` - MILKING_RECTIFY'
+    MilkingUpdateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/MilkingUpdateCommandTypeEnum'
+          default: MILKING_UPDATE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/MilkingUpdatePayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    MilkingUpdateCommandTypeEnum:
+      enum:
+      - MILKING_UPDATE
+      type: string
+      description: '* `MILKING_UPDATE` - MILKING_UPDATE'
+    MilkingUpdatePayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        turn_id:
+          type: string
+          format: uuid
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CowDetailRequest'
+      required:
+      - date
+      - details
+      - turn_id
+    MilkingVoidCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/MilkingVoidCommandTypeEnum'
+          default: MILKING_VOID
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/VoidPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    MilkingVoidCommandTypeEnum:
+      enum:
+      - MILKING_VOID
+      type: string
+      description: '* `MILKING_VOID` - MILKING_VOID'
+    MinimalOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+      required:
+      - id
+      - name
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        type:
+          type: string
+          maxLength: 32
+        source_event_id:
+          type: string
+          format: uuid
+        entity_type:
+          type: string
+          maxLength: 32
+        entity_id:
+          type: string
+          format: uuid
+        version_id:
+          type: string
+          format: uuid
+          nullable: true
+        title:
+          type: string
+          maxLength: 160
+        text:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - created_at
+      - entity_id
+      - entity_type
+      - id
+      - source_event_id
+      - text
+      - title
+      - type
+    NotificationPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        unread_count:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+      required:
+      - count
+      - next
+      - previous
+      - results
+      - unread_count
+    OfflineBatchInputRequest:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfflineCommandRequest'
+      required:
+      - events
+    OfflineCommandRequest:
+      oneOf:
+      - $ref: '#/components/schemas/CorrectionAcceptCommandRequest'
+      - $ref: '#/components/schemas/CorrectionRejectCommandRequest'
+      - $ref: '#/components/schemas/MilkingConfirmCommandRequest'
+      - $ref: '#/components/schemas/MilkingCreateCommandRequest'
+      - $ref: '#/components/schemas/MilkingUpdateCommandRequest'
+      - $ref: '#/components/schemas/TransferCreateCommandRequest'
+      - $ref: '#/components/schemas/TransferPickupCommandRequest'
+      - $ref: '#/components/schemas/TransferReceiveCommandRequest'
+      - $ref: '#/components/schemas/TransferSendCommandRequest'
+      - $ref: '#/components/schemas/TransferUpdateCommandRequest'
+      discriminator:
+        propertyName: type
+        mapping:
+          CORRECTION_ACCEPT: '#/components/schemas/CorrectionAcceptCommandRequest'
+          CORRECTION_REJECT: '#/components/schemas/CorrectionRejectCommandRequest'
+          MILKING_CONFIRM: '#/components/schemas/MilkingConfirmCommandRequest'
+          MILKING_CREATE: '#/components/schemas/MilkingCreateCommandRequest'
+          MILKING_UPDATE: '#/components/schemas/MilkingUpdateCommandRequest'
+          TRANSFER_CREATE: '#/components/schemas/TransferCreateCommandRequest'
+          TRANSFER_PICKUP: '#/components/schemas/TransferPickupCommandRequest'
+          TRANSFER_RECEIVE: '#/components/schemas/TransferReceiveCommandRequest'
+          TRANSFER_SEND: '#/components/schemas/TransferSendCommandRequest'
+          TRANSFER_UPDATE: '#/components/schemas/TransferUpdateCommandRequest'
+    OperationResult:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/OperationStateEnum'
+        entity_id:
+          type: string
+          format: uuid
+        lock_version:
+          type: integer
+          nullable: true
+        result:
+          type: object
+          additionalProperties: {}
+        error:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        server_received_at:
+          type: string
+          format: date-time
+      required:
+      - entity_id
+      - error
+      - event_id
+      - lock_version
+      - result
+      - server_received_at
+      - status
+    OperationStateEnum:
+      enum:
+      - RECIBIDA
+      - ESPERA_DEPENDENCIA
+      - APLICADA
+      - RECHAZADA
+      type: string
+      description: |-
+        * `RECIBIDA` - Recibida
+        * `ESPERA_DEPENDENCIA` - Espera Dependencia
+        * `APLICADA` - Aplicada
+        * `RECHAZADA` - Rechazada
+    OptionDefaults:
+      type: object
+      properties:
+        driver_id:
+          type: string
+          format: uuid
+          nullable: true
+        destination_id:
+          type: string
+          format: uuid
+          nullable: true
+        receiver_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - destination_id
+      - driver_id
+      - receiver_id
+    OptionsResponse:
+      type: object
+      properties:
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/MinimalOption'
+        destinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/MinimalOption'
+        receivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/MinimalOption'
+        defaults:
+          $ref: '#/components/schemas/OptionDefaults'
+      required:
+      - defaults
+      - destinations
+      - drivers
+      - receivers
+    Overview:
+      type: object
+      properties:
+        date_from:
+          type: string
+          format: date
+        date_to:
+          type: string
+          format: date
+        cutoff:
+          type: string
+          format: date-time
+        timezone:
+          type: string
+        synchronized_only:
+          type: boolean
+        centers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CenterSummary'
+        production:
+          $ref: '#/components/schemas/MilkMetrics'
+        transfers:
+          $ref: '#/components/schemas/TransferMetrics'
+      required:
+      - centers
+      - cutoff
+      - date_from
+      - date_to
+      - production
+      - synchronized_only
+      - timezone
+      - transfers
+    PaginatedAnimalList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Animal'
+    PaginatedCenterProductInputList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CenterProductInput'
+    PaginatedCorrectionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Correction'
+    PaginatedLocationInputList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationInput'
+    PaginatedLotList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lot'
+    PaginatedMilkingList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Milking'
+    PaginatedPresentationInputList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PresentationInput'
+    PaginatedProductInputList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductInput'
+    PaginatedRoleAssignmentAdminList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleAssignmentAdmin'
+    PaginatedSpeciesInputList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpeciesInput'
+    PaginatedStayList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stay'
+    PaginatedTimelineList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Timeline'
+    PaginatedTransferList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transfer'
+    PaginatedTurnInputList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TurnInput'
+    PaginatedUnitInputList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitInput'
+    PaginatedUserAdminList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserAdmin'
+    PasswordRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 1024
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 1024
+      required:
+      - new_password
+      - old_password
+    PatchedAnimalUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        status:
+          $ref: '#/components/schemas/AnimalStatusEnum'
+    PatchedCenterProductInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        enabled:
+          type: boolean
+          default: true
+    PatchedLocationInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        kind:
+          $ref: '#/components/schemas/LocationInputKindEnum'
+        active:
+          type: boolean
+          default: true
+    PatchedMilkingUpdateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/MilkingUpdateCommandTypeEnum'
+          default: MILKING_UPDATE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/MilkingUpdatePayloadRequest'
+    PatchedPresentationInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        content_base:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        allows_fraction:
+          type: boolean
+          default: false
+        active:
+          type: boolean
+          default: true
+    PatchedProductInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        unit_id:
+          $ref: '#/components/schemas/UnitCodeEnum'
+        active:
+          type: boolean
+          default: true
+    PatchedSpeciesInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        active:
+          type: boolean
+          default: true
+    PatchedTransferUpdateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferUpdateCommandTypeEnum'
+          default: TRANSFER_UPDATE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/DraftPayloadRequest'
+    PatchedTurnInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        active:
+          type: boolean
+          default: true
+    PatchedUnitInputRequest:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/UnitCodeEnum'
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+    PatchedUpdateAssignmentRequest:
+      type: object
+      properties:
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+    PatchedUpdateUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          maxLength: 150
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        is_active:
+          type: boolean
+    PendingApprover:
+      type: object
+      properties:
+        function:
+          $ref: '#/components/schemas/FunctionEnum'
+        user_id:
+          type: string
+          format: uuid
+      required:
+      - function
+      - user_id
+    PresentationInput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 100
+        content_base:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        allows_fraction:
+          type: boolean
+          default: false
+        active:
+          type: boolean
+          default: true
+      required:
+      - content_base
+      - id
+      - name
+      - product_id
+    PresentationInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        content_base:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        allows_fraction:
+          type: boolean
+          default: false
+        active:
+          type: boolean
+          default: true
+      required:
+      - content_base
+      - id
+      - name
+      - product_id
+    ProductInput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          maxLength: 32
+        name:
+          type: string
+          maxLength: 150
+        unit_id:
+          $ref: '#/components/schemas/UnitCodeEnum'
+        active:
+          type: boolean
+          default: true
+      required:
+      - code
+      - id
+      - name
+      - unit_id
+    ProductInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        unit_id:
+          $ref: '#/components/schemas/UnitCodeEnum'
+        active:
+          type: boolean
+          default: true
+      required:
+      - code
+      - id
+      - name
+      - unit_id
+    ProductionHistory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: integer
+        state:
+          type: string
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        author_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CowDetail'
+      required:
+      - author_id
+      - details
+      - id
+      - number
+      - published_at
+      - quantity
+      - reason
+      - state
+    ProductionStateEnum:
+      enum:
+      - BORRADOR
+      - CONFIRMADA
+      - ANULADA
+      type: string
+      description: |-
+        * `BORRADOR` - BORRADOR
+        * `CONFIRMADA` - CONFIRMADA
+        * `ANULADA` - ANULADA
+    PushConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        vapid_public_key:
+          type: string
+          nullable: true
+      required:
+      - enabled
+      - vapid_public_key
+    PushKeysRequest:
+      type: object
+      properties:
+        p256dh:
+          type: string
+          minLength: 1
+          maxLength: 128
+        auth:
+          type: string
+          minLength: 1
+          maxLength: 64
+      required:
+      - auth
+      - p256dh
+    ReasonPayloadRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+    ReceiverReassignmentRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: UUID estable de esta acción online.
+        expected_version:
+          type: integer
+          minimum: 1
+        version_id:
+          type: string
+          format: uuid
+        line_id:
+          type: string
+          format: uuid
+        receiver_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - expected_version
+      - id
+      - line_id
+      - reason
+      - receiver_id
+      - version_id
+    RectifyPayloadRequest:
+      type: object
+      properties:
+        version_id:
+          type: string
+          format: uuid
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CowDetailRequest'
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - details
+      - reason
+      - version_id
+    RejectPayloadRequest:
+      type: object
+      properties:
+        version_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+      - version_id
+    ResetPasswordRequest:
+      type: object
+      properties:
+        temporary_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 1024
+      required:
+      - temporary_password
+    RevisePayloadRequest:
+      type: object
+      properties:
+        version_id:
+          type: string
+          format: uuid
+        line_id:
+          type: string
+          format: uuid
+        units:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        destination_id:
+          type: string
+          format: uuid
+        driver_id:
+          type: string
+          format: uuid
+        receiver_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - destination_id
+      - driver_id
+      - line_id
+      - reason
+      - receiver_id
+      - units
+      - version_id
+    RoleAssignmentAdmin:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        user_id:
+          type: string
+          format: uuid
+        role:
+          type: string
+        scope:
+          allOf:
+          - $ref: '#/components/schemas/ScopeEnum'
+          readOnly: true
+        location_id:
+          type: string
+          format: uuid
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+          readOnly: true
+        ends_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - ends_at
+      - id
+      - location_id
+      - role
+      - scope
+      - starts_at
+      - user_id
+    RoleEnum:
+      enum:
+      - PRODUCCION
+      - TRANSPORTE
+      - RECEPCION
+      - ADMIN
+      type: string
+      description: |-
+        * `PRODUCCION` - Produccion
+        * `TRANSPORTE` - Transporte
+        * `RECEPCION` - Recepcion
+        * `ADMIN` - Admin
+    ScopeEnum:
+      enum:
+      - GLOBAL
+      - UBICACION
+      type: string
+      description: |-
+        * `GLOBAL` - Global
+        * `UBICACION` - Ubicacion
+    SexEnum:
+      enum:
+      - HEMBRA
+      - MACHO
+      type: string
+      description: |-
+        * `HEMBRA` - Hembra
+        * `MACHO` - Macho
+    SnapshotResponse:
+      type: object
+      properties:
+        snapshot_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        preparation_expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SyncEntry'
+        next_page:
+          type: string
+          nullable: true
+        cursor:
+          type: string
+          nullable: true
+      required:
+      - cursor
+      - expires_at
+      - next_page
+      - preparation_expires_at
+      - results
+      - snapshot_at
+    SpeciesInput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          maxLength: 32
+        name:
+          type: string
+          maxLength: 100
+        active:
+          type: boolean
+          default: true
+      required:
+      - code
+      - id
+      - name
+    SpeciesInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        active:
+          type: boolean
+          default: true
+      required:
+      - code
+      - id
+      - name
+    Stay:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        center_id:
+          type: string
+          format: uuid
+        starts_on:
+          type: string
+          format: date
+        ends_on:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - center_id
+      - id
+      - starts_on
+    StayInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        starts_on:
+          type: string
+          format: date
+        ends_on:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - center_id
+      - id
+      - starts_on
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        device_id:
+          type: string
+          format: uuid
+          readOnly: true
+        active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - created_at
+      - device_id
+      - id
+      - updated_at
+    SubscriptionInputRequest:
+      type: object
+      properties:
+        device_id:
+          type: string
+          format: uuid
+        endpoint:
+          type: string
+          minLength: 1
+          maxLength: 2048
+        keys:
+          $ref: '#/components/schemas/PushKeysRequest'
+      required:
+      - device_id
+      - endpoint
+      - keys
+    SubscriptionsPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscription'
+      required:
+      - count
+      - next
+      - previous
+      - results
+    SyncEntry:
+      type: object
+      properties:
+        entity_type:
+          type: string
+        id:
+          type: string
+        deleted:
+          type: boolean
+        data:
+          nullable: true
+      required:
+      - data
+      - deleted
+      - entity_type
+      - id
+    Timeline:
+      type: object
+      properties:
+        type:
+          type: string
+        at:
+          type: string
+          format: date-time
+        registered_at:
+          type: string
+          format: date-time
+        version_id:
+          type: string
+          format: uuid
+        actor_id:
+          type: string
+          format: uuid
+      required:
+      - actor_id
+      - at
+      - type
+      - version_id
+    Transfer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        creator_id:
+          type: string
+          format: uuid
+        pending_correction_id:
+          type: string
+          format: uuid
+          nullable: true
+        state:
+          $ref: '#/components/schemas/TransferStateEnum'
+        lock_version:
+          type: integer
+        version_id:
+          type: string
+          format: uuid
+          nullable: true
+        current_version:
+          allOf:
+          - $ref: '#/components/schemas/TransferVersion'
+          nullable: true
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransferVersion'
+        capabilities:
+          type: array
+          items:
+            type: string
+      required:
+      - capabilities
+      - code
+      - creator_id
+      - current_version
+      - id
+      - lock_version
+      - pending_correction_id
+      - state
+      - version_id
+      - versions
+    TransferCancelCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferCancelCommandTypeEnum'
+          default: TRANSFER_CANCEL
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/ReasonPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    TransferCancelCommandTypeEnum:
+      enum:
+      - TRANSFER_CANCEL
+      type: string
+      description: '* `TRANSFER_CANCEL` - TRANSFER_CANCEL'
+    TransferCommandError:
+      oneOf:
+      - $ref: '#/components/schemas/OperationResult'
+      - $ref: '#/components/schemas/Error'
+    TransferCreateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferCreateCommandTypeEnum'
+          default: TRANSFER_CREATE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/DraftPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+    TransferCreateCommandTypeEnum:
+      enum:
+      - TRANSFER_CREATE
+      type: string
+      description: '* `TRANSFER_CREATE` - TRANSFER_CREATE'
+    TransferDay:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        picked_up_liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        received_liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        picked_up_count:
+          type: integer
+        received_count:
+          type: integer
+      required:
+      - date
+      - picked_up_count
+      - picked_up_liters
+      - received_count
+      - received_liters
+    TransferMetricRow:
+      type: object
+      properties:
+        transfer_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        version_id:
+          type: string
+          format: uuid
+        version_number:
+          type: integer
+        origin_id:
+          type: string
+          format: uuid
+        origin_name:
+          type: string
+        destination_id:
+          type: string
+          format: uuid
+        destination_name:
+          type: string
+        state:
+          type: string
+        liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        corrected:
+          type: boolean
+        pickup_at:
+          type: string
+          format: date-time
+          nullable: true
+        reception_at:
+          type: string
+          format: date-time
+          nullable: true
+        pickup_in_period:
+          type: boolean
+        reception_in_period:
+          type: boolean
+      required:
+      - code
+      - corrected
+      - destination_id
+      - destination_name
+      - liters
+      - origin_id
+      - origin_name
+      - pickup_at
+      - pickup_in_period
+      - reception_at
+      - reception_in_period
+      - state
+      - transfer_id
+      - version_id
+      - version_number
+    TransferMetrics:
+      type: object
+      properties:
+        date_from:
+          type: string
+          format: date
+        date_to:
+          type: string
+          format: date
+        cutoff:
+          type: string
+          format: date-time
+        timezone:
+          type: string
+        synchronized_only:
+          type: boolean
+        picked_up_liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        received_liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        picked_up_count:
+          type: integer
+        received_count:
+          type: integer
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransferDay'
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransferMetricRow'
+      required:
+      - cutoff
+      - date_from
+      - date_to
+      - days
+      - picked_up_count
+      - picked_up_liters
+      - received_count
+      - received_liters
+      - records
+      - synchronized_only
+      - timezone
+    TransferPickupCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferPickupCommandTypeEnum'
+          default: TRANSFER_PICKUP
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/VersionPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    TransferPickupCommandTypeEnum:
+      enum:
+      - TRANSFER_PICKUP
+      type: string
+      description: '* `TRANSFER_PICKUP` - TRANSFER_PICKUP'
+    TransferReceipt:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/OperationStateEnum'
+        entity_id:
+          type: string
+          format: uuid
+        lock_version:
+          type: integer
+          nullable: true
+        result:
+          $ref: '#/components/schemas/Transfer'
+        error:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        server_received_at:
+          type: string
+          format: date-time
+      required:
+      - entity_id
+      - error
+      - event_id
+      - lock_version
+      - result
+      - server_received_at
+      - status
+    TransferReceiveCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferReceiveCommandTypeEnum'
+          default: TRANSFER_RECEIVE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/VersionPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    TransferReceiveCommandTypeEnum:
+      enum:
+      - TRANSFER_RECEIVE
+      type: string
+      description: '* `TRANSFER_RECEIVE` - TRANSFER_RECEIVE'
+    TransferReviseCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferReviseCommandTypeEnum'
+          default: TRANSFER_REVISE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/RevisePayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    TransferReviseCommandTypeEnum:
+      enum:
+      - TRANSFER_REVISE
+      type: string
+      description: '* `TRANSFER_REVISE` - TRANSFER_REVISE'
+    TransferSendCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferSendCommandTypeEnum'
+          default: TRANSFER_SEND
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/VersionPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    TransferSendCommandTypeEnum:
+      enum:
+      - TRANSFER_SEND
+      type: string
+      description: '* `TRANSFER_SEND` - TRANSFER_SEND'
+    TransferStateEnum:
+      enum:
+      - BORRADOR
+      - PENDIENTE_RECOGIDA
+      - EN_CAMINO
+      - RECIBIDO
+      - CANCELADO
+      type: string
+      description: |-
+        * `BORRADOR` - BORRADOR
+        * `PENDIENTE_RECOGIDA` - PENDIENTE_RECOGIDA
+        * `EN_CAMINO` - EN_CAMINO
+        * `RECIBIDO` - RECIBIDO
+        * `CANCELADO` - CANCELADO
+    TransferUpdateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferUpdateCommandTypeEnum'
+          default: TRANSFER_UPDATE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/DraftPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    TransferUpdateCommandTypeEnum:
+      enum:
+      - TRANSFER_UPDATE
+      type: string
+      description: '* `TRANSFER_UPDATE` - TRANSFER_UPDATE'
+    TransferVersion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: integer
+        origin_id:
+          type: string
+          format: uuid
+        destination_id:
+          type: string
+          format: uuid
+        emitter_id:
+          type: string
+          format: uuid
+        driver_id:
+          type: string
+          format: uuid
+        receiver_id:
+          type: string
+          format: uuid
+        state:
+          type: string
+        reason:
+          type: string
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Line'
+      required:
+      - destination_id
+      - driver_id
+      - emitter_id
+      - id
+      - lines
+      - number
+      - origin_id
+      - published_at
+      - reason
+      - receiver_id
+      - state
+    TurnInput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          maxLength: 32
+        name:
+          type: string
+          maxLength: 100
+        active:
+          type: boolean
+          default: true
+      required:
+      - code
+      - id
+      - name
+    TurnInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        active:
+          type: boolean
+          default: true
+      required:
+      - code
+      - id
+      - name
+    UnitCodeEnum:
+      enum:
+      - L
+      - KG
+      - UN
+      type: string
+      description: |-
+        * `L` - L
+        * `KG` - KG
+        * `UN` - UN
+    UnitInput:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/UnitCodeEnum'
+        name:
+          type: string
+          maxLength: 50
+      required:
+      - code
+      - name
+    UnitInputRequest:
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/UnitCodeEnum'
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+      required:
+      - code
+      - name
+    UserAdmin:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+        name:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+          title: Activo
+          description: Indica si el usuario debe ser tratado como activo. Desmarque
+            esta opción en lugar de borrar la cuenta.
+        password_change_required:
+          type: boolean
+          readOnly: true
+      required:
+      - id
+      - is_active
+      - name
+      - password_change_required
+      - username
+    VersionPayloadRequest:
+      type: object
+      properties:
+        version_id:
+          type: string
+          format: uuid
+      required:
+      - version_id
+    VoidPayloadRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
