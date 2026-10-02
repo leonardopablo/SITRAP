@@ -30,8 +30,9 @@
 | F15 | Implementado localmente | `fcee64e` | Revisión, total positivo, lote UUID una vez, cadena y estado local; build y 23 pruebas | B14 acuse central/versión/lote; mock no crea lote en servidor ni habilita entrega real |
 | F16 | Implementado localmente con fixture demo | `dbd601d` | Opciones válidas, bolsa entera, disponibilidad y borrador local; build y 25 pruebas | B11/B17: lote confirmado real, disponibilidad y presentación, participantes actuales. Fixture de lote solo en mock |
 | F17 | Implementado localmente | `29e1ba4` | Envío dependiente, detalle local/remoto y estados sin aviso prematuro; build y 26 pruebas | B19: contrato de detalle/acuses/reserva/notificación real; mock no confirma envíos |
-| F18 | Implementado con fixture demo | `feat: modificar solicitud` | Revisión/cancelación online con motivo, lock_version y conflicto; build/pruebas | B20 y stock documental; mock revisa solo fixture no una recogida real |
-| F19–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F18 | Implementado con fixture demo | `19a1228` | Revisión/cancelación online con motivo, lock_version y conflicto; build y 27 pruebas | B20 y reserva documental; mock revisa solo fixture no una recogida real |
+| F19 | Implementado localmente | `feat: confirmar recogida` | Inicio transporte, refresco 10 s/manual/foco, versión descargada y sin recaptura; build/pruebas | B21: permisos, acuse, aviso a R; mock no envía conformidad central |
+| F20–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -49,7 +50,8 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 - F16: DTO supuestos GET `/lots` paginado (`id,code,center_id,product_id,produced_litres,unlinked_litres,confirmed`), `/presentations` paginado (`id,product_id,name,content_base,admits_fraction,active`) y `/assignment-options?origin_id=` (`destinations,drivers,receivers,defaults`). Payload supuesto TRANSFER_CREATE `{version_id,lot_id,presentation_id,units_presentation,origin_id,destination_id,driver_id,receiver_id}`. Los IDs y lote DEMO no existen en Django: botón solo crea borrador local, nunca solicitud remota.
 - F17: `TRANSFER_SEND` supuesto `{version_id}` y `expected_version:1` provisional del borrador. Detalle remoto supuesto `{id,code,state,lock_version,version_id,units_presentation,origin_name,destination_name,driver_name,receiver_name}`. Corregir con OpenAPI B19. Se requiere acuse `APLICADA` antes de mostrar envío central; mock no genera PICKUP_REQUESTED.
 - F18: payload provisional `TRANSFER_REVISE {version_id,new_version_id,units_presentation,reason}` / `TRANSFER_CANCEL {version_id,reason}`, sobre §3 con `expected_version`. Mock solo en fixture `DEMO-ENTREGA-01`, no actualiza avisos ni produce recogida. El backend debe comprobar reserva/versión, no el límite local provisional; adaptar a OpenAPI B20.
+- F19: GET `/transfers` supuesto paginado con `state,lock_version,version_id,units_presentation,origin_name,destination_name,driver_name,receiver_name`. `TRANSFER_PICKUP` solo `{version_id}`; se almacena antes de intentar sync. Mock no crea recogida ni aviso remoto. Confirmar autorización y capacidades con B21.
 
 ## Continuación
 
-Siguiente: F19. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F20. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.

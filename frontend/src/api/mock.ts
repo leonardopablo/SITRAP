@@ -97,6 +97,10 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     if (!['PRODUCCION', 'ADMIN'].includes(session.assignments[0].role)) return error('PERMISSION_DENIED', 'No autorizado en esta demostración.', 403)
     return json(record)
   }
+  if (path === '/transfers' && method === 'GET') {
+    const role = session.assignments[0].role
+    return json({ results: ['PRODUCCION', 'TRANSPORTE', 'RECEPCION', 'ADMIN'].includes(role) ? [...demoTransfers.values()] : [], next: null, count: demoTransfers.size })
+  }
   if (path.startsWith('/transfers/') && method === 'POST' && (path.endsWith('/revise') || path.endsWith('/cancel'))) {
     const record = demoTransfers.get(path.split('/')[2])
     if (!record || session.assignments[0].role !== 'PRODUCCION') return error('PERMISSION_DENIED', 'Solo producción asignada puede revisar esta solicitud.', 403)

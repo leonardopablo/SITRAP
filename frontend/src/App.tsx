@@ -14,6 +14,7 @@ import { AnimalsPage } from './animals/AnimalsPage'
 import { MilkingDraftPage } from './milk/MilkingDraftPage'
 import { PreparePage } from './transfers/PreparePage'
 import { TransferDetailPage } from './transfers/TransferDetailPage'
+import { TransportToday } from './transfers/TransportToday'
 
 export function App() {
   return <>
@@ -28,6 +29,7 @@ export function App() {
           <Route path="/cuenta/clave" element={<PasswordPage />} />
           <Route element={<Shell />}>
             <Route path="/hoy" element={<TodayPage />} />
+            <Route element={<RequireRole roles={['TRANSPORTE']} />}><Route path="/recogidas" element={<TransportToday />} /></Route>
             <Route path="/sincronizacion" element={<SyncPanel />} />
             <Route path="/avisos" element={<InboxPage />} />
             <Route path="/entregas/:id" element={<TransferDetailPage />} />
