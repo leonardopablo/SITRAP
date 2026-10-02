@@ -32,10 +32,10 @@ export function ProposeCorrection({ transfer }: { transfer: OperationalTransfer 
     setBusy(true)
     try {
       const device = await getDevice(account.id)
-      const command = createCommand({ type: 'CORRECTION_CREATE', entity_id: transfer.id, device_id: device.device_id, expected_version: transfer.lock_version, payload: { correction_id: crypto.randomUUID(), proposal_version_id: crypto.randomUUID(), new_quantity: Number(quantity), reason: reason.trim() } })
+      const command = createCommand({ type: 'CORRECTION_CREATE', entity_id: transfer.id, device_id: device.device_id, expected_version: transfer.lock_version, payload: apiMode === 'http' ? { correction_id: crypto.randomUUID(), version_id: crypto.randomUUID(), line_id: crypto.randomUUID(), units: Number(quantity).toFixed(3), reason: reason.trim() } : { correction_id: crypto.randomUUID(), proposal_version_id: crypto.randomUUID(), new_quantity: Number(quantity), reason: reason.trim() } })
       // Online-only command: never enter offline outbox.
-      const result = await api.post<{ result: Correction }>(`/transfers/${encodeURIComponent(transfer.id)}/corrections`, command)
-      setCreated(result.result)
+      const result = await api.post<{ result: Correction & { correction?: Correction } }>(`/transfers/${encodeURIComponent(transfer.id)}/corrections`, command)
+      setCreated(apiMode === 'http' ? result.result.correction ?? null : result.result)
       await cache.invalidateQueries({ queryKey: ['corrections', account.id] })
       await cache.invalidateQueries({ queryKey: ['transfer', account.id, transfer.id] })
     } catch (cause) { setError((cause as Error).message) }

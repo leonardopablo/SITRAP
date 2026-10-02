@@ -10,6 +10,7 @@ import { db, enqueue, getDevice, readCopy, saveCopy } from '../offline/db'
 import { Button, Notice } from '../components/ui'
 import { ProposeCorrection } from '../corrections/ProposeCorrection'
 import { AcceptedMark } from '../components/AcceptedMark'
+import { syncAccount } from '../offline/sync'
 
 interface LocalTransfer { version_id: string; lot_id: string; units_presentation: number; destination_id: string; driver_id: string; receiver_id: string; event_id: string; send_event_id?: string }
 interface ServerTransfer { id: string; code: string; state: string; lock_version: number; version_id: string; units_presentation: number; origin_name: string; destination_name: string; driver_name: string; receiver_name: string }
@@ -27,7 +28,7 @@ export function TransferDetailPage() {
   const draft = local?.document as LocalTransfer | undefined
   const creation = useLiveQuery(() => draft ? db.events.get(draft.event_id) : undefined, [draft?.event_id])
   const sending = useLiveQuery(() => draft?.send_event_id ? db.events.get(draft.send_event_id) : undefined, [draft?.send_event_id])
-  const server = useQuery({ queryKey: ['transfer', account?.id, id], queryFn: () => api.request<ServerTransfer>(`/transfers/${encodeURIComponent(id!)}`), enabled: !!account && !!id && !draft && navigator.onLine })
+  const server = useQuery({ queryKey: ['transfer', account?.id, id], queryFn: () => api.request<ServerTransfer>(`/transfers/${encodeURIComponent(id!)}`), enabled: !!account && !!id && (!draft || sending?.status === 'APLICADA') && navigator.onLine })
   async function send() {
     if (!account || !id || !draft || draft.send_event_id || busy || assignment?.role !== 'PRODUCCION') return
     setBusy(true); setError('')
@@ -37,6 +38,7 @@ export function TransferDetailPage() {
       const command = createCommand({ type: 'TRANSFER_SEND', entity_id: id, device_id: device.device_id, expected_version: 1, depends_on: [draft.event_id], payload: { version_id: draft.version_id } })
       await enqueue(account.id, command)
       await saveCopy(account.id, 'transfer-draft', id, { ...draft, send_event_id: command.event_id })
+      if (navigator.onLine && apiMode === 'http') await syncAccount(account.id)
     } catch (cause) { setError((cause as Error).message) }
     finally { setBusy(false) }
   }
@@ -48,7 +50,8 @@ export function TransferDetailPage() {
       const device = await getDevice(account.id)
       if (kind === 'revise' && (!/^[1-9]\d*$/.test(bags) || !Number.isSafeInteger(Number(bags)))) throw new Error('La cantidad debe ser un número entero positivo de bolsas.')
       const amount = kind === 'revise' ? Number(bags) : undefined
-      const command = createCommand({ type: kind === 'revise' ? 'TRANSFER_REVISE' : 'TRANSFER_CANCEL', entity_id: id, device_id: device.device_id, expected_version: server.data.lock_version, payload: { version_id: server.data.version_id, ...(kind === 'revise' ? { new_version_id: crypto.randomUUID(), units_presentation: amount } : {}), reason: reason.trim() } })
+      const document = (server.data as ServerTransfer & { current_version?: { destination_id: string; driver_id: string; receiver_id: string } }).current_version
+      const command = createCommand({ type: kind === 'revise' ? 'TRANSFER_REVISE' : 'TRANSFER_CANCEL', entity_id: id, device_id: device.device_id, expected_version: server.data.lock_version, payload: kind === 'revise' ? { version_id: crypto.randomUUID(), line_id: crypto.randomUUID(), units: amount!.toFixed(3), destination_id: document?.destination_id, driver_id: document?.driver_id, receiver_id: document?.receiver_id, reason: reason.trim() } : { reason: reason.trim() } })
       // These commands are ONLINE only (04 §5): do not enqueue locally.
       await api.post(`/transfers/${encodeURIComponent(id)}/${kind}`, command)
       await server.refetch()
@@ -65,7 +68,7 @@ export function TransferDetailPage() {
       {!draft.send_event_id && assignment?.role === 'PRODUCCION' && <Button busy={busy} onClick={() => void send()}>Enviar solicitud a transporte</Button>}
       {sending && <Notice tone={sending.status === 'APLICADA' ? 'success' : 'warning'}>{sending.status === 'APLICADA' ? <AcceptedMark label="Solicitud aceptada por el servidor. El aviso a transporte depende del backend." /> : sending.status === 'RECHAZADA' ? `Solicitud rechazada: ${sending.error?.message ?? 'revisa el registro'}` : 'Envío guardado en este teléfono, pendiente de aceptar por el servidor. Nadie más lo ve todavía.'}</Notice>}
     </article>}
-    {!draft && server.data && <article className="card stack"><h2>{server.data.code}</h2><p>{server.data.state} · Versión {server.data.lock_version}</p><p className="quantity">{server.data.units_presentation} bolsas · {server.data.units_presentation} L</p><p>{server.data.origin_name} → {server.data.destination_name}</p><p>Conductor {server.data.driver_name} · Receptor {server.data.receiver_name}</p>
+    {(!draft || sending?.status === 'APLICADA') && server.data && <article className="card stack"><h2>{server.data.code}</h2><p>{server.data.state} · Versión {server.data.lock_version}</p><p className="quantity">{server.data.units_presentation} bolsas · {server.data.units_presentation} L</p><p>{server.data.origin_name} → {server.data.destination_name}</p><p>Conductor {server.data.driver_name} · Receptor {server.data.receiver_name}</p>
       {server.data.state === 'PENDIENTE_RECOGIDA' && assignment?.role === 'PRODUCCION' && <div className="row"><Button variant="secondary" onClick={() => { setEditing(true); setRevising(true); setBags(String(server.data?.units_presentation)) }}>Modificar solicitud</Button><Button variant="danger" onClick={() => { setEditing(true); setRevising(false) }}>Cancelar solicitud</Button></div>}
       {editing && <section className="stack"><h3>{revising ? 'Modificar antes de recogida' : 'Cancelar antes de recogida'}</h3><p>Si el conductor confirmó mientras editabas, el servidor rechazará esta versión y tendrás que consultar el estado actual.</p>
         {revising && <div className="field"><label htmlFor="revised-bags">Bolsas de 1 L propuestas</label><input id="revised-bags" inputMode="numeric" value={bags} onChange={event => setBags(event.target.value)} /></div>}

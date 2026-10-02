@@ -7,7 +7,7 @@ import { useAuth } from '../auth/AuthProvider'
 import { useConnection } from '../offline/SyncPanel'
 import { Button, Notice } from '../components/ui'
 
-interface Reception { id: string; code: string; state: string; units_presentation: number; original_quantity?: number; received_date: string; origin_name: string; destination_name: string }
+interface Reception { id: string; code: string; state: string; units_presentation: number; original_quantity?: number; received_date: string; origin_name: string; destination_name: string; corrected?: boolean }
 const defaultDate = () => { const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Lima', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date()); const get = (type: string) => parts.find(part => part.type === type)?.value; return `${get('year')}-${get('month')}-${get('day')}` }
 export function ReceptionHistory() {
   const { account } = useAuth()
@@ -16,7 +16,12 @@ export function ReceptionHistory() {
   const [to, setTo] = useState(defaultDate())
   const [applied, setApplied] = useState({ from, to })
   const valid = /^\d{4}-\d{2}-\d{2}$/.test(from) && /^\d{4}-\d{2}-\d{2}$/.test(to) && from <= to
-  const query = useQuery({ queryKey: ['reception-history', account?.id, applied.from, applied.to], queryFn: () => api.request<Page<Reception>>(`/transfers?status=RECIBIDO&from=${applied.from}&to=${applied.to}`), enabled: !!account && online })
+  const query = useQuery({ queryKey: ['reception-history', account?.id, applied.from, applied.to], queryFn: async () => {
+    if (apiMode === 'mock') return api.request<Page<Reception>>(`/transfers?status=RECIBIDO&from=${applied.from}&to=${applied.to}`)
+    const report = await api.request<{ records: { transfer_id: string; code: string; state: string; liters: string; reception_at: string | null; reception_in_period: boolean; origin_name: string; destination_name: string; corrected: boolean }[] }>(`/metrics/transfers?from=${applied.from}&to=${applied.to}`)
+    const results: Reception[] = report.records.filter(item => item.reception_in_period && item.reception_at).map(item => ({ id: item.transfer_id, code: item.code, state: item.state, units_presentation: Number(item.liters), received_date: new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(item.reception_at!)), origin_name: item.origin_name, destination_name: item.destination_name, corrected: item.corrected }))
+    return { results, count: results.length, next: null }
+  }, enabled: !!account && online })
   return <section className="stack"><h1>Historial de recepciones</h1>
     {apiMode === 'mock' && <Notice tone="warning">Datos de demostración. No hay recepciones físicas reales registradas.</Notice>}
     <div className="row"><div className="field"><label htmlFor="reception-from">Desde</label><input type="date" id="reception-from" value={from} onChange={event => setFrom(event.target.value)} /></div>
@@ -29,6 +34,7 @@ export function ReceptionHistory() {
     {query.data?.results.length === 0 && <p>No hay recepciones documentadas en este período.</p>}
     {query.data?.results.map(item => <article className="card" key={item.id}><h2>{item.code} · {item.received_date}</h2><p>{item.origin_name} → {item.destination_name}</p><p className="quantity">{item.units_presentation} L recibidos</p>
       {item.original_quantity !== undefined && item.original_quantity !== item.units_presentation && <p>Valor documental corregido. Original: {item.original_quantity} L; vigente: {item.units_presentation} L. La fecha física no cambió.</p>}
+      {item.corrected && <p>Valor documental corregido; consulta el detalle para ver las versiones.</p>}
       <Link to={`/entregas/${item.id}`}>Ver detalle e historial</Link></article>)}
     {query.data?.next && <Notice>Hay más recepciones; falta conectar paginación B35.</Notice>}
   </section>

@@ -21,16 +21,18 @@ export function CatalogPage() {
   const [product, setProduct] = useState('')
   const [locationType, setLocationType] = useState('CENTRO')
   const [content, setContent] = useState('1.000')
+  const [unit, setUnit] = useState('L')
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
   const key = (name: CatalogName) => ['catalog', account?.id, name]
   const items = useQuery({ queryKey: key(catalog), queryFn: () => api.request<Page<Row>>(`/${catalog}`), enabled: !!account && online })
   const centers = useQuery({ queryKey: key('locations'), queryFn: () => api.request<Page<Row>>('/locations'), enabled: !!account && online })
   const products = useQuery({ queryKey: key('products'), queryFn: () => api.request<Page<Row>>('/products'), enabled: !!account && online })
+  const units = useQuery({ queryKey: ['catalog-units', account?.id], queryFn: () => api.request<Page<{ code: string; name: string }>>('/units'), enabled: !!account && online })
   async function run(action: () => Promise<unknown>, success: string) { setBusy(true); setMessage(''); try { await action(); await cache.invalidateQueries({ queryKey: ['catalog', account?.id] }); setMessage(apiMode === 'mock' ? `${success} (solo simulación)` : success) } catch (error) { setMessage((error as Error).message) } finally { setBusy(false) } }
   function create() {
-    const body = catalog === 'center-products' ? { center_id: center, product_id: product, enabled: true } : catalog === 'presentations' ? { name, product_id: product, content_base: content, admits_fraction: false, active: true } : { code, name, active: true, ...(catalog === 'locations' ? { type: locationType } : {}), ...(catalog === 'products' ? { unit: 'L' } : {}) }
-    void run(async () => { await api.post(`/${catalog}`, body); setCode(''); setName('') }, 'Catálogo guardado')
+    const body = catalog === 'center-products' ? { center_id: center, product_id: product, enabled: true } : catalog === 'presentations' ? { name, product_id: product, content_base: content, ...(apiMode === 'http' ? { allows_fraction: false } : { admits_fraction: false }), active: true } : { code, name, active: true, ...(catalog === 'locations' ? apiMode === 'http' ? { kind: locationType } : { type: locationType } : {}), ...(catalog === 'products' ? apiMode === 'http' ? { unit_id: unit } : { unit: 'L' } : {}) }
+    void run(async () => { await api.post(`/${catalog}`, apiMode === 'http' ? { id: crypto.randomUUID(), ...body } : body); setCode(''); setName('') }, 'Catálogo guardado')
   }
   return <section className="stack"><h1>Catálogos</h1>
     {apiMode === 'mock' && <Notice tone="warning">Catálogos de demostración. Los cambios no están conectados al servidor.</Notice>}
@@ -40,6 +42,7 @@ export function CatalogPage() {
       {!['center-products', 'presentations'].includes(catalog) && <><div className="field"><label htmlFor="catalog-code">Código</label><input id="catalog-code" value={code} onChange={event => setCode(event.target.value)} /></div><div className="field"><label htmlFor="catalog-name">Nombre</label><input id="catalog-name" value={name} onChange={event => setName(event.target.value)} /></div></>}
       {catalog === 'presentations' && <div className="field"><label htmlFor="catalog-presentation-name">Nombre</label><input id="catalog-presentation-name" value={name} onChange={event => setName(event.target.value)} /></div>}
       {catalog === 'locations' && <div className="field"><label htmlFor="location-kind">Tipo</label><select id="location-kind" value={locationType} onChange={event => setLocationType(event.target.value)}><option value="CENTRO">Centro</option><option value="PUNTO_VENTA">Punto de venta</option></select></div>}
+      {catalog === 'products' && <div className="field"><label htmlFor="catalog-unit">Unidad base</label><select id="catalog-unit" value={unit} onChange={event => setUnit(event.target.value)}>{units.data?.results.map(item => <option key={item.code} value={item.code}>{item.name}</option>)}</select></div>}
       {catalog === 'center-products' && <div className="field"><label htmlFor="catalog-center">Centro</label><select id="catalog-center" value={center} onChange={event => setCenter(event.target.value)}><option value="">Selecciona</option>{centers.data?.results.filter(item => item.type === 'CENTRO').map(item => <option value={item.id} key={item.id}>{item.name}</option>)}</select></div>}
       {['center-products', 'presentations'].includes(catalog) && <div className="field"><label htmlFor="catalog-product">Producto</label><select id="catalog-product" value={product} onChange={event => setProduct(event.target.value)}><option value="">Selecciona</option>{products.data?.results.map(item => <option value={item.id} key={item.id}>{item.name}</option>)}</select></div>}
       {catalog === 'presentations' && <div className="field"><label htmlFor="catalog-content">Contenido base (unidad del producto)</label><input id="catalog-content" inputMode="decimal" value={content} onChange={event => setContent(event.target.value)} /></div>}

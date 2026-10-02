@@ -6,11 +6,12 @@ import { useWorkspace } from '../auth/workspace'
 import { api, apiMode } from '../api/client'
 import type { Page } from '../api/types'
 import { createCommand } from '../api/commands'
-import { enqueue, getDevice, saveCopy } from '../offline/db'
+import { db, enqueue, getDevice, readCopy, saveCopy } from '../offline/db'
 import { useConnection } from '../offline/SyncPanel'
 import { Button, Field, Notice } from '../components/ui'
 import { defaults, validateBags } from './prepare'
 import type { AssignmentOptions, Lot, Presentation } from './types'
+import { syncAccount } from '../offline/sync'
 
 export function PreparePage() {
   const { account } = useAuth()
@@ -27,9 +28,21 @@ export function PreparePage() {
   const [transferId, setTransferId] = useState('')
   const [saving, setSaving] = useState(false)
   const key = [account?.id, assignment?.id]
-  const lots = useQuery({ queryKey: ['lots', ...key], queryFn: () => api.request<Page<Lot>>('/lots'), enabled: !!account && !!assignment && online })
-  const presentations = useQuery({ queryKey: ['presentations', ...key], queryFn: () => api.request<Page<Presentation>>('/presentations'), enabled: !!account && !!assignment && online })
-  const options = useQuery({ queryKey: ['assignment-options', ...key], queryFn: () => api.request<AssignmentOptions>(`/assignment-options?origin_id=${encodeURIComponent(assignment!.location_id ?? '')}`), enabled: !!account && !!assignment?.location_id && online })
+  const lots = useQuery({ queryKey: ['lots', ...key, online], queryFn: async () => {
+    const page = online ? await api.request<Page<Lot & { quantity?: string; production_state?: string }>>('/lots') : { results: (await db.copies.where('[account_id+kind]').equals([account!.id, 'lot']).toArray()).map(copy => copy.document as Lot & { quantity?: string; production_state?: string }), next: null, count: 0 }
+    return { ...page, results: apiMode === 'http' ? page.results.map(item => ({ ...item, confirmed: item.production_state === 'CONFIRMADA', unlinked_litres: item.quantity ?? '0' })) : page.results }
+  }, enabled: !!account && !!assignment })
+  const presentations = useQuery({ queryKey: ['presentations', ...key, online], queryFn: async () => {
+    const page = online ? await api.request<Page<Presentation & { allows_fraction?: boolean }>>('/presentations') : { results: (await db.copies.where('[account_id+kind]').equals([account!.id, 'presentation']).toArray()).map(copy => copy.document as Presentation & { allows_fraction?: boolean }), next: null, count: 0 }
+    return { ...page, results: apiMode === 'http' ? page.results.map(item => ({ ...item, admits_fraction: item.allows_fraction ?? false })) : page.results }
+  }, enabled: !!account && !!assignment })
+  const options = useQuery({ queryKey: ['assignment-options', ...key, destinationId, online], queryFn: async () => {
+    if (online) return api.request<AssignmentOptions>(`/assignment-options?origin_id=${encodeURIComponent(assignment!.location_id ?? '')}${destinationId ? `&destination_id=${encodeURIComponent(destinationId)}` : ''}`)
+    const copy = await readCopy(account!.id, 'assignment_options', assignment!.location_id!)
+    if (!copy) throw new Error('Prepara opciones con conexión antes de salir al campo.')
+    const data = copy.document as AssignmentOptions & { receivers_by_destination: Record<string, { id: string; name: string }[]> }
+    return { ...data, receivers: data.receivers_by_destination[destinationId || data.defaults?.destination_id || ''] ?? [] }
+  }, enabled: !!account && !!assignment?.location_id })
   useEffect(() => { if (lots.data?.results.length === 1) setLotId(lots.data.results[0].id) }, [lots.data])
   useEffect(() => { if (presentations.data?.results.length === 1) setPresentationId(presentations.data.results[0].id) }, [presentations.data])
   useEffect(() => { if (options.data) { const chosen = defaults(options.data); setDestinationId(chosen.destination_id); setDriverId(chosen.driver_id); setReceiverId(chosen.receiver_id) } }, [options.data])
@@ -45,26 +58,27 @@ export function PreparePage() {
       setSaving(true)
       const device = await getDevice(account.id)
       const transferId = crypto.randomUUID(); const versionId = crypto.randomUUID()
-      const command = createCommand({ type: 'TRANSFER_CREATE', entity_id: transferId, device_id: device.device_id, payload: { version_id: versionId, lot_id: lot.id, presentation_id: presentation.id, units_presentation: amount, origin_id: assignment.location_id, destination_id: destinationId, driver_id: driverId, receiver_id: receiverId } })
+       const command = createCommand({ type: 'TRANSFER_CREATE', entity_id: transferId, device_id: device.device_id, payload: { version_id: versionId, line_id: crypto.randomUUID(), lot_id: lot.id, presentation_id: presentation.id, units: amount.toFixed(3), destination_id: destinationId, driver_id: driverId, receiver_id: receiverId } })
       await enqueue(account.id, command)
       await saveCopy(account.id, 'transfer-draft', transferId, { version_id: versionId, lot_id: lot.id, units_presentation: amount, destination_id: destinationId, driver_id: driverId, receiver_id: receiverId, event_id: command.event_id })
-      setSaved(command.event_id)
-      setTransferId(transferId)
+       setSaved(command.event_id)
+       setTransferId(transferId)
+       if (online && apiMode === 'http') await syncAccount(account.id)
     } catch (cause) { setError((cause as Error).message) }
     finally { setSaving(false) }
   }
   return <section className="stack form"><h1>Preparar entrega</h1>
     {apiMode === 'mock' && <Notice tone="warning">Lote y personas de DEMOSTRACIÓN. Solo se guardará un borrador en este teléfono; no hay solicitud ni aviso para transporte.</Notice>}
-    <p>Elige un lote confirmado y revisa la cantidad disponible. “No vinculado” no es inventario físico.</p>
+    <p>Elige un lote confirmado. El servidor comprueba los litros aún no vinculados al enviar; el total producido no es inventario físico.</p>
     {lots.isPending || options.isPending || presentations.isPending ? <Notice>Cargando opciones…</Notice> : null}
     {lots.isError || options.isError || presentations.isError ? <Notice tone="error">No se pudieron obtener lotes, presentaciones u opciones. Reintenta con conexión.</Notice> : null}
-    <div className="field"><label htmlFor="transfer-lot">Lote de origen</label><select id="transfer-lot" value={lotId} onChange={event => setLotId(event.target.value)}><option value="">Selecciona lote</option>{lots.data?.results.filter(item => item.confirmed && item.center_id === assignment?.location_id).map(item => <option key={item.id} value={item.id}>{item.code} · {item.unlinked_litres} L no vinculados</option>)}</select></div>
+    <div className="field"><label htmlFor="transfer-lot">Lote de origen</label><select id="transfer-lot" value={lotId} onChange={event => setLotId(event.target.value)}><option value="">Selecciona lote</option>{lots.data?.results.filter(item => item.confirmed && item.center_id === assignment?.location_id).map(item => <option key={item.id} value={item.id}>{item.code} · {item.unlinked_litres} L producidos</option>)}</select></div>
     <div className="field"><label htmlFor="transfer-presentation">Presentación</label><select id="transfer-presentation" value={presentationId} onChange={event => setPresentationId(event.target.value)}><option value="">Selecciona presentación</option>{presentations.data?.results.filter(item => item.active && item.content_base === '1.000' && !item.admits_fraction && item.product_id === lot?.product_id).map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>
     <Field label="Bolsas de 1 L" inputMode="numeric" value={bags} onChange={event => setBags(event.target.value)} help="Una bolsa equivale a 1 L en este piloto." />
     <p className="quantity">{/^\d+$/.test(bags) ? bags : '0'} bolsas · {/^\d+$/.test(bags) ? bags : '0'} L</p>
     {([['Destino', destinationId, setDestinationId, options.data?.destinations], ['Conductor', driverId, setDriverId, options.data?.drivers], ['Receptor', receiverId, setReceiverId, options.data?.receivers]] as const).map(([label, value, setter, choices]) => <div className="field" key={label}><label htmlFor={`option-${label}`}>{label}</label><select id={`option-${label}`} value={value} onChange={event => setter(event.target.value)}><option value="">Selecciona {label.toLowerCase()}</option>{choices?.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>)}
     {error && <Notice tone="error">{error}</Notice>}
-    <Button busy={saving} disabled={!online || !lot || !presentation || !options.data || !!saved} onClick={() => void save()}>Guardar borrador de entrega</Button>
+    <Button busy={saving} disabled={!lot || !presentation || !options.data || !!saved} onClick={() => void save()}>Guardar borrador de entrega</Button>
     {saved && <Notice tone="warning">Borrador guardado solo en este teléfono (evento {saved}). Aún no se envió a transporte. <Link to={`/entregas/${transferId}`}>Revisar y enviar</Link>.</Notice>}
   </section>
 }

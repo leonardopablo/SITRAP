@@ -23,8 +23,10 @@ export function AnimalsPage() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [selected, setSelected] = useState<string | null>(null)
+  const [speciesId, setSpeciesId] = useState('')
   const key = ['animals', account?.id, assignment?.id]
   const animals = useQuery({ queryKey: key, queryFn: () => api.request<Page<Animal>>('/animals'), enabled: !!account && !!assignment && online })
+  const species = useQuery({ queryKey: ['animal-species', account?.id], queryFn: () => api.request<Page<{ id: string; name: string; active: boolean }>>('/species'), enabled: !!account && online })
   const detail = useQuery({ queryKey: ['animal', account?.id, selected], queryFn: () => api.request<Animal>(`/animals/${encodeURIComponent(selected!)}`), enabled: !!selected && online })
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<Form>({ resolver: zodResolver(schema), defaultValues: { code: '', name: '', status: 'ACTIVO' } })
   const centerId = assignment?.location_id
@@ -32,8 +34,9 @@ export function AnimalsPage() {
     setError(''); setMessage('')
     if (!online) { setError('Alta y edición de vacas requieren conexión.'); return }
     try {
-      if (editing) await api.patch<Animal>(`/animals/${encodeURIComponent(editing.id)}`, { code: values.code, name: values.name, status: values.status })
-      else if (centerId) await api.post<Animal>('/animals', { code: values.code, name: values.name, species_id: 'bovina-demo', sex: 'HEMBRA', center_id: centerId })
+      if (editing) await api.patch<Animal>(`/animals/${encodeURIComponent(editing.id)}`, { name: values.name, status: values.status })
+      else if (centerId && (speciesId || species.data?.results.filter(item => item.active).length === 1)) await api.post<Animal>('/animals', { id: crypto.randomUUID(), code: values.code, name: values.name, species_id: speciesId || species.data!.results.find(item => item.active)!.id, sex: 'HEMBRA', center_id: centerId, stay_id: crypto.randomUUID(), starts_on: new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()) })
+      else if (centerId) throw new Error('Selecciona la especie autorizada antes de registrar.')
       else { setError('Elige primero un centro autorizado.'); return }
       await cache.invalidateQueries({ queryKey: ['animals', account?.id] })
       if (editing) await cache.invalidateQueries({ queryKey: ['animal', account?.id, editing.id] })
@@ -49,8 +52,9 @@ export function AnimalsPage() {
     {formOpen && <form className="card stack form" onSubmit={handleSubmit(save)}><h2>{editing ? 'Editar vaca' : 'Registrar vaca'}</h2>
       <Field label="Código de vaca" {...register('code')} error={errors.code?.message} />
       <Field label="Nombre (opcional)" {...register('name')} error={errors.name?.message} />
+      {!editing && <div className="field"><label htmlFor="animal-species">Especie</label><select id="animal-species" value={speciesId || (species.data?.results.filter(item => item.active).length === 1 ? species.data.results.find(item => item.active)!.id : '')} onChange={event => setSpeciesId(event.target.value)}><option value="">Selecciona especie</option>{species.data?.results.filter(item => item.active).map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>}
       {editing && <div className="field"><label htmlFor="animal-status">Estado</label><select id="animal-status" {...register('status')}><option value="ACTIVO">Activa</option><option value="INACTIVO">Inactiva</option></select></div>}
-      <p className="help">Especie bovina y centro {assignment?.location_name} preseleccionados. No registra producción ni lactancia.</p>
+      <p className="help">Centro {assignment?.location_name}. No registra producción ni lactancia.</p>
       {error && <Notice tone="error">{error}</Notice>}
       <div className="row"><Button busy={isSubmitting} type="submit">{editing ? 'Guardar cambios' : 'Registrar vaca'}</Button><Button variant="secondary" type="button" onClick={() => setFormOpen(false)}>Cancelar</Button></div>
     </form>}
