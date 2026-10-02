@@ -11,6 +11,7 @@ import { PwaControls } from './pwa'
 import { SyncPanel } from './offline/SyncPanel'
 import { InboxPage } from './notifications/Inbox'
 import { AnimalsPage } from './animals/AnimalsPage'
+import { MilkingDraftPage } from './milk/MilkingDraftPage'
 
 export function App() {
   return <>
@@ -28,7 +29,7 @@ export function App() {
             <Route path="/sincronizacion" element={<SyncPanel />} />
             <Route path="/avisos" element={<InboxPage />} />
             <Route element={<RequireRole roles={['PRODUCCION']} />}>
-              <Route path="/produccion" element={<PendingFeature title="Producción" />} />
+              <Route path="/produccion" element={<MilkingDraftPage />} />
               <Route path="/vacas" element={<AnimalsPage />} />
               <Route path="/historial" element={<PendingFeature title="Historial" />} />
             </Route>
