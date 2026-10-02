@@ -25,6 +25,7 @@ import { ReceptionHistory } from './reports/ReceptionHistory'
 import { ProductionHistory } from './milk/ProductionHistory'
 import { ProductionRevision } from './milk/ProductionRevision'
 import { PdfProduction } from './reports/PdfProduction'
+import { PdfDeliveries } from './reports/PdfDeliveries'
 const MilkAnalytics = lazy(() => import('./reports/MilkAnalytics').then(module => ({ default: module.MilkAnalytics })))
 
 export function App() {
@@ -48,6 +49,7 @@ export function App() {
             <Route path="/correcciones/:id" element={<CorrectionPage />} />
             <Route path="/correcciones" element={<CorrectionHistory />} />
             <Route path="/preferencias/avisos" element={<PushPreferences />} />
+            <Route element={<RequireRole roles={['TRANSPORTE', 'RECEPCION']} />}><Route path="/informes/entregas" element={<PdfDeliveries />} /></Route>
             <Route element={<RequireRole roles={['PRODUCCION']} />}>
               <Route path="/produccion" element={<MilkingDraftPage />} />
               <Route path="/entregas/preparar" element={<PreparePage />} />
