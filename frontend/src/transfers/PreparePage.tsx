@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '../auth/AuthProvider'
 import { useWorkspace } from '../auth/workspace'
@@ -23,6 +24,7 @@ export function PreparePage() {
   const [receiverId, setReceiverId] = useState('')
   const [error, setError] = useState('')
   const [saved, setSaved] = useState('')
+  const [transferId, setTransferId] = useState('')
   const [saving, setSaving] = useState(false)
   const key = [account?.id, assignment?.id]
   const lots = useQuery({ queryKey: ['lots', ...key], queryFn: () => api.request<Page<Lot>>('/lots'), enabled: !!account && !!assignment && online })
@@ -47,6 +49,7 @@ export function PreparePage() {
       await enqueue(account.id, command)
       await saveCopy(account.id, 'transfer-draft', transferId, { version_id: versionId, lot_id: lot.id, units_presentation: amount, destination_id: destinationId, driver_id: driverId, receiver_id: receiverId, event_id: command.event_id })
       setSaved(command.event_id)
+      setTransferId(transferId)
     } catch (cause) { setError((cause as Error).message) }
     finally { setSaving(false) }
   }
@@ -62,6 +65,6 @@ export function PreparePage() {
     {([['Destino', destinationId, setDestinationId, options.data?.destinations], ['Conductor', driverId, setDriverId, options.data?.drivers], ['Receptor', receiverId, setReceiverId, options.data?.receivers]] as const).map(([label, value, setter, choices]) => <div className="field" key={label}><label htmlFor={`option-${label}`}>{label}</label><select id={`option-${label}`} value={value} onChange={event => setter(event.target.value)}><option value="">Selecciona {label.toLowerCase()}</option>{choices?.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>)}
     {error && <Notice tone="error">{error}</Notice>}
     <Button busy={saving} disabled={!online || !lot || !presentation || !options.data || !!saved} onClick={() => void save()}>Guardar borrador de entrega</Button>
-    {saved && <Notice tone="warning">Borrador guardado solo en este teléfono (evento {saved}). Aún no se envió a transporte. F17 añadirá el envío.</Notice>}
+    {saved && <Notice tone="warning">Borrador guardado solo en este teléfono (evento {saved}). Aún no se envió a transporte. <Link to={`/entregas/${transferId}`}>Revisar y enviar</Link>.</Notice>}
   </section>
 }

@@ -28,8 +28,9 @@
 | F13 | Implementado con mock limitado | `8998933` | Alta, lista, detalle y edición/desactivación; guardas de rol/centro; build y 20 pruebas | B12: IDs de especie, estancias, paginación real; prueba de permisos central |
 | F14 | Implementado localmente | `2e84526` | Vacío/0, suma exacta en ml, borrador y cadena de eventos; build y 22 pruebas | B13; turno/catálogo/ediciones reales; requiere preparar dispositivo; mock no envía |
 | F15 | Implementado localmente | `fcee64e` | Revisión, total positivo, lote UUID una vez, cadena y estado local; build y 23 pruebas | B14 acuse central/versión/lote; mock no crea lote en servidor ni habilita entrega real |
-| F16 | Implementado localmente con fixture demo | `feat: preparar entrega` | Opciones válidas, bolsa entera, disponibilidad y borrador local; build/pruebas | B11/B17: lote confirmado real, disponibilidad y presentación, participantes actuales. Fixture de lote solo en mock |
-| F17–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F16 | Implementado localmente con fixture demo | `dbd601d` | Opciones válidas, bolsa entera, disponibilidad y borrador local; build y 25 pruebas | B11/B17: lote confirmado real, disponibilidad y presentación, participantes actuales. Fixture de lote solo en mock |
+| F17 | Implementado localmente | `feat: enviar solicitud de leche` | Envío dependiente, detalle local/remoto y estados sin aviso prematuro; build/pruebas | B19: contrato de detalle/acuses/reserva/notificación real; mock no confirma envíos |
+| F18–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -45,7 +46,8 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 - F14: payload supuesto `MILKING_CREATE/UPDATE`: `{center_id,date,shift_id,version_id,details:[{animal_id,litros:string|null}]}`. `diario-demo` es turno de muestra, se debe reemplazar por `/turns`. Borrador local tiene UUID independiente y dependencia explícita para ediciones; `expected_version` local calculada debe contrastarse con B13. No afirmar aceptación remota ni crear lote en frontend.
 - F15: payload supuesto `MILKING_CONFIRM`: `{version_id,lot_id}`, `expected_version` del borrador y dependencia sobre último guardado; UUID lote es intención cliente, no existencia central. Acuse B14 debe aportar lote/versión final y habilitar F16 solo después de `APLICADA`.
 - F16: DTO supuestos GET `/lots` paginado (`id,code,center_id,product_id,produced_litres,unlinked_litres,confirmed`), `/presentations` paginado (`id,product_id,name,content_base,admits_fraction,active`) y `/assignment-options?origin_id=` (`destinations,drivers,receivers,defaults`). Payload supuesto TRANSFER_CREATE `{version_id,lot_id,presentation_id,units_presentation,origin_id,destination_id,driver_id,receiver_id}`. Los IDs y lote DEMO no existen en Django: botón solo crea borrador local, nunca solicitud remota.
+- F17: `TRANSFER_SEND` supuesto `{version_id}` y `expected_version:1` provisional del borrador. Detalle remoto supuesto `{id,code,state,lock_version,version_id,units_presentation,origin_name,destination_name,driver_name,receiver_name}`. Corregir con OpenAPI B19. Se requiere acuse `APLICADA` antes de mostrar envío central; mock no genera PICKUP_REQUESTED.
 
 ## Continuación
 
-Siguiente: F17. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F18. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.

@@ -13,6 +13,7 @@ import { InboxPage } from './notifications/Inbox'
 import { AnimalsPage } from './animals/AnimalsPage'
 import { MilkingDraftPage } from './milk/MilkingDraftPage'
 import { PreparePage } from './transfers/PreparePage'
+import { TransferDetailPage } from './transfers/TransferDetailPage'
 
 export function App() {
   return <>
@@ -29,6 +30,7 @@ export function App() {
             <Route path="/hoy" element={<TodayPage />} />
             <Route path="/sincronizacion" element={<SyncPanel />} />
             <Route path="/avisos" element={<InboxPage />} />
+            <Route path="/entregas/:id" element={<TransferDetailPage />} />
             <Route element={<RequireRole roles={['PRODUCCION']} />}>
               <Route path="/produccion" element={<MilkingDraftPage />} />
               <Route path="/entregas/preparar" element={<PreparePage />} />
