@@ -67,8 +67,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.SessionAuthentication"],
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_AUTHENTICATION_CLASSES": ["apps.accounts.authentication.SessionAuth"],
+    "DEFAULT_PERMISSION_CLASSES": ["apps.accounts.authentication.ReadyAccount"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 50,
@@ -84,3 +84,9 @@ SPECTACULAR_SETTINGS = {
 }
 
 AUTH_USER_MODEL = "accounts.User"
+
+CSRF_FAILURE_VIEW = "apps.common.errors.csrf_failure"
+REST_FRAMEWORK["EXCEPTION_HANDLER"] = "apps.common.errors.error_handler"
+LOGIN_WINDOW_SECONDS = env.int("LOGIN_WINDOW_SECONDS", default=300)
+LOGIN_USER_LIMIT = env.int("LOGIN_USER_LIMIT", default=5)
+LOGIN_IP_LIMIT = env.int("LOGIN_IP_LIMIT", default=100)

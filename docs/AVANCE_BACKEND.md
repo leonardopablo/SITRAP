@@ -1,35 +1,72 @@
 # Avance backend SITRAP
 
-Rama exclusiva: `agente-backend`. Especificación: los cuatro documentos revisión 3,
-leídos íntegramente el 2026-10-02. Frontend, fusiones y despliegue Azure excluidos.
+Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
+Última tarea terminada: **B04**. Siguiente elegible: **B05**.
+No se modificó frontend, no hubo fusiones ni despliegues.
 
-## Estado
+## Commits y pruebas
 
-B01 en implementación. Última tarea terminada: ninguna.
+| Tarea | Commit | Verificación al cierre |
+|---|---|---|
+| B01 | `e85720a` | Django/DRF, configuración por entorno, lock con hashes, health y arranque WSGI/ASGI: 2 pruebas; check y OpenAPI correctos. |
+| B02 | `043fb22` | PostgreSQL 18 aislado, runner pytest y CI: 3 pruebas acumuladas; migraciones reales y rollback. Workflow remoto aún no ejecutado. |
+| B03 | `bed8229` | Usuario UUID, roles sembrados, ámbitos GLOBAL/UBICACION, períodos, unicidad y FK protegidas: 11 pruebas acumuladas; migración limpia. |
+| B04 | commit que contiene esta fila: `feat: autenticar usuarios (B04)` | 17 pruebas acumuladas: CSRF en login/mutaciones, cookies, expiración/logout, contraseñas y revocación de otras sesiones, inactivos y límite de intentos; Ruff y OpenAPI válidos. |
 
-## Registro por tarea
+Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
+Cada funcionalidad tiene su propio commit; no se publica hasta disponer del remoto.
 
-Se anotarán alcance, pruebas y commit individual. El hash del commit que contiene
-una fila se resuelve con `git log --oneline --grep='Bxx'`; las siguientes tareas
-añadirán los hashes ya conocidos sin reescribir commits.
+## Entorno reproducible
 
-## Entorno y bloqueos
+- Python 3.12.14 disponible en `C:/Users/pablo/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe`.
+- Entorno del proyecto: `.venv/Scripts/python.exe`; versiones y hashes en `requirements.txt` y `requirements-dev.txt`.
+- PostgreSQL 18.6 de `C:/Program Files/PostgreSQL/18/bin`.
+- Clúster exclusivo de desarrollo: `.local/pgdata`, escucha `127.0.0.1:55432`.
+  Base `sitrap`; pytest crea/destruye `test_sitrap`. Secretos solo en archivos ignorados.
+- `scripts/local-postgres.ps1 Start|Stop|Status`; requiere el mismo usuario Windows que creó el clúster.
+- Verificación: `scripts/check.ps1`. Aplicar migraciones pendientes: `.venv/Scripts/python.exe manage.py migrate`.
+- El sandbox impide escribir metadatos Git del worktree en `../SITRAP/.git`;
+  commits requieren ejecución autorizada fuera del sandbox. No cambiar de rama.
+- Las pruebas corren contra PostgreSQL real. No se admite SQLite.
+- Al editar desde PowerShell, usar UTF-8 explícito o JSON con Unicode escapado;
+  una tubería con codificación ASCII dejó inicialmente filas del avance sin reemplazar.
+  Este informe corrige el estado completo verificándolo contra el log Git.
 
-- Worktree Git sin remoto configurado; URL de GitHub solicitada. No impide commits
-  locales ni tareas independientes. No declarar publicación hasta verificar push.
-- Python 3.12 encontrado en el runtime local de Codex; venv aislado `.venv`.
-- PostgreSQL 18 instalado; preparar clúster de pruebas aislado, sin tocar bases existentes.
+## Bloqueos
 
-## Pendientes y siguiente paso
+No hay bloqueo funcional actual. No hay remoto Git configurado; URL de GitHub
+solicitada al usuario y pendiente. Commits locales disponibles; **ningún push
+ni ejecución de CI remoto verificados**. Continuar tareas independientes.
 
-B01–B39 pendientes, ejecutar en orden de dependencias de 04 §8. B40 se limita a
-configuración e instrucciones después de B39; despliegue real después de integrar frontend.
+## Decisiones que afectan al frontend
 
-## Decisiones para frontend
+- Prefijo `/api/v1`, sin barra final. `docs/openapi.yaml` contiene solo rutas implementadas.
+- Autenticación por cookie de sesión, no bearer tokens. Pedir `GET /auth/csrf`,
+  enviar `X-CSRFToken` en login y mutaciones, renovar CSRF tras login.
+- `GET /auth/me` devuelve UUID, username, name, password_change_required y asignaciones
+  vigentes. Capacidades/ubicaciones se incorporan en B05.
+- Sesión de 12 horas y preparación offline de 7 días configurables.
+- `401 SESSION_EXPIRED` conserva la cola; `403 CSRF_FAILED` exige renovar CSRF.
+  Errores uniformes: code, message, field_errors, retryable. Validación: 422.
+- Contraseña temporal obliga al cambio; cambio de contraseña invalida otras sesiones.
+- ADMIN no obtendrá conformidades operativas por ser administrador.
+- B03 solo añadió la ubicación mínima necesaria para las FK; API de catálogos pendiente B09.
+- Cantidades serán strings Decimal; UUID de negocio, tiempos UTC y fechas America/Lima.
+- La revisión de login usa límites persistentes por usuario e IP; no confiar en X-Forwarded-For
+  sin configurar explícitamente un proxy conocido. B40 debe documentar proxy y limpieza de buckets.
 
-- Prefijo `/api/v1`, rutas sin barra final. OpenAPI incremental solo anuncia rutas reales.
-- Sesiones de 12 horas y preparación offline de 7 días; variables configurables.
-- Cantidades como strings Decimal, UUID de negocio, UTC en tiempos y America/Lima en fechas.
+## Pendientes y reanudación
 
-B03 introduce solo el modelo m?nimo de ubicaciones requerido por las FK de ?mbito;
-las API de cat?logos siguen pendientes hasta B09. No hay endpoints operativos todav?a.
+**B05–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
+después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
+B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
+B31 requiere B18; B32 requiere B25/B26/B31; B33 worker.
+B34–B38 métricas/PDF y B39 contrato/demo solo tras B30/B33/B38.
+
+**B40 pendiente de preparación** después de B39. Dejar configuración e instrucciones
+de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda reservado
+hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
+
+Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B05, sin rehacer B01–B04.

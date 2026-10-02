@@ -4,6 +4,152 @@ info:
   version: 0.1.0
   description: MVP de trazabilidad de leche. Contrato incremental; solo rutas implementadas.
 paths:
+  /api/v1/auth/change-password:
+    post:
+      operationId: auth_change_password_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/auth/csrf:
+    get:
+      operationId: auth_csrf_retrieve
+      tags:
+      - auth
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CSRF'
+          description: ''
+  /api/v1/auth/login:
+    post:
+      operationId: auth_login_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/auth/logout:
+    post:
+      operationId: auth_logout_create
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/auth/me:
+    get:
+      operationId: auth_me_retrieve
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/health:
     get:
       operationId: health_retrieve
@@ -18,6 +164,57 @@ paths:
           description: ''
 components:
   schemas:
+    Assignment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        role:
+          type: string
+        scope:
+          $ref: '#/components/schemas/ScopeEnum'
+        location_id:
+          type: string
+          format: uuid
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - id
+      - location_id
+      - role
+      - scope
+    CSRF:
+      type: object
+      properties:
+        csrf_token:
+          type: string
+      required:
+      - csrf_token
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        field_errors:
+          type: object
+          additionalProperties: {}
+        retryable:
+          type: boolean
+      required:
+      - code
+      - field_errors
+      - message
+      - retryable
     Health:
       type: object
       properties:
@@ -25,8 +222,81 @@ components:
           $ref: '#/components/schemas/StatusEnum'
       required:
       - status
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 1024
+      required:
+      - password
+      - username
+    Me:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          title: Nombre de usuario
+          description: 'Requerido. 150 carácteres como máximo. Únicamente letras,
+            dígitos y @/./+/-/_ '
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        name:
+          type: string
+          maxLength: 150
+        password_change_required:
+          type: boolean
+        assignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Assignment'
+          readOnly: true
+      required:
+      - assignments
+      - id
+      - name
+      - username
+    PasswordRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 1024
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 1024
+      required:
+      - new_password
+      - old_password
+    ScopeEnum:
+      enum:
+      - GLOBAL
+      - UBICACION
+      type: string
+      description: |-
+        * `GLOBAL` - Global
+        * `UBICACION` - Ubicacion
     StatusEnum:
       enum:
       - ok
       type: string
       description: '* `ok` - ok'
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

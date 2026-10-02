@@ -69,3 +69,9 @@ class RoleAssignment(models.Model):
                 name="assignment_open_global_unique",
             ),
         ]
+
+
+class LoginBucket(models.Model):
+    key = models.CharField(primary_key=True, max_length=64)
+    attempts = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
