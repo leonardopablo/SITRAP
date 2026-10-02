@@ -1,9 +1,10 @@
 import { Link, Route, Routes } from 'react-router-dom'
+import { Logo } from './components/Logo'
 
 export function App() {
   return <>
     <a className="skip-link" href="#contenido">Saltar al contenido</a>
-    <header><Link to="/">SITRAP</Link></header>
+    <header><Link to="/" aria-label="SITRAP, inicio"><Logo /></Link></header>
     <main id="contenido" tabIndex={-1}>
       <Routes>
         <Route path="/" element={<><h1>Cada producto tiene una historia</h1><p>Seguimos el camino de la leche, desde su origen.</p><Link to="/acceso">Ingresar</Link></>} />
