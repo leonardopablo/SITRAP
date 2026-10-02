@@ -4,6 +4,50 @@ info:
   version: 0.1.0
   description: MVP de trazabilidad de leche. Contrato incremental; solo rutas implementadas.
 paths:
+  /api/v1/assignment-options:
+    get:
+      operationId: assignment_options_retrieve
+      parameters:
+      - in: query
+        name: destination_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: origin_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - assignment-options
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OptionsResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/auth/change-password:
     post:
       operationId: auth_change_password_create
@@ -1845,6 +1889,58 @@ components:
       - locations
       - name
       - username
+    MinimalOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+      required:
+      - id
+      - name
+    OptionDefaults:
+      type: object
+      properties:
+        driver_id:
+          type: string
+          format: uuid
+          nullable: true
+        destination_id:
+          type: string
+          format: uuid
+          nullable: true
+        receiver_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - destination_id
+      - driver_id
+      - receiver_id
+    OptionsResponse:
+      type: object
+      properties:
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/MinimalOption'
+        destinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/MinimalOption'
+        receivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/MinimalOption'
+        defaults:
+          $ref: '#/components/schemas/OptionDefaults'
+      required:
+      - defaults
+      - destinations
+      - drivers
+      - receivers
     PaginatedCenterProductInputList:
       type: object
       required:
