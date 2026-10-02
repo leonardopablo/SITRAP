@@ -1,0 +1,28 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "SITRAP — contrato FRONTEND PROVISIONAL, no exportado de Django", "version": "0.1.0", "description": "Derivado de SITRAP_04 revisión 3. Sustituir por OpenAPI B39 antes de integración. Los nombres de DTO son supuestos explícitos." },
+  "servers": [{ "url": "/api/v1" }],
+  "paths": {
+    "/auth/me": { "get": { "responses": { "200": { "description": "Cuenta propia", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Account" } } } } } } },
+    "/sync/events": { "post": { "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["events"], "properties": { "events": { "type": "array", "items": { "$ref": "#/components/schemas/Command" } } } } } } }, "responses": { "200": { "description": "Acuses individuales", "content": { "application/json": { "schema": { "type": "object", "required": ["results"], "properties": { "results": { "type": "array", "items": { "$ref": "#/components/schemas/Acknowledgement" } } } } } } } } } }
+  },
+  "components": { "schemas": {
+    "Role": { "type": "string", "enum": ["PRODUCCION", "TRANSPORTE", "RECEPCION", "ADMIN"] },
+    "Assignment": { "type": "object", "required": ["id", "role", "location_id", "location_name", "scope"], "properties": {
+      "id": { "type": "string" }, "role": { "$ref": "#/components/schemas/Role" }, "location_id": { "type": "string", "nullable": true }, "location_name": { "type": "string" }, "scope": { "type": "string", "enum": ["GLOBAL", "UBICACION"] }
+    } },
+    "Account": { "type": "object", "required": ["id", "username", "name", "change_password_required", "assignments", "capabilities"], "properties": {
+      "id": { "type": "string", "format": "uuid" }, "username": { "type": "string" }, "name": { "type": "string" }, "change_password_required": { "type": "boolean" }, "assignments": { "type": "array", "items": { "$ref": "#/components/schemas/Assignment" } }, "capabilities": { "type": "array", "items": { "type": "string" } }
+    } },
+    "ErrorBody": { "type": "object", "required": ["code", "message", "retryable"], "properties": {
+      "code": { "type": "string" }, "message": { "type": "string" }, "retryable": { "type": "boolean" }, "field_errors": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } } }
+    } },
+    "CommandType": { "type": "string", "enum": ["MILKING_CREATE", "MILKING_UPDATE", "MILKING_CONFIRM", "MILKING_RECTIFY", "MILKING_VOID", "TRANSFER_CREATE", "TRANSFER_UPDATE", "TRANSFER_SEND", "TRANSFER_REVISE", "TRANSFER_CANCEL", "TRANSFER_PICKUP", "TRANSFER_RECEIVE", "CORRECTION_CREATE", "CORRECTION_ACCEPT", "CORRECTION_REJECT", "CORRECTION_WITHDRAW"] },
+    "Command": { "type": "object", "additionalProperties": false, "required": ["event_id", "device_id", "type", "entity_id", "occurred_at", "depends_on", "payload"], "properties": {
+      "event_id": { "type": "string", "format": "uuid" }, "device_id": { "type": "string", "format": "uuid" }, "type": { "$ref": "#/components/schemas/CommandType" }, "entity_id": { "type": "string", "format": "uuid" }, "occurred_at": { "type": "string", "format": "date-time" }, "expected_version": { "type": "integer", "minimum": 1 }, "depends_on": { "type": "array", "items": { "type": "string", "format": "uuid" } }, "payload": { "type": "object", "additionalProperties": true }
+    } },
+    "Acknowledgement": { "type": "object", "required": ["event_id", "status", "entity_id", "server_received_at"], "properties": {
+      "event_id": { "type": "string", "format": "uuid" }, "status": { "type": "string", "enum": ["RECIBIDA", "ESPERA_DEPENDENCIA", "APLICADA", "RECHAZADA"] }, "entity_id": { "type": "string", "format": "uuid" }, "lock_version": { "type": "integer" }, "result": { "type": "object", "additionalProperties": true }, "server_received_at": { "type": "string", "format": "date-time" }, "error": { "$ref": "#/components/schemas/ErrorBody" }
+    } }
+  } }
+}

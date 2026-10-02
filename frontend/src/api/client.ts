@@ -13,12 +13,15 @@ export function createApiClient(transport: Transport, onExpired = () => window.d
     const method = init.method ?? 'GET'
     const mutation = !['GET', 'HEAD'].includes(method)
     if (mutation && !csrf) await refreshCsrf()
-    const response = await transport(`/api/v1${path}`, {
+    if (!path.startsWith('/') || path.startsWith('//') || path.includes('://')) throw new Error('La ruta API debe ser interna')
+    let response: Response
+    try { response = await transport(`/api/v1${path}`, {
       ...init, credentials: 'same-origin',
       headers: { Accept: 'application/json', ...(init.body ? { 'Content-Type': 'application/json' } : {}), ...(mutation ? { 'X-CSRFToken': csrf! } : {}), ...init.headers },
-    })
+    }) } catch { throw new ApiError(0, { code: 'NETWORK_ERROR', message: 'Sin respuesta del servidor. Conserva la intención y reintenta con conexión.', retryable: true }) }
     if (!response.ok) {
-      const body = await response.json().catch(() => ({ code: 'HTTP_ERROR', message: 'No pudimos completar la solicitud.', retryable: response.status >= 500 })) as ErrorBody
+      const raw = await response.json().catch(() => null)
+      const body: ErrorBody = { code: typeof raw?.code === 'string' ? raw.code : 'HTTP_ERROR', message: typeof raw?.message === 'string' ? raw.message : 'No pudimos completar la solicitud.', field_errors: raw?.field_errors ?? {}, retryable: typeof raw?.retryable === 'boolean' ? raw.retryable : response.status >= 500 }
       if (body.code === 'CSRF_FAILED') csrf = undefined
       if (response.status === 401 && path !== '/auth/login') onExpired()
       throw new ApiError(response.status, body)

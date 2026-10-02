@@ -1,5 +1,9 @@
-/** Provisional contract from SITRAP_04. Replace/validate against B39 OpenAPI. */
-export type Role = 'PRODUCCION' | 'TRANSPORTE' | 'RECEPCION' | 'ADMIN'
-export interface Assignment { id: string; role: Role; location_id: string | null; location_name: string; scope: 'GLOBAL' | 'UBICACION' }
-export interface Account { id: string; username: string; name: string; change_password_required: boolean; assignments: Assignment[]; capabilities: string[] }
-export interface ErrorBody { code: string; message: string; field_errors?: Record<string, string[]>; retryable: boolean }
+import type { components } from './generated'
+export type Role = components['schemas']['Role']
+export type Assignment = components['schemas']['Assignment']
+export type Account = components['schemas']['Account']
+export type ErrorBody = components['schemas']['ErrorBody']
+export type CommandType = components['schemas']['CommandType']
+export type Command = components['schemas']['Command']
+export type Acknowledgement = components['schemas']['Acknowledgement']
+export interface Page<T> { results: T[]; next: string | null; count: number }
