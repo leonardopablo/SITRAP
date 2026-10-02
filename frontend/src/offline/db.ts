@@ -5,7 +5,7 @@ import { downloadedOnly, onlineOnly } from '../api/commands'
 export type LocalStatus = 'PENDIENTE' | 'ENVIANDO' | 'APLICADA' | 'REQUIERE_SESION' | 'ESPERA_DEPENDENCIA' | 'RECHAZADA'
 export interface LocalEvent { event_id: string; account_id: string; device_id: string; command: Command; status: LocalStatus; created_at: string; updated_at: string; error?: ErrorBody; result?: unknown }
 export interface AuthorizedCopy { key: string; account_id: string; kind: string; entity_id: string; document: unknown; downloaded_at: string }
-export interface DeviceRecord { account_id: string; device_id: string; registered: boolean; prepared_until: string | null }
+export interface DeviceRecord { account_id: string; device_id: string; registered: boolean; prepared_until: string | null; cursor?: string; needs_revoke?: boolean }
 
 export class SitrapDB extends Dexie {
   events!: Table<LocalEvent, string>
@@ -40,7 +40,7 @@ export async function enqueue(accountId: string, command: Command, storage: Sitr
   if (!accountId || !command.device_id || !command.event_id || !command.entity_id) throw new Error('Falta identidad para guardar la operación.')
   const device = await storage.devices.get(accountId)
   if (device?.device_id !== command.device_id) throw new Error('El dispositivo no corresponde a esta cuenta.')
-  if (device.prepared_until && Date.now() >= Date.parse(device.prepared_until)) throw new Error('La preparación offline venció; renueva acceso antes de registrar operaciones.')
+  if (!device.registered || !device.prepared_until || Date.now() >= Date.parse(device.prepared_until)) throw new Error('La preparación offline falta o venció; renueva acceso antes de registrar operaciones.')
   if (downloadedOnly.has(command.type)) {
     const kind = command.type.startsWith('CORRECTION') ? 'correction' : 'transfer'
     const copy = await readCopy(accountId, kind, command.entity_id, storage)

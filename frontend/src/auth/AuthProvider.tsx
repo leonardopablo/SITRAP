@@ -2,11 +2,13 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { useQueryClient } from '@tanstack/react-query'
 import { api, ApiError } from '../api/client'
 import type { Account } from '../api/types'
+import { db, getDevice } from '../offline/db'
 
 interface AuthState {
   account: Account | null; loading: boolean; expiredAccount: Account | null; error: string | null
   login: (username: string, password: string) => Promise<void>
   logout: () => Promise<void>
+  lock: () => Promise<void>
   changePassword: (current: string, next: string) => Promise<void>
   refresh: () => Promise<void>
 }
@@ -32,6 +34,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function login(username: string, password: string) {
     if (expiredAccount && username !== expiredAccount.username) throw new Error(`Continúa con la cuenta ${expiredAccount.username}.`)
     await api.refreshCsrf()
+    // Offline logout may leave a central session alive. Revoke it before any new work.
+    const previous = (await db.devices.toArray()).filter(device => device.needs_revoke)
+    for (const device of previous) {
+      try { await api.post('/auth/logout') } catch (error) { if (!(error instanceof ApiError && error.status === 401)) throw error }
+      await db.devices.update(device.account_id, { needs_revoke: false })
+    }
     await api.post('/auth/login', { username, password })
     await api.refreshCsrf()
     const next = await api.request<Account>('/auth/me')
@@ -42,12 +50,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await api.post('/auth/logout')
     cache.clear(); setAccount(null); setExpiredAccount(null)
   }
+  async function lock() { if (account) { await getDevice(account.id); await db.devices.update(account.id, { needs_revoke: true }) } cache.clear(); setAccount(null); setExpiredAccount(null) }
   async function changePassword(current: string, next: string) {
     await api.post('/auth/change-password', { current_password: current, new_password: next })
     await api.refreshCsrf()
     setAccount(await api.request<Account>('/auth/me'))
   }
-  return <Context.Provider value={{ account, loading, expiredAccount, error, login, logout, changePassword, refresh }}>{children}</Context.Provider>
+  return <Context.Provider value={{ account, loading, expiredAccount, error, login, logout, lock, changePassword, refresh }}>{children}</Context.Provider>
 }
 export function useAuth() {
   const state = useContext(Context)

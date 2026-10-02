@@ -23,10 +23,10 @@ export function Dialog({ open, title, children, onClose }: { open: boolean; titl
   const ref = useRef<HTMLDialogElement>(null)
   const id = useId()
   useEffect(() => {
-    if (!open) { ref.current?.close(); return }
+    if (!open) { if (ref.current?.open) ref.current.close?.(); return }
     const previous = document.activeElement as HTMLElement | null
-    ref.current?.showModal()
-    return () => { ref.current?.close(); previous?.focus() }
+    ref.current?.showModal?.()
+    return () => { ref.current?.close?.(); previous?.focus() }
   }, [open])
   return <dialog ref={ref} aria-labelledby={id} onCancel={onClose}>
     <h2 id={id}>{title}</h2>{children}<Button variant="secondary" onClick={onClose}>Cerrar</Button>

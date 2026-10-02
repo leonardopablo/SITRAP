@@ -5,7 +5,7 @@ import type { Acknowledgement, Command } from '../api/types'
 import { enqueue, getDevice, listEvents, SitrapDB } from './db'
 import { syncAccount } from './sync'
 
-const setup = async () => { const store = new SitrapDB(`sync-${crypto.randomUUID()}`); const device = await getDevice('one', store); return { store, device } }
+const setup = async () => { const store = new SitrapDB(`sync-${crypto.randomUUID()}`); const device = await getDevice('one', store); await store.devices.update('one', { registered: true, prepared_until: new Date(Date.now() + 86400000).toISOString() }); return { store, device } }
 const cmd = (device: string, depends_on: string[] = []) => createCommand({ device_id: device, entity_id: crypto.randomUUID(), type: 'MILKING_CREATE', payload: {}, depends_on })
 const ack = (command: Command, status: Acknowledgement['status'], error?: Acknowledgement['error']): Acknowledgement => ({ event_id: command.event_id, entity_id: command.entity_id, server_received_at: new Date().toISOString(), status, error })
 

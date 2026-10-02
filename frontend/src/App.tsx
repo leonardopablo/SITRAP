@@ -8,6 +8,7 @@ import { Notice } from './components/ui'
 import { Shell, TodayPage, PendingFeature } from './components/Shell'
 import { RequireRole } from './auth/workspace'
 import { PwaControls } from './pwa'
+import { SyncPanel } from './offline/SyncPanel'
 
 export function App() {
   return <>
@@ -22,6 +23,7 @@ export function App() {
           <Route path="/cuenta/clave" element={<PasswordPage />} />
           <Route element={<Shell />}>
             <Route path="/hoy" element={<TodayPage />} />
+            <Route path="/sincronizacion" element={<SyncPanel />} />
             <Route element={<RequireRole roles={['PRODUCCION']} />}>
               <Route path="/produccion" element={<PendingFeature title="Producción" />} />
               <Route path="/vacas" element={<PendingFeature title="Vacas" />} />

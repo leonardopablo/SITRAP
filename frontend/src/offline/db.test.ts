@@ -8,6 +8,7 @@ it('conserva UUID y pendientes tras cerrar y abrir IndexedDB; no mezcla cuentas'
   const name = `test-${crypto.randomUUID()}`
   const storage = new SitrapDB(name)
   const one = await getDevice('one', storage)
+  await storage.devices.update('one', { registered: true, prepared_until: new Date(Date.now() + 86400000).toISOString() })
   const original = commandFor(one.device_id)
   await enqueue('one', original, storage)
   storage.close()
@@ -25,6 +26,7 @@ it('conserva UUID y pendientes tras cerrar y abrir IndexedDB; no mezcla cuentas'
 it('rechaza confirmaciones no descargadas, versiones ajenas y comandos solo online', async () => {
   const storage = new SitrapDB(`test-${crypto.randomUUID()}`)
   const device = await getDevice('one', storage)
+  await storage.devices.update('one', { registered: true, prepared_until: new Date(Date.now() + 86400000).toISOString() })
   const pickup = commandFor(device.device_id, 'TRANSFER_PICKUP')
   await expect(enqueue('one', pickup, storage)).rejects.toThrow('Descarga')
   await saveCopy('one', 'transfer', pickup.entity_id, { version_id: 'old' }, storage)
@@ -38,6 +40,7 @@ it('rechaza confirmaciones no descargadas, versiones ajenas y comandos solo onli
 it('no altera silenciosamente una intención ya registrada y bloquea preparación vencida', async () => {
   const storage = new SitrapDB(`test-${crypto.randomUUID()}`)
   const device = await getDevice('one', storage)
+  await storage.devices.update('one', { registered: true, prepared_until: new Date(Date.now() + 86400000).toISOString() })
   const command = commandFor(device.device_id)
   await enqueue('one', command, storage)
   await expect(enqueue('one', { ...command, payload: { litros: '999' } }, storage)).rejects.toThrow('UUID')

@@ -36,5 +36,8 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     session = { ...session, change_password_required: false }
     return json({ changed: true })
   }
+  if (path === '/devices' && method === 'POST') return json({ device_id: data.device_id, prepared_until: new Date(Date.now() + 7 * 86400000).toISOString() })
+  if (path === '/sync/bootstrap') return json({ cursor: 'demo-1', prepared_until: new Date(Date.now() + 7 * 86400000).toISOString(), copies: [], tombstones: [] })
+  if (path === '/sync/changes') return json({ cursor: 'demo-1', copies: [], tombstones: [] })
   return error('MOCK_NOT_IMPLEMENTED', 'Este punto del contrato aún no está implementado en la simulación.', 501)
 }
