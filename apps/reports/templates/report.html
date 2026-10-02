@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"><title>{{ title }} | SITRAP</title>
+<style>
+@page { size: A4; margin: 19mm 15mm 18mm;
+  @bottom-left { content: "SITRAP · Datos sincronizados"; font-size: 8pt; color: #52616b; }
+  @bottom-right { content: "Página " counter(page) " de " counter(pages); font-size: 8pt; color: #52616b; }
+}
+body { font-family: Arial, sans-serif; color:#17333b; font-size:9pt; line-height:1.4; }
+.brand { font-weight:700; font-size:11pt; letter-spacing:2pt; color:#177262; }
+h1 {font-size:24pt; line-height:1.2; margin:6pt 0 14pt;}
+h2 {font-size:13pt; margin:18pt 0 6pt; page-break-after:avoid;}
+.meta {border-left:3pt solid #177262; background:#f0f6f4; padding:9pt 12pt; margin-bottom:12pt;}
+.filters {font-size:8pt; overflow-wrap:anywhere;}
+table {border-collapse:collapse; width:100%; table-layout:fixed; margin-top:7pt; font-size:8pt;}
+thead {display:table-header-group;}
+th {background:#17333b; color:white; text-align:left; padding:6pt;}
+td {padding:6pt; border-bottom:0.5pt solid #d5e0dd; vertical-align:top; overflow-wrap:anywhere;}
+tr {break-inside:avoid;}
+tbody tr:nth-child(even) {background:#f4f8f7;}
+.note {font-size:8pt; color:#52616b;}
+.empty {padding:12pt; border:1pt solid #d5e0dd;}
+</style></head>
+<body>
+<div class="brand">SITRAP</div><h1>{{ title }}</h1>
+<div class="meta">
+<strong>Período:</strong> {{ data.date_from|date:"Y-m-d" }} a {{ data.date_to|date:"Y-m-d" }} (inclusive).<br>
+<strong>Corte del servidor:</strong> {{ cutoff }} · America/Lima.<br>
+Este informe refleja solo datos sincronizados al corte. El servidor no conoce las operaciones pendientes en los teléfonos.
+</div>
+<p class="filters"><strong>Filtros aplicados:</strong> {% for key, value in filters.items %}{{ key }} = {{ value }}{% if not forloop.last %} · {% endif %}{% endfor %}</p>
+{% for section in sections %}
+<h2>{{ section.title }}</h2><p>{{ section.text }}</p>
+{% if section.rows %}
+<table><thead><tr>{% for header in section.headers %}<th>{{ header }}</th>{% endfor %}</tr></thead>
+<tbody>{% for row in section.rows %}<tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>{% endfor %}</tbody></table>
+{% else %}<p class="empty">Sin registros para el período y filtros seleccionados.</p>{% endif %}
+{% endfor %}
+<p class="note">Las cantidades de producción, recogida y recepción son medidas distintas. Los valores documentales vigentes pueden incorporar rectificaciones o correcciones aprobadas.</p>
+</body></html>

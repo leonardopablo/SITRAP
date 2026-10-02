@@ -2029,6 +2029,66 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: ''
+  /api/v1/reports/production.pdf:
+    get:
+      operationId: reports_production.pdf_retrieve
+      parameters:
+      - in: query
+        name: animal_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: date_from
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: date_to
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: product_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: turn_id
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - reports
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          description: PDF con datos sincronizados al corte del servidor.
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/role-assignments:
     get:
       operationId: role_assignments_list

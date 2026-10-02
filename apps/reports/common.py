@@ -1,7 +1,6 @@
 from functools import wraps
 
 from django.db import connection, transaction
-from django.utils import timezone
 from rest_framework import serializers
 
 from apps.common.errors import DomainError
@@ -17,7 +16,7 @@ class PeriodQuery(StrictSerializer):
     def validate(self, data):
         days = (data["date_to"] - data["date_from"]).days + 1
         if not 1 <= days <= 366:
-            raise serializers.ValidationError("Seleccione entre 1 y 366 días.")
+            raise serializers.ValidationError("Seleccione entre 1 y 366 dÃ­as.")
         return data
 
 
@@ -35,15 +34,18 @@ def snapshot(function):
 def bounded(queryset, limit=10000):
     rows = list(queryset[: limit + 1])
     if len(rows) > limit:
-        raise DomainError("REPORT_TOO_LARGE", "Reduzca el período o los filtros.", 422)
+        raise DomainError("REPORT_TOO_LARGE", "Reduzca el perÃ­odo o los filtros.", 422)
     return rows
 
 
 def metadata(filters):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT transaction_timestamp()")
+        cutoff = cursor.fetchone()[0]
     return {
         "date_from": filters["date_from"],
         "date_to": filters["date_to"],
-        "cutoff": timezone.now(),
+        "cutoff": cutoff,
         "timezone": "America/Lima",
         "synchronized_only": True,
     }
