@@ -6,7 +6,7 @@
 - Leídos los cuatro documentos SITRAP, revisión 3 (2026-10-02).
 - API/OpenAPI aún ausentes. Las dependencias Bxx se cubren provisionalmente con contrato documental y mocks tras el mismo cliente. **Implementado frontend no significa integrado con backend.**
 - F39 reservado para después de fusionar, por instrucción del usuario.
-- Remoto `origin` configurado; publicación de `agente-frontend` pendiente hasta confirmar el push. Sin fusiones.
+- Rama `agente-frontend` publicada en `origin/agente-frontend`; sin fusiones.
 - Cada fila refiere al commit por su mensaje único; los hashes se incorporan al siguiente incremento para evitar autorreferencias.
 
 ## Tareas y verificaciones
