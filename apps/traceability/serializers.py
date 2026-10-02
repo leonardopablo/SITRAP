@@ -42,6 +42,7 @@ class TransferSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     code = serializers.CharField()
     creator_id = serializers.UUIDField()
+    pending_correction_id = serializers.UUIDField(allow_null=True)
     state = serializers.ChoiceField(
         choices=["BORRADOR", "PENDIENTE_RECOGIDA", "EN_CAMINO", "RECIBIDO", "CANCELADO"]
     )

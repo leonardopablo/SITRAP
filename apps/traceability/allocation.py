@@ -17,6 +17,20 @@ def reserved_quantities(*, exclude_transfer=None):
     totals = defaultdict(Decimal)
     for lot_id, quantity in lines.values_list("lot_id", "quantity"):
         totals[lot_id] += quantity
+    from .correction_models import Correction
+
+    pending = Correction.objects.filter(state="PENDIENTE")
+    if exclude_transfer:
+        pending = pending.exclude(transfer_id=exclude_transfer)
+    for correction in pending:
+        old = defaultdict(Decimal)
+        new = defaultdict(Decimal)
+        for line in correction.original_version.lines.all():
+            old[line.lot_id] += line.quantity
+        for line in correction.proposed_version.lines.all():
+            new[line.lot_id] += line.quantity
+        for lot_id, quantity in new.items():
+            totals[lot_id] += max(Decimal(0), quantity - old[lot_id])
     return totals
 
 

@@ -84,6 +84,9 @@ def transfer_data(transfer, actor):
         "state": transfer.state,
         "lock_version": transfer.lock_version,
         "version_id": transfer.current_version_id,
+        "pending_correction_id": transfer.corrections.filter(state="PENDIENTE")
+        .values_list("id", flat=True)
+        .first(),
         "current_version": version_data(transfer.current_version),
         "versions": [version_data(version) for version in transfer.versions.order_by("number")],
         "capabilities": transfer_capabilities(transfer, actor),
@@ -112,6 +115,15 @@ def timeline(transfer):
                     "registered_at": conformity.registered_at,
                 }
             )
+    for correction in transfer.corrections.all():
+        events.append(
+            {
+                "type": "CORRECTION_CREATED",
+                "at": correction.created_at,
+                "version_id": correction.proposed_version_id,
+                "actor_id": correction.requester_id,
+            }
+        )
     return sorted(events, key=lambda item: (item["at"], str(item["version_id"]), item["type"]))
 
 
@@ -134,5 +146,12 @@ def transfer_capabilities(transfer, actor):
         and version.receiver_id == actor.id
         and version.destination_id in location_ids(actor, "RECEPCION")
     ):
-        result.append("receive")
+        if not transfer.corrections.filter(state="PENDIENTE").exists():
+            result.append("receive")
+    if (
+        transfer.state in ["EN_CAMINO", "RECIBIDO"]
+        and version.origin_id in location_ids(actor, "PRODUCCION")
+        and not transfer.corrections.filter(state="PENDIENTE").exists()
+    ):
+        result.append("request_correction")
     return result

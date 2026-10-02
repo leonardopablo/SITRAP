@@ -69,7 +69,8 @@ def receive(actor, command, operation):
     require_assigned(actor, "RECEPCION", version.destination_id, version.receiver_id)
     if transfer.state != "EN_CAMINO":
         raise DomainError("INVALID_STATE", "La entrega no está en camino.")
-    # B23 adds the pending-correction guard before correction creation is exposed.
+    if transfer.corrections.filter(state="PENDIENTE").exists():
+        raise DomainError("CORRECTION_PENDING", "Resuelva la propuesta antes de recibir.")
     ensure_document(transfer, command["payload"]["version_id"])
     before = transfer_data(transfer, actor)
     sign(transfer, actor, operation, "RECEPCION")

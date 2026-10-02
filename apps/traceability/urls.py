@@ -13,7 +13,12 @@ from apps.traceability.views import (
     TransfersView,
 )
 
+from .correction_views import CorrectionDetailView, CorrectionsView, CreateCorrectionView
+
 urlpatterns = [
+    path("transfers/<uuid:pk>/corrections", CreateCorrectionView.as_view()),
+    path("corrections", CorrectionsView.as_view()),
+    path("corrections/<uuid:pk>", CorrectionDetailView.as_view()),
     path("transfers/<uuid:pk>/receive", ReceiveTransferView.as_view()),
     path("transfers/<uuid:pk>/pickup", PickupTransferView.as_view()),
     path("transfers/<uuid:pk>/revise", ReviseTransferView.as_view()),

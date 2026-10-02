@@ -116,3 +116,6 @@ class ConformityDetail(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["conformity", "line"], name="conformity_detail_unique")
         ]
+
+
+from .correction_models import Correction  # noqa: E402,F401
