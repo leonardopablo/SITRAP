@@ -52,6 +52,7 @@ export function TransportToday() {
   const pending = transfers.filter(item => item.state === 'PENDIENTE_RECOGIDA')
   const underway = transfers.filter(item => item.state === 'EN_CAMINO')
   return <section className="stack"><h1>Recogidas de hoy</h1>
+    <p>¿Sin solicitud descargada? <Link to="/notas">Guardar una nota provisional</Link>. No confirma recogida ni envía una solicitud.</p>
     {apiMode === 'mock' && <Notice tone="warning">Entregas de demostración. Tu confirmación solo queda en este teléfono, sin aviso a recepción.</Notice>}
     {query.isPending && online && <Notice>Cargando solicitudes…</Notice>}
     {query.isError && <Notice tone="error">No pudimos actualizar solicitudes. Comprueba la conexión. <Button variant="secondary" onClick={() => void query.refetch()}>Actualizar</Button></Notice>}

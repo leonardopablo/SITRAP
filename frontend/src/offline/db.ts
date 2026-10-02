@@ -6,14 +6,17 @@ export type LocalStatus = 'PENDIENTE' | 'ENVIANDO' | 'APLICADA' | 'REQUIERE_SESI
 export interface LocalEvent { event_id: string; account_id: string; device_id: string; command: Command; status: LocalStatus; created_at: string; updated_at: string; error?: ErrorBody; result?: unknown }
 export interface AuthorizedCopy { key: string; account_id: string; kind: string; entity_id: string; document: unknown; downloaded_at: string }
 export interface DeviceRecord { account_id: string; device_id: string; registered: boolean; prepared_until: string | null; cursor?: string; needs_revoke?: boolean }
+export interface FieldNote { id: string; account_id: string; text: string; created_at: string; linked_transfer_id?: string; linked_at?: string }
 
 export class SitrapDB extends Dexie {
   events!: Table<LocalEvent, string>
   copies!: Table<AuthorizedCopy, string>
   devices!: Table<DeviceRecord, string>
+  notes!: Table<FieldNote, string>
   constructor(name = 'sitrap-local-v1') {
     super(name)
     this.version(1).stores({ events: 'event_id, account_id, [account_id+status], created_at', copies: 'key, account_id, [account_id+kind], [account_id+entity_id]', devices: 'account_id' })
+    this.version(2).stores({ notes: 'id, account_id, [account_id+linked_transfer_id], created_at' })
   }
 }
 export const db = new SitrapDB()

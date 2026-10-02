@@ -30,6 +30,7 @@ import { AdminOverview } from './reports/AdminOverview'
 import { UsersPage } from './admin/UsersPage'
 import { CatalogPage } from './admin/CatalogPage'
 import { ReassignReceiver } from './admin/ReassignReceiver'
+import { FieldNotes } from './offline/FieldNotes'
 const MilkAnalytics = lazy(() => import('./reports/MilkAnalytics').then(module => ({ default: module.MilkAnalytics })))
 
 export function App() {
@@ -48,6 +49,7 @@ export function App() {
             <Route element={<RequireRole roles={['TRANSPORTE']} />}><Route path="/recogidas" element={<TransportToday />} /></Route>
             <Route element={<RequireRole roles={['RECEPCION']} />}><Route path="/recibir" element={<ReceptionToday />} /></Route>
             <Route path="/sincronizacion" element={<SyncPanel />} />
+            <Route path="/notas" element={<FieldNotes />} />
             <Route path="/avisos" element={<InboxPage />} />
             <Route path="/entregas/:id" element={<TransferDetailPage />} />
             <Route path="/correcciones/:id" element={<CorrectionPage />} />

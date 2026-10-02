@@ -35,6 +35,7 @@ export function SyncPanel() {
   useEffect(() => { void refresh(); const onFocus = () => void refresh(); window.addEventListener('focus', onFocus); window.addEventListener('online', onFocus); return () => { window.removeEventListener('focus', onFocus); window.removeEventListener('online', onFocus) } }, [refresh])
   async function run(action: () => Promise<unknown>, success: string) { setBusy(true); setMessage(''); try { await action(); setMessage(success) } catch (error) { setMessage((error as Error).message) } finally { setBusy(false) } }
   return <section className="stack"><h1>Pendientes de sincronización</h1>
+    <p><Link to="/notas">Notas provisionales</Link> (separadas de las operaciones que espera el servidor).</p>
     {apiMode === 'mock' && <Notice tone="warning">Modo simulado. Puedes preparar copias vacías de demostración, pero no existe servidor para confirmar registros. Sincronizar está deshabilitado.</Notice>}
     <Notice>{online ? 'Con conexión' : 'Sin conexión'} · Preparación: {device?.prepared_until ? new Intl.DateTimeFormat('es-PE', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Lima' }).format(new Date(device.prepared_until)) : 'no preparada'} · {events?.filter(item => item.status !== 'APLICADA' && item.status !== 'RECHAZADA').length ?? 0} pendientes</Notice>
     <div className="row"><Button disabled={!online} busy={busy} onClick={() => run(() => prepareAccount(account!.id), 'Datos preparados en este teléfono. No son confirmaciones de negocio.')}>Preparar dispositivo</Button>
