@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B14**. Siguiente elegible: **B15**.
+Última tarea terminada: **B15**. Siguiente elegible: **B16**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -31,7 +31,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B13 | `07f505e` | 51 pruebas acumuladas; UUID, vacío/cero, vaca/fecha/centro válidos, replay y carrera de edición con una sola versión ganadora; contrato exacto. |
 
-| B14 | `feat: confirmar produccion (B14)` (este commit) | Suite completa: 54 pruebas; luego 4 de confirmación al parametrizar cero/vacío. Suma, versión exacta, lote único, carrera entre productores e inmutabilidad publicada. |
+| B14 | `7f48032` | Suite completa: 54 pruebas; luego 4 de confirmación al parametrizar cero/vacío. Suma, versión exacta, lote único, carrera entre productores e inmutabilidad publicada. |
+
+| B15 | `feat: preparar anulacion de ordeno (B15)` (este commit) | Suite 58 pruebas; luego 6 de borrador/anulación, incluida carrera con dos productores. Unicidad parcial, historia conservada y reemplazo con lote propio. Sin endpoint público. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
@@ -76,7 +78,7 @@ B01-B12 publicados y rama local sigue origin/agente-backend. No se ha verificado
 
 ## Pendientes y reanudación
 
-**B15–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B16–B39 pendientes**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -88,7 +90,7 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B15, sin rehacer B01–B14.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B16, sin rehacer B01–B15.
 
 B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
 X-Device-ID. El sobre de comandos está implementado en servicios internos,
@@ -146,3 +148,8 @@ activas/hembras con estancia válida al día y total positivo. Devuelve lot_id.
 La confirmación no crea avisos de transporte. Versiones publicadas y detalles
 protegidos por triggers; solo transición documental PUBLICADA a SUPERADA permitida.
 Intento de consultar CI por API pública no accesible; CI remoto sigue sin verificarse.
+
+B15: MILKING_CREATE acepta replaces_id opcional de ordeño ANULADO del mismo
+centro/producto. Anulación solo servicio interno void_internal: motivo y versión,
+producción ANULADA y voided_at atómicos. B19 debe incorporar bloqueo por
+asignaciones activas antes de permitir publicar entregas; B27 expone /void al final.

@@ -17,6 +17,15 @@ class Milking(models.Model):
         "self", on_delete=models.PROTECT, null=True, related_name="replacements"
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["center", "date", "turn"],
+                condition=Q(voided_at__isnull=True),
+                name="milking_active_center_date_turn_unique",
+            )
+        ]
+
 
 class MilkingDetail(models.Model):
     version = models.ForeignKey(

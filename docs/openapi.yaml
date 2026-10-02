@@ -2502,6 +2502,14 @@ components:
     Milking:
       type: object
       properties:
+        replaces_id:
+          type: string
+          format: uuid
+          nullable: true
+        voided_at:
+          type: string
+          format: date-time
+          nullable: true
         lot_id:
           type: string
           format: uuid
@@ -2562,11 +2570,13 @@ components:
       - product_id
       - production_id
       - quantity
+      - replaces_id
       - responsible_id
       - state
       - turn_id
       - version_id
       - version_number
+      - voided_at
     MilkingCommandError:
       oneOf:
       - $ref: '#/components/schemas/OperationResult'
@@ -2670,6 +2680,10 @@ components:
     MilkingCreatePayloadRequest:
       type: object
       properties:
+        replaces_id:
+          type: string
+          format: uuid
+          nullable: true
         production_id:
           type: string
           format: uuid

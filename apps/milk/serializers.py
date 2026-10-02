@@ -14,6 +14,7 @@ class CowDetail(StrictSerializer):
 
 
 class MilkingCreatePayload(StrictSerializer):
+    replaces_id = serializers.UUIDField(required=False, allow_null=True, default=None)
     production_id = serializers.UUIDField()
     version_id = serializers.UUIDField()
     center_id = serializers.UUIDField()
@@ -47,6 +48,8 @@ class MilkingUpdateCommand(EnvelopeSerializer):
 
 
 class MilkingSerializer(serializers.Serializer):
+    replaces_id = serializers.UUIDField(allow_null=True)
+    voided_at = serializers.DateTimeField(allow_null=True)
     lot_id = serializers.UUIDField(allow_null=True)
     id = serializers.UUIDField()
     production_id = serializers.UUIDField()

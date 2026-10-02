@@ -44,6 +44,8 @@ def milking_data(milking, actor):
         allowed = ["update", "confirm"]
     return {
         "id": str(milking.id),
+        "replaces_id": str(milking.replaces_id) if milking.replaces_id else None,
+        "voided_at": milking.voided_at.isoformat() if milking.voided_at else None,
         "lot_id": str(lot_id)
         if (
             lot_id := Lot.objects.filter(production=production).values_list("id", flat=True).first()
@@ -116,6 +118,18 @@ def create_milking(actor, command, operation):
     ).first()
     if link is None:
         raise DomainError("VALIDATION_ERROR", "Producto en litros no habilitado en el centro.", 422)
+    if data.get("replaces_id"):
+        previous = Milking.objects.filter(
+            pk=data["replaces_id"],
+            center_id=data["center_id"],
+            production__product_id=data["product_id"],
+        ).first()
+        if previous is None:
+            raise DomainError("VALIDATION_ERROR", "Referencia de reemplazo no válida.", 422)
+        previous_production = Production.objects.select_for_update().get(pk=previous.production_id)
+        previous.refresh_from_db()
+        if previous_production.state != "ANULADA" or previous.voided_at is None:
+            raise DomainError("INVALID_STATE", "Primero debe anular la producción anterior.")
     quantity = validate_details(data["center_id"], data["date"], data["turn_id"], data["details"])
     if Milking.objects.filter(
         center_id=data["center_id"],
@@ -145,6 +159,7 @@ def create_milking(actor, command, operation):
             production.save(update_fields=["current_version"])
             milking = Milking.objects.create(
                 id=command["entity_id"],
+                replaces_id=data.get("replaces_id"),
                 production=production,
                 center_id=data["center_id"],
                 date=data["date"],
@@ -189,7 +204,11 @@ def update_milking(actor, command, operation):
     ):
         raise DomainError("INVALID_STATE", "Centro, fecha y turno ya utilizados.")
     milking.date, milking.turn_id = data["date"], data["turn_id"]
-    milking.save(update_fields=["date", "turn"])
+    try:
+        with transaction.atomic():
+            milking.save(update_fields=["date", "turn"])
+    except IntegrityError:
+        raise DomainError("INVALID_STATE", "Centro, fecha y turno ya utilizados.")
     version = production.current_version
     version.details.all().delete()
     MilkingDetail.objects.bulk_create(
