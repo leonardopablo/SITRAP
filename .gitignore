@@ -9,3 +9,10 @@ __pycache__/
 htmlcov/
 staticfiles/
 *.sqlite3
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+.env.local
+*.tsbuildinfo
