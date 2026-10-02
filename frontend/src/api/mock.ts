@@ -119,10 +119,10 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     if (!record || session.assignments[0].role !== 'PRODUCCION') return error('PERMISSION_DENIED', 'Solo producción de origen propone cambios.', 403)
     if (!['EN_CAMINO', 'RECIBIDO'].includes(record.state)) return error('INVALID_STATE', 'Solo después de recogida.', 409)
     if (record.lock_version !== data.expected_version) return error('VERSION_CONFLICT', 'La entrega cambió.', 409)
-    if (demoCorrections.has(record.id)) return error('CORRECTION_PENDING', 'Ya hay una corrección pendiente.', 409)
+    if ([...demoCorrections.values()].some(item => item.transfer_id === record.id && item.state === 'PENDIENTE')) return error('CORRECTION_PENDING', 'Ya hay una corrección pendiente.', 409)
     if (!Number.isInteger(data.payload?.new_quantity) || data.payload.new_quantity <= 0 || !data.payload?.reason?.trim()) return error('VALIDATION_ERROR', 'Cantidad positiva y motivo son obligatorios.', 422)
     const correction = { id: data.payload.correction_id, transfer_id: record.id, original_quantity: record.units_presentation, proposed_quantity: data.payload.new_quantity, reason: data.payload.reason, state: 'PENDIENTE', proposal_version_id: data.payload.proposal_version_id, approver_transport: demoAccounts[1].id, approver_reception: demoAccounts[2].id, lock_version: 1, decisions: [] }
-    demoCorrections.set(record.id, correction)
+    demoCorrections.set(correction.id, correction)
     record.correction_pending = true
     record.lock_version++
     return json({ event_id: data.event_id, entity_id: record.id, status: 'APLICADA', lock_version: record.lock_version, result: correction, server_received_at: new Date().toISOString() })
@@ -133,6 +133,16 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     if (!found) return error('VALIDATION_ERROR', 'Corrección no encontrada.', 404)
     if (!['ADMIN', 'PRODUCCION'].includes(session.assignments[0].role) && ![found.approver_transport, found.approver_reception].includes(session.id)) return error('PERMISSION_DENIED', 'Sin acceso a la propuesta.', 403)
     return json(found)
+  }
+  if (path.startsWith('/corrections/') && path.endsWith('/withdraw') && method === 'POST') {
+    const found = [...demoCorrections.values()].find(item => item.id === path.split('/')[2])
+    if (!found || session.assignments[0].role !== 'PRODUCCION') return error('PERMISSION_DENIED', 'Solo solicitante puede retirar esta propuesta.', 403)
+    if (found.state !== 'PENDIENTE' || data.expected_version !== found.lock_version) return error('VERSION_CONFLICT', 'La propuesta cambió de estado.', 409)
+    if (!data.payload?.reason?.trim()) return error('VALIDATION_ERROR', 'Explica por qué retiras esta propuesta.', 422)
+    found.state = 'RETIRADA'; found.lock_version++
+    const transfer = demoTransfers.get(found.transfer_id)
+    if (transfer) transfer.correction_pending = false
+    return json({ event_id: data.event_id, entity_id: found.id, status: 'APLICADA', lock_version: found.lock_version, result: found, server_received_at: new Date().toISOString() })
   }
   if (path === '/devices' && method === 'POST') return json({ device_id: data.device_id, prepared_until: new Date(Date.now() + 7 * 86400000).toISOString() })
   if (path === '/sync/bootstrap') return json({ cursor: 'demo-1', prepared_until: new Date(Date.now() + 7 * 86400000).toISOString(), copies: [], tombstones: [] })

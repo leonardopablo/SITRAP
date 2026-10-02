@@ -17,6 +17,7 @@ import { TransferDetailPage } from './transfers/TransferDetailPage'
 import { TransportToday } from './transfers/TransportToday'
 import { ReceptionToday } from './transfers/ReceptionToday'
 import { CorrectionPage } from './corrections/CorrectionPage'
+import { CorrectionHistory } from './corrections/CorrectionHistory'
 
 export function App() {
   return <>
@@ -37,6 +38,7 @@ export function App() {
             <Route path="/avisos" element={<InboxPage />} />
             <Route path="/entregas/:id" element={<TransferDetailPage />} />
             <Route path="/correcciones/:id" element={<CorrectionPage />} />
+            <Route path="/correcciones" element={<CorrectionHistory />} />
             <Route element={<RequireRole roles={['PRODUCCION']} />}>
               <Route path="/produccion" element={<MilkingDraftPage />} />
               <Route path="/entregas/preparar" element={<PreparePage />} />
@@ -45,7 +47,7 @@ export function App() {
             </Route>
             <Route element={<RequireRole roles={['TRANSPORTE']} />}><Route path="/diario" element={<PendingFeature title="Diario de transporte" />} /></Route>
             <Route element={<RequireRole roles={['RECEPCION']} />}><Route path="/recepciones" element={<PendingFeature title="Recepciones" />} /></Route>
-            <Route element={<RequireRole roles={['TRANSPORTE', 'RECEPCION']} />}><Route path="/pendientes" element={<PendingFeature title="Pendientes" />} /></Route>
+            <Route element={<RequireRole roles={['TRANSPORTE', 'RECEPCION']} />}><Route path="/pendientes" element={<CorrectionHistory />} /></Route>
             <Route element={<RequireRole roles={['ADMIN']} />}>
               <Route path="/administracion" element={<PendingFeature title="Administración" />} />
               <Route path="/reportes" element={<PendingFeature title="Reportes" />} />

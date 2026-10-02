@@ -23,6 +23,8 @@ export function CorrectionPage() {
   const [message, setMessage] = useState('')
   const [reason, setReason] = useState('')
   const [rejecting, setRejecting] = useState(false)
+  const [withdrawing, setWithdrawing] = useState(false)
+  const [withdrawReason, setWithdrawReason] = useState('')
   const [busy, setBusy] = useState(false)
   const copy = useLiveQuery(() => account && id ? readCopy(account.id, 'correction', id) : undefined, [account?.id, id])
   const query = useQuery({ queryKey: ['correction', account?.id, id], queryFn: () => api.request<Correction>(`/corrections/${encodeURIComponent(id!)}`), enabled: !!account && !!id && online, refetchOnWindowFocus: true })
@@ -48,6 +50,21 @@ export function CorrectionPage() {
     } catch (cause) { setError((cause as Error).message) }
     finally { setBusy(false) }
   }
+  async function withdraw() {
+    if (!account || !proposal || assignment?.role !== 'PRODUCCION' || !online || busy || proposal.state !== 'PENDIENTE') return
+    if (!withdrawReason.trim()) { setError('Escribe el motivo del retiro.'); return }
+    setBusy(true); setError('')
+    try {
+      const device = await getDevice(account.id)
+      const command = createCommand({ type: 'CORRECTION_WITHDRAW', entity_id: proposal.id, device_id: device.device_id, expected_version: proposal.lock_version, payload: { reason: withdrawReason.trim() } })
+      // Online-only; keep original decisions, never reuse them for another proposal.
+      await api.post(`/corrections/${encodeURIComponent(proposal.id)}/withdraw`, command)
+      await cache.invalidateQueries({ queryKey: ['correction', account.id, id] })
+      await cache.invalidateQueries({ queryKey: ['corrections', account.id] })
+      setWithdrawing(false); setMessage('Solicitud retirada. La cantidad original permanece vigente; las decisiones anteriores quedan en el historial.')
+    } catch (cause) { setError((cause as Error).message) }
+    finally { setBusy(false) }
+  }
   return <section className="stack form"><h1>Corrección de cantidad</h1>
     {apiMode === 'mock' && <Notice tone="warning">Demostración sin decisiones remotas. Una aprobación local nunca cambia la cantidad vigente.</Notice>}
     {query.isPending && online && <Notice>Cargando propuesta…</Notice>}
@@ -59,7 +76,11 @@ export function CorrectionPage() {
         {rejecting && <div className="field"><label htmlFor="reject-reason">Motivo del rechazo</label><textarea id="reject-reason" value={reason} onChange={event => setReason(event.target.value)} /><Button busy={busy} onClick={() => void decide('reject')}>Confirmar rechazo</Button></div>}
       </div>}
       {decided && proposal.state === 'PENDIENTE' && <Notice tone="warning">Ya registraste una decisión o hay una pendiente de sincronizar. Falta consultar el estado final del servidor.</Notice>}
+      {proposal.state === 'PENDIENTE' && assignment?.role === 'PRODUCCION' && <div className="stack"><Button variant="danger" disabled={!online} onClick={() => setWithdrawing(true)}>Retirar propuesta</Button>
+        {withdrawing && <div className="field"><label htmlFor="withdraw-reason">Motivo del retiro</label><textarea id="withdraw-reason" value={withdrawReason} onChange={event => setWithdrawReason(event.target.value)} /><Button busy={busy} onClick={() => void withdraw()}>Confirmar retiro</Button></div>}
+      </div>}
       {proposal.state === 'APLICADA' && <Notice tone="success">Ambos aprobaron; la cantidad vigente se actualizó. La recepción física, si faltaba, sigue pendiente.</Notice>}
+      {['RECHAZADA', 'RETIRADA'].includes(proposal.state) && <Notice tone="warning">Propuesta {proposal.state.toLowerCase()}. La cantidad original permanece vigente. Las decisiones anteriores no se reutilizan.</Notice>}
     </article>}
     {message && <Notice tone="warning">{message}</Notice>}{error && <Notice tone="error">{error}</Notice>}
     <Link to="/sincronizacion">Ver operaciones locales y conflictos</Link>
