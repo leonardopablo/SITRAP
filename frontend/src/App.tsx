@@ -27,6 +27,7 @@ import { ProductionRevision } from './milk/ProductionRevision'
 import { PdfProduction } from './reports/PdfProduction'
 import { PdfDeliveries } from './reports/PdfDeliveries'
 import { AdminOverview } from './reports/AdminOverview'
+import { UsersPage } from './admin/UsersPage'
 const MilkAnalytics = lazy(() => import('./reports/MilkAnalytics').then(module => ({ default: module.MilkAnalytics })))
 
 export function App() {
@@ -65,6 +66,7 @@ export function App() {
             <Route element={<RequireRole roles={['TRANSPORTE', 'RECEPCION']} />}><Route path="/pendientes" element={<CorrectionHistory />} /></Route>
             <Route element={<RequireRole roles={['ADMIN']} />}>
               <Route path="/administracion" element={<AdminOverview />} />
+              <Route path="/administracion/usuarios" element={<UsersPage />} />
               <Route path="/reportes" element={<PendingFeature title="Reportes" />} />
             </Route>
           </Route>

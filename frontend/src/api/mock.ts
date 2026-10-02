@@ -15,6 +15,8 @@ let session: Account | null = null
 let expiresAt = 0
 const notifications = new Map<string, Notification[]>()
 const animals: Animal[] = []
+const mockUsers = demoAccounts.map(item => ({ id: item.id, username: item.username, name: item.name, active: true, change_password_required: item.change_password_required }))
+const mockAssignments = demoAccounts.flatMap(item => item.assignments.map(assignment => ({ ...assignment, user_id: item.id, active: true })))
 const demoLots: Lot[] = [{ id: '11111111-1111-4111-8111-111111111111', code: 'DEMO-LOTE-01', center_id: 'center-demo', product_id: 'milk-demo', produced_litres: '23.500', unlinked_litres: '23.500', confirmed: true }]
 const demoPresentation: Presentation = { id: '22222222-2222-4222-8222-222222222222', product_id: 'milk-demo', name: 'Bolsa de 1 L', content_base: '1.000', admits_fraction: false, active: true }
 const demoOptions: AssignmentOptions = { destinations: [{ id: 'destination-demo', name: 'Punto de venta demo' }], drivers: [{ id: demoAccounts[1].id, name: demoAccounts[1].name }], receivers: [{ id: demoAccounts[2].id, name: demoAccounts[2].name }], defaults: { destination_id: 'destination-demo', driver_id: demoAccounts[1].id, receiver_id: demoAccounts[2].id } }
@@ -124,6 +126,42 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
   }
   if (path === '/locations' && method === 'GET') return json({ results: [{ id: 'center-demo', name: 'Centro demo', type: 'CENTRO', active: true }, { id: 'destination-demo', name: 'Punto de venta demo', type: 'PUNTO_VENTA', active: true }], next: null, count: 2 })
   if (path === '/products' && method === 'GET') return json({ results: [{ id: 'milk-demo', name: 'Leche', code: 'LECHE', unit: 'L', active: true }], next: null, count: 1 })
+  if (path === '/users' && method === 'GET') return session.assignments[0].role === 'ADMIN' ? json({ results: mockUsers, next: null, count: mockUsers.length }) : error('PERMISSION_DENIED', 'Solo ADMIN consulta cuentas.', 403)
+  if (path === '/users' && method === 'POST') {
+    if (session.assignments[0].role !== 'ADMIN') return error('PERMISSION_DENIED', 'Solo ADMIN crea cuentas.', 403)
+    if (!data.username || mockUsers.some(item => item.username === data.username)) return error('VALIDATION_ERROR', 'Usuario vacío o duplicado.', 422)
+    const user = { id: crypto.randomUUID(), username: data.username, name: data.name, active: true, change_password_required: true }
+    mockUsers.push(user); return json({ ...user, temporary_password: 'Temporal123! (solo demo)' }, 201)
+  }
+  if (path.startsWith('/users/') && method === 'PATCH') {
+    if (session.assignments[0].role !== 'ADMIN') return error('PERMISSION_DENIED', 'Solo ADMIN modifica cuentas.', 403)
+    const user = mockUsers.find(item => item.id === path.split('/')[2])
+    if (!user) return error('VALIDATION_ERROR', 'Cuenta inexistente.', 404)
+    if (user.id === session.id && data.active === false) return error('INVALID_STATE', 'No puedes desactivar tu propia cuenta activa.', 409)
+    if (typeof data.active === 'boolean') user.active = data.active
+    if (typeof data.name === 'string') user.name = data.name
+    return json(user)
+  }
+  if (path.startsWith('/users/') && path.endsWith('/reset-password') && method === 'POST') {
+    if (session.assignments[0].role !== 'ADMIN') return error('PERMISSION_DENIED', 'Solo ADMIN restablece contraseñas.', 403)
+    const user = mockUsers.find(item => item.id === path.split('/')[2])
+    if (!user) return error('VALIDATION_ERROR', 'Cuenta inexistente.', 404)
+    user.change_password_required = true; return json({ temporary_password: 'Temporal123! (solo demo)' })
+  }
+  if (path === '/role-assignments' && method === 'GET') return session.assignments[0].role === 'ADMIN' ? json({ results: mockAssignments, next: null, count: mockAssignments.length }) : error('PERMISSION_DENIED', 'Solo ADMIN consulta ámbitos.', 403)
+  if (path === '/role-assignments' && method === 'POST') {
+    if (session.assignments[0].role !== 'ADMIN') return error('PERMISSION_DENIED', 'Solo ADMIN asigna funciones.', 403)
+    if (data.role === 'ADMIN' ? data.scope !== 'GLOBAL' || data.location_id !== null : data.scope !== 'UBICACION' || !data.location_id) return error('VALIDATION_ERROR', 'ADMIN usa GLOBAL; operadores requieren UBICACION.', 422)
+    if (!mockUsers.some(item => item.id === data.user_id && item.active)) return error('VALIDATION_ERROR', 'Cuenta inactiva o inexistente.', 422)
+    const assignment = { id: crypto.randomUUID(), user_id: data.user_id, role: data.role, scope: data.scope, location_id: data.location_id, location_name: data.location_id ?? 'Todos', active: true }
+    mockAssignments.push(assignment); return json(assignment, 201)
+  }
+  if (path.startsWith('/role-assignments/') && method === 'PATCH') {
+    if (session.assignments[0].role !== 'ADMIN') return error('PERMISSION_DENIED', 'Solo ADMIN modifica ámbitos.', 403)
+    const assignment = mockAssignments.find(item => item.id === path.split('/')[2])
+    if (!assignment) return error('VALIDATION_ERROR', 'Asignación inexistente.', 404)
+    assignment.active = data.active ?? assignment.active; return json(assignment)
+  }
   if (path === '/milkings' && method === 'GET') {
     if (!['PRODUCCION', 'ADMIN'].includes(session.assignments[0].role)) return error('PERMISSION_DENIED', 'Sin acceso a producción.', 403)
     return json({ results: [...demoMilkings.values()], next: null, count: demoMilkings.size })
