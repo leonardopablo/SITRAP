@@ -36,6 +36,6 @@ export function createApiClient(transport: Transport, onExpired = () => window.d
     csrf = body.csrf_token
     if (!csrf) throw new Error('Falta csrf_token en el contrato de acceso')
   }
-  return { request, refreshCsrf, post: <T>(path: string, body: unknown = {}) => request<T>(path, { method: 'POST', body: JSON.stringify(body) }) }
+  return { request, refreshCsrf, post: <T>(path: string, body: unknown = {}) => request<T>(path, { method: 'POST', body: JSON.stringify(body) }), patch: <T>(path: string, body: unknown) => request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }) }
 }
 export const api = createApiClient(apiMode === 'mock' ? mockFetch : (input, init) => fetch(input, init))

@@ -10,6 +10,7 @@ import { RequireRole } from './auth/workspace'
 import { PwaControls } from './pwa'
 import { SyncPanel } from './offline/SyncPanel'
 import { InboxPage } from './notifications/Inbox'
+import { AnimalsPage } from './animals/AnimalsPage'
 
 export function App() {
   return <>
@@ -28,7 +29,7 @@ export function App() {
             <Route path="/avisos" element={<InboxPage />} />
             <Route element={<RequireRole roles={['PRODUCCION']} />}>
               <Route path="/produccion" element={<PendingFeature title="Producción" />} />
-              <Route path="/vacas" element={<PendingFeature title="Vacas" />} />
+              <Route path="/vacas" element={<AnimalsPage />} />
               <Route path="/historial" element={<PendingFeature title="Historial" />} />
             </Route>
             <Route element={<RequireRole roles={['TRANSPORTE']} />}><Route path="/diario" element={<PendingFeature title="Diario de transporte" />} /></Route>
