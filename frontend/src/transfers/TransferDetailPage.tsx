@@ -17,6 +17,10 @@ export function TransferDetailPage() {
   const { assignment } = useWorkspace()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [editing, setEditing] = useState(false)
+  const [revising, setRevising] = useState(false)
+  const [reason, setReason] = useState('')
+  const [bags, setBags] = useState('')
   const local = useLiveQuery(() => account && id ? readCopy(account.id, 'transfer-draft', id) : undefined, [account?.id, id])
   const draft = local?.document as LocalTransfer | undefined
   const creation = useLiveQuery(() => draft ? db.events.get(draft.event_id) : undefined, [draft?.event_id])
@@ -34,6 +38,22 @@ export function TransferDetailPage() {
     } catch (cause) { setError((cause as Error).message) }
     finally { setBusy(false) }
   }
+  async function change(kind: 'revise' | 'cancel') {
+    if (!server.data || !account || !id || !navigator.onLine || busy || assignment?.role !== 'PRODUCCION') return
+    setBusy(true); setError('')
+    try {
+      if (!reason.trim()) throw new Error('Explica el motivo del cambio.')
+      const device = await getDevice(account.id)
+      if (kind === 'revise' && (!/^[1-9]\d*$/.test(bags) || !Number.isSafeInteger(Number(bags)))) throw new Error('La cantidad debe ser un número entero positivo de bolsas.')
+      const amount = kind === 'revise' ? Number(bags) : undefined
+      const command = createCommand({ type: kind === 'revise' ? 'TRANSFER_REVISE' : 'TRANSFER_CANCEL', entity_id: id, device_id: device.device_id, expected_version: server.data.lock_version, payload: { version_id: server.data.version_id, ...(kind === 'revise' ? { new_version_id: crypto.randomUUID(), units_presentation: amount } : {}), reason: reason.trim() } })
+      // These commands are ONLINE only (04 §5): do not enqueue locally.
+      await api.post(`/transfers/${encodeURIComponent(id)}/${kind}`, command)
+      await server.refetch()
+      setEditing(false); setRevising(false); setReason('')
+    } catch (cause) { setError((cause as Error).message) }
+    finally { setBusy(false) }
+  }
   if (!id) return <Notice tone="error">Entrega no identificada.</Notice>
   return <section className="stack form"><h1>Detalle de entrega</h1>
     {apiMode === 'mock' && <Notice tone="warning">Demostración sin servidor. La solicitud NO se notifica al conductor; solo queda en este teléfono.</Notice>}
@@ -43,7 +63,14 @@ export function TransferDetailPage() {
       {!draft.send_event_id && assignment?.role === 'PRODUCCION' && <Button busy={busy} onClick={() => void send()}>Enviar solicitud a transporte</Button>}
       {sending && <Notice tone={sending.status === 'APLICADA' ? 'success' : 'warning'}>{sending.status === 'APLICADA' ? 'Solicitud aceptada por el servidor. El aviso a transporte depende del backend.' : sending.status === 'RECHAZADA' ? `Solicitud rechazada: ${sending.error?.message ?? 'revisa el registro'}` : 'Envío guardado en este teléfono, pendiente de aceptar por el servidor. Nadie más lo ve todavía.'}</Notice>}
     </article>}
-    {!draft && server.data && <article className="card stack"><h2>{server.data.code}</h2><p>{server.data.state} · Versión {server.data.lock_version}</p><p className="quantity">{server.data.units_presentation} bolsas · {server.data.units_presentation} L</p><p>{server.data.origin_name} → {server.data.destination_name}</p><p>Conductor {server.data.driver_name} · Receptor {server.data.receiver_name}</p></article>}
+    {!draft && server.data && <article className="card stack"><h2>{server.data.code}</h2><p>{server.data.state} · Versión {server.data.lock_version}</p><p className="quantity">{server.data.units_presentation} bolsas · {server.data.units_presentation} L</p><p>{server.data.origin_name} → {server.data.destination_name}</p><p>Conductor {server.data.driver_name} · Receptor {server.data.receiver_name}</p>
+      {server.data.state === 'PENDIENTE_RECOGIDA' && assignment?.role === 'PRODUCCION' && <div className="row"><Button variant="secondary" onClick={() => { setEditing(true); setRevising(true); setBags(String(server.data?.units_presentation)) }}>Modificar solicitud</Button><Button variant="danger" onClick={() => { setEditing(true); setRevising(false) }}>Cancelar solicitud</Button></div>}
+      {editing && <section className="stack"><h3>{revising ? 'Modificar antes de recogida' : 'Cancelar antes de recogida'}</h3><p>Si el conductor confirmó mientras editabas, el servidor rechazará esta versión y tendrás que consultar el estado actual.</p>
+        {revising && <div className="field"><label htmlFor="revised-bags">Bolsas de 1 L propuestas</label><input id="revised-bags" inputMode="numeric" value={bags} onChange={event => setBags(event.target.value)} /></div>}
+        <div className="field"><label htmlFor="change-reason">Motivo obligatorio</label><textarea id="change-reason" value={reason} onChange={event => setReason(event.target.value)} /></div>
+        <div className="row"><Button busy={busy} onClick={() => void change(revising ? 'revise' : 'cancel')}>{revising ? 'Publicar revisión' : 'Confirmar cancelación'}</Button><Button variant="secondary" onClick={() => setEditing(false)}>Volver</Button></div>
+      </section>}
+    </article>}
     {!draft && server.isError && <Notice tone="error">No se pudo consultar esta entrega o no tienes autorización. Un aviso antiguo no acredita permisos actuales.</Notice>}
     {error && <Notice tone="error">{error}</Notice>}
     <Link to="/sincronizacion">Ver estado de sincronización</Link>

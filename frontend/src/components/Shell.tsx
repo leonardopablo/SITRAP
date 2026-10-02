@@ -70,6 +70,7 @@ export function TodayPage() {
     <p>{new Intl.DateTimeFormat('es-PE', { dateStyle: 'full', timeZone: 'America/Lima' }).format(new Date())}</p>
     <Notice>{assignment ? `Espacio de ${roleLabels[assignment.role].toLowerCase()} preparado. Las tareas operativas se incorporarán en los siguientes incrementos.` : 'No tienes asignaciones activas. Contacta al administrador.'}</Notice>
     {assignment?.role === 'PRODUCCION' && apiMode === 'mock' && <p><Link to="/entregas/preparar">Explorar preparación con lote de demostración (sin envío real)</Link></p>}
+    {assignment?.role === 'PRODUCCION' && apiMode === 'mock' && <p><Link to="/entregas/33333333-3333-4333-8333-333333333333">Explorar revisión/cancelación de solicitud de demostración</Link></p>}
   </section>
 }
 export function PendingFeature({ title }: { title: string }) {

@@ -18,6 +18,8 @@ const animals: Animal[] = []
 const demoLots: Lot[] = [{ id: '11111111-1111-4111-8111-111111111111', code: 'DEMO-LOTE-01', center_id: 'center-demo', product_id: 'milk-demo', produced_litres: '23.500', unlinked_litres: '23.500', confirmed: true }]
 const demoPresentation: Presentation = { id: '22222222-2222-4222-8222-222222222222', product_id: 'milk-demo', name: 'Bolsa de 1 L', content_base: '1.000', admits_fraction: false, active: true }
 const demoOptions: AssignmentOptions = { destinations: [{ id: 'destination-demo', name: 'Punto de venta demo' }], drivers: [{ id: demoAccounts[1].id, name: demoAccounts[1].name }], receivers: [{ id: demoAccounts[2].id, name: demoAccounts[2].name }], defaults: { destination_id: 'destination-demo', driver_id: demoAccounts[1].id, receiver_id: demoAccounts[2].id } }
+const demoTransferId = '33333333-3333-4333-8333-333333333333'
+const demoTransfers = new Map([[demoTransferId, { id: demoTransferId, code: 'DEMO-ENTREGA-01', state: 'PENDIENTE_RECOGIDA', lock_version: 1, version_id: '44444444-4444-4444-8444-444444444444', units_presentation: 20, origin_name: 'Centro demo', destination_name: 'Punto de venta demo', driver_name: 'Cuenta demo transporte', receiver_name: 'Cuenta demo recepcion' }]])
 export function seedDemoNotifications(accountId: string, items: Notification[]) { notifications.set(accountId, structuredClone(items)) }
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
 const error = (code: string, message: string, status: number) => json({ code, message, field_errors: {}, retryable: false }, status)
@@ -88,6 +90,23 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
   if (path === '/assignment-options' && method === 'GET') {
     if (!['PRODUCCION', 'ADMIN'].includes(session.assignments[0].role)) return error('PERMISSION_DENIED', 'Sin acceso a opciones.', 403)
     return json(demoOptions)
+  }
+  if (path.startsWith('/transfers/') && method === 'GET') {
+    const record = demoTransfers.get(path.split('/')[2])
+    if (!record) return error('VALIDATION_ERROR', 'Entrega no disponible en la demostración.', 404)
+    if (!['PRODUCCION', 'ADMIN'].includes(session.assignments[0].role)) return error('PERMISSION_DENIED', 'No autorizado en esta demostración.', 403)
+    return json(record)
+  }
+  if (path.startsWith('/transfers/') && method === 'POST' && (path.endsWith('/revise') || path.endsWith('/cancel'))) {
+    const record = demoTransfers.get(path.split('/')[2])
+    if (!record || session.assignments[0].role !== 'PRODUCCION') return error('PERMISSION_DENIED', 'Solo producción asignada puede revisar esta solicitud.', 403)
+    if (record.state !== 'PENDIENTE_RECOGIDA') return error('INVALID_STATE', 'La entrega ya no espera recogida.', 409)
+    if (record.lock_version !== data.expected_version || (path.endsWith('/revise') && data.payload?.version_id !== record.version_id)) return error('VERSION_CONFLICT', 'La solicitud cambió; revisa la cantidad actual.', 409)
+    if (!data.payload?.reason) return error('VALIDATION_ERROR', 'Se necesita un motivo.', 422)
+    if (path.endsWith('/revise')) { record.version_id = data.payload.new_version_id; record.units_presentation = data.payload.units_presentation }
+    else record.state = 'CANCELADO'
+    record.lock_version++
+    return json({ event_id: data.event_id, status: 'APLICADA', entity_id: record.id, lock_version: record.lock_version, result: { ...record }, server_received_at: new Date().toISOString() })
   }
   if (path === '/devices' && method === 'POST') return json({ device_id: data.device_id, prepared_until: new Date(Date.now() + 7 * 86400000).toISOString() })
   if (path === '/sync/bootstrap') return json({ cursor: 'demo-1', prepared_until: new Date(Date.now() + 7 * 86400000).toISOString(), copies: [], tombstones: [] })
