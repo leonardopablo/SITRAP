@@ -34,7 +34,7 @@ def test_login_requires_csrf_and_hides_password(user):
     assert "password" not in response.json()
     assert client.cookies["sessionid"]["httponly"]
     assert client.cookies["sessionid"]["samesite"] == "Lax"
-    assert client.cookies["sessionid"]["max-age"] == 43200
+    assert 43190 <= client.cookies["sessionid"]["max-age"] <= 43200
     assert client.get("/api/v1/auth/me").json()["id"] == str(user.id)
 
 

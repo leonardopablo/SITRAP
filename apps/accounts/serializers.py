@@ -28,6 +28,7 @@ class CapabilitySerializer(serializers.Serializer):
 
 
 class MeSerializer(serializers.ModelSerializer):
+    session_expires_at = serializers.DateTimeField(read_only=True, required=False)
     assignments = serializers.SerializerMethodField()
     locations = serializers.SerializerMethodField()
     capabilities = serializers.SerializerMethodField()
@@ -39,6 +40,7 @@ class MeSerializer(serializers.ModelSerializer):
             "username",
             "name",
             "password_change_required",
+            "session_expires_at",
             "assignments",
             "locations",
             "capabilities",

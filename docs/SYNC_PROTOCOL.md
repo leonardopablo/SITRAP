@@ -57,3 +57,17 @@ lote/producción autorizado. Un padre rechazado propaga DEPENDENCY_REJECTED.
 
 Rectificar/anular producción, revisar/cancelar entregas, crear/retirar correcciones
 y reasignar receptor siguen exclusivamente online. Esta lista coincide con 04 §5.
+
+
+# Sesión y revocación (B30)
+
+Login/me devuelven session_expires_at. Es una expiración absoluta: registrar dispositivo
+no amplía las 12 h. Device devuelve preparation_valid además de sus fechas; esa
+preparación local no acredita una sesión. Si vence, el cliente permite solo notas
+nuevas y conserva intenciones anteriores. Tras login online de la misma cuenta,
+el servidor revalida y procesa esas intenciones aunque la preparación haya vencido.
+
+Sesiones/CSRF fallidos no crean operaciones. Una cuenta distinta no puede usar el
+dispositivo ni la cola anterior. Cuenta/dispositivo inactivos y permisos revocados
+bloquean aplicación; no purgar ni cambiar silenciosamente los UUID. Una revocación
+no se remedia reescribiendo expected_version ni transfiriendo registros de usuario.

@@ -34,6 +34,16 @@ class DeviceInputSerializer(StrictSerializer):
 
 
 class DeviceSerializer(serializers.ModelSerializer):
+    preparation_valid = serializers.SerializerMethodField()
+
+    def get_preparation_valid(self, obj) -> bool:
+        return bool(
+            obj.active
+            and obj.prepared_at
+            and obj.preparation_expires_at
+            and obj.preparation_expires_at > timezone.now()
+        )
+
     class Meta:
         model = Device
         fields = (
@@ -42,6 +52,7 @@ class DeviceSerializer(serializers.ModelSerializer):
             "active",
             "prepared_at",
             "preparation_expires_at",
+            "preparation_valid",
             "last_contact_at",
         )
         read_only_fields = fields

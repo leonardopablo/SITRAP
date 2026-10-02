@@ -4095,6 +4095,9 @@ components:
           format: date-time
           readOnly: true
           nullable: true
+        preparation_valid:
+          type: boolean
+          readOnly: true
         last_contact_at:
           type: string
           format: date-time
@@ -4105,6 +4108,7 @@ components:
       - last_contact_at
       - name
       - preparation_expires_at
+      - preparation_valid
       - prepared_at
     DeviceInputRequest:
       type: object
@@ -4387,6 +4391,10 @@ components:
           maxLength: 150
         password_change_required:
           type: boolean
+        session_expires_at:
+          type: string
+          format: date-time
+          readOnly: true
         assignments:
           type: array
           items:
@@ -4408,6 +4416,7 @@ components:
       - id
       - locations
       - name
+      - session_expires_at
       - username
     Milking:
       type: object

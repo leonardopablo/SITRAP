@@ -1,4 +1,5 @@
 import hashlib
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
@@ -23,8 +24,10 @@ from apps.accounts.serializers import (
 from apps.common.errors import DomainError, ErrorSerializer
 
 
-def me_data(user):
-    return MeSerializer(user).data
+def me_data(user, request):
+    data = MeSerializer(user).data
+    data["session_expires_at"] = request.session.get_expiry_date().isoformat()
+    return data
 
 
 def consume_login_budget(request, username):
@@ -83,8 +86,8 @@ class LoginView(APIView):
         if user is None:
             raise DomainError("INVALID_CREDENTIALS", "Usuario o contraseña incorrectos.", 401)
         login(request, user)
-        request.session.set_expiry(settings.SESSION_COOKIE_AGE)
-        return Response(me_data(user))
+        request.session.set_expiry(timezone.now() + timedelta(seconds=settings.SESSION_COOKIE_AGE))
+        return Response(me_data(user, request))
 
 
 class MeView(APIView):
@@ -92,7 +95,7 @@ class MeView(APIView):
 
     @extend_schema(responses={200: MeSerializer, 401: ErrorSerializer})
     def get(self, request):
-        return Response(me_data(request.user))
+        return Response(me_data(request.user, request))
 
 
 class LogoutView(APIView):
@@ -135,4 +138,4 @@ class ChangePasswordView(APIView):
             # Session auth hash invalidates all other sessions on their next request.
             update_session_auth_hash(request, user)
             request.user = user
-        return Response(me_data(user))
+        return Response(me_data(user, request))
