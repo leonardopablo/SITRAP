@@ -15,8 +15,8 @@ from apps.traceability.models import Lot
 
 @transaction.atomic
 def void_internal(actor, milking_id, expected_version, reason, *, operation=None):
-    # Internal only until B27. B19 must add the published-allocation guard before transfers can publish.
-    actor = User.objects.select_for_update().get(pk=actor.pk)
+    # Internal only until B27; production lock serializes publication and voiding.
+    actor = User.objects.select_for_update(no_key=True).get(pk=actor.pk)
     ensure_actor(actor)
     reference = Milking.objects.filter(pk=milking_id).first()
     if reference is None:
@@ -31,6 +31,10 @@ def void_internal(actor, milking_id, expected_version, reason, *, operation=None
         raise DomainError("INVALID_STATE", "La producción ya fue anulada.")
     if not isinstance(reason, str) or not reason.strip():
         raise DomainError("VALIDATION_ERROR", "Indique el motivo de anulación.", 422)
+    from apps.traceability.allocation import has_active_links
+
+    if has_active_links(production.id):
+        raise DomainError("INVALID_STATE", "Producción vinculada a una entrega activa.")
     before = milking_data(milking, actor)
     production.state = "ANULADA"
     production.lock_version += 1

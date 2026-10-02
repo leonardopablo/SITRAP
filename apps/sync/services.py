@@ -54,7 +54,7 @@ def owned_device(actor, device_id, *, lock=False):
 
 @transaction.atomic
 def register_device(actor, data):
-    actor = User.objects.select_for_update().get(pk=actor.pk)
+    actor = User.objects.select_for_update(no_key=True).get(pk=actor.pk)
     ensure_actor(actor)
     try:
         with transaction.atomic():
@@ -97,7 +97,7 @@ def finish(operation, state, status, *, result=None, error=None):
 def execute(actor, envelope, handler, authorize):
     normalized, payload_hash = normalize(envelope)
     # Account lock serializes same-account replay and coordinates revocation/password resets.
-    actor = User.objects.select_for_update().get(pk=actor.pk)
+    actor = User.objects.select_for_update(no_key=True).get(pk=actor.pk)
     ensure_actor(actor)
     device = owned_device(actor, normalized["device_id"], lock=True)
     authorize(actor, normalized)

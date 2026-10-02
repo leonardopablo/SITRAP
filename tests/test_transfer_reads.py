@@ -2,7 +2,7 @@ import pytest
 from django.utils import timezone
 from rest_framework.test import APIClient
 
-from apps.accounts.models import RoleAssignment, User
+from apps.accounts.models import Role, RoleAssignment, User
 from apps.catalog.models import Location, Presentation
 from apps.sync.commands import dispatch
 from apps.traceability.models import Lot, Transfer, TransferLine, TransferVersion
@@ -13,6 +13,8 @@ pytestmark = pytest.mark.django_db
 
 
 def transfer_fixture(user):
+    for code in ("PRODUCCION", "TRANSPORTE", "RECEPCION", "ADMIN"):
+        Role.objects.get_or_create(code=code)
     command = complete_command(user)
     dispatch(user, command, fixed_type="MILKING_CREATE")
     dispatch(user, confirm_command(command))

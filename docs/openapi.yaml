@@ -1850,6 +1850,75 @@ paths:
               schema:
                 $ref: '#/components/schemas/TransferCommandError'
           description: ''
+  /api/v1/transfers/{id}/send:
+    post:
+      operationId: transfers_send_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferSendCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransferSendCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransferSendCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
   /api/v1/transfers/{id}/timeline:
     get:
       operationId: transfers_timeline_list
@@ -4315,6 +4384,48 @@ components:
       - result
       - server_received_at
       - status
+    TransferSendCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferSendCommandTypeEnum'
+          default: TRANSFER_SEND
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/VersionPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    TransferSendCommandTypeEnum:
+      enum:
+      - TRANSFER_SEND
+      type: string
+      description: '* `TRANSFER_SEND` - TRANSFER_SEND'
     TransferStateEnum:
       enum:
       - BORRADOR
@@ -4485,6 +4596,14 @@ components:
       - name
       - password_change_required
       - username
+    VersionPayloadRequest:
+      type: object
+      properties:
+        version_id:
+          type: string
+          format: uuid
+      required:
+      - version_id
   securitySchemes:
     cookieAuth:
       type: apiKey

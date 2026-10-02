@@ -69,7 +69,7 @@ def lock_context(transfer_id, incoming_lot_id):
             version_id__in=Transfer.objects.filter(pk=transfer_id).values("current_version_id"),
         ).values_list("lot_id", flat=True)
     )
-    lot_ids = old_lots | {incoming_lot_id}
+    lot_ids = old_lots | ({incoming_lot_id} if incoming_lot_id else set())
     production_ids = Lot.objects.filter(pk__in=lot_ids).values_list("production_id", flat=True)
     lock_rows(Production, production_ids)
     lots = {lot.pk: lot for lot in lock_rows(Lot, lot_ids)}
@@ -78,7 +78,7 @@ def lock_context(transfer_id, incoming_lot_id):
         current_lots = set(transfer.current_version.lines.values_list("lot_id", flat=True))
         if not current_lots.issubset(lot_ids):
             raise DomainError("VERSION_CONFLICT", "La entrega cambió; vuelva a consultarla.")
-    return lots[incoming_lot_id], transfer
+    return lots.get(incoming_lot_id), transfer
 
 
 def validate_draft(actor, data, lot):
