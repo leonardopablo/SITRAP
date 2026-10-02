@@ -6,7 +6,7 @@
 - Leídos los cuatro documentos SITRAP, revisión 3 (2026-10-02).
 - API/OpenAPI aún ausentes. Las dependencias Bxx se cubren provisionalmente con contrato documental y mocks tras el mismo cliente. **Implementado frontend no significa integrado con backend.**
 - F39 reservado para después de fusionar, por instrucción del usuario.
-- No hay remoto Git configurado: publicación pendiente; no se ha hecho push.
+- Remoto `origin` configurado; publicación de `agente-frontend` pendiente hasta confirmar el push. Sin fusiones.
 - Cada fila refiere al commit por su mensaje único; los hashes se incorporan al siguiente incremento para evitar autorreferencias.
 
 ## Tareas y verificaciones
@@ -49,8 +49,8 @@
 | F34 | Implementado con mock | `9c1fa8e` | Centros, productos/centro, presentaciones, turnos/especies, desactivar sin stock; build y 44 pruebas | B09/B10 compatibilidades, referencias históricas y unidad real; animales ADMIN B12 |
 | F35 | UI con fixture demo | `c61077f` | Solo ADMIN, EN_CAMINO, motivo, bloqueo histórico del servidor, conductor intacto; build y 45 pruebas | B26 restricción cualquier corrección histórica y aviso auditado real |
 | F36 | Notas locales separadas | `db78f09` | Persistencia, aislamiento, migración y vínculo explícito a copia autorizada; build y 46 pruebas | No hay sincronización de notas ni intercambio directo entre teléfonos definido |
-| F37 | Movimiento tras acuse | `feat: animar confirmaciones` | Marca textual/visual en registros aceptados, reduced motion; build/pruebas | Ilustraciones F03/F04 siguen decorativas, sin animación en cola local |
-| F38 | Pendiente | — | — | Auditoría móvil/accesible y validación Android real |
+| F37 | Movimiento tras acuse | `6b6fa87` | Marca textual/visual en registros aceptados, reduced motion; build y 47 pruebas | Ilustraciones F03/F04 siguen decorativas, sin animación en cola local |
+| F38 | Revisión automatizada en Chromium | `fix: ajustar experiencia de campo` | Build; 47 unitarias; 4 Playwright: 320/1280 px, teclado, desbordamiento, reduced motion, PWA offline | Validación táctil/push/instalación en Android real pendiente; backend ausente |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -87,7 +87,8 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 - F35: POST `/transfers/{id}/reassign-receiver` online con sobre provisional `event_id,device_id,occurred_at,expected_version,payload:{receiver_id,reason}`. Catálogo de comandos §5 no nombra esta acción administrativa: **confirmar DTO con OpenAPI B26 antes de integrar**, sin reutilizar `TRANSFER_REVISE` ni enviarlo offline. El servidor valida cualquier corrección histórica y registra auditoría/avisos.
 - F36: notas locales IndexedDB v2 por cuenta; vínculo exclusivamente a transferencia descargada para esa cuenta. No se encolan como eventos ni se envían a la API. El texto puede contener observaciones, nunca una firma ni cantidad oficial. No se inventa intercambio P2P o confirmación entre teléfonos.
 - F37: se reutilizan logo e ilustraciones vectoriales F03/F04. Una marca accesible con animación discreta aparece solo en estados `APLICADA` o mensaje de acuse central; `prefers-reduced-motion` y control global deshabilitan animación. No se interpreta guardar en IndexedDB como confirmación.
+- F38: pruebas Playwright de navegación a 320/1280 px, acceso por teclado y movimiento reducido. Ajustes CSS de palabras largas y calendario; la ejecución Android real no es reproducible en este entorno Windows/Chromium y debe verificarse antes del piloto. Una ejecución de Vitest en paralelo con el build agotó el tiempo de espera de un test de logout; ese test pasó aislado y la suite completa pasó en la repetición secuencial.
 
 ## Continuación
 
-Siguiente: F38. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F39 únicamente después de fusionar con backend B40. No afirmar integración ni piloto con mock.
