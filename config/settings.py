@@ -18,6 +18,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "drf_spectacular",
+    "apps.accounts",
+    "apps.catalog",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -80,3 +82,5 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
 }
+
+AUTH_USER_MODEL = "accounts.User"

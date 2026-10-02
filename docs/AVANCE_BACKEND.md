@@ -30,3 +30,6 @@ configuración e instrucciones después de B39; despliegue real después de inte
 - Prefijo `/api/v1`, rutas sin barra final. OpenAPI incremental solo anuncia rutas reales.
 - Sesiones de 12 horas y preparación offline de 7 días; variables configurables.
 - Cantidades como strings Decimal, UUID de negocio, UTC en tiempos y America/Lima en fechas.
+
+B03 introduce solo el modelo m?nimo de ubicaciones requerido por las FK de ?mbito;
+las API de cat?logos siguen pendientes hasta B09. No hay endpoints operativos todav?a.

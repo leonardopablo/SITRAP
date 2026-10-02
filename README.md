@@ -23,8 +23,7 @@ ejecutar pruebas y revisar el diff antes de confirmar. Las versiones compatibles
 se resuelven desde PyPI; Django 5.2 es LTS según
 [Django](https://docs.djangoproject.com/en/5.2/releases/5.2/).
 
-No ejecutar migraciones del proyecto B01 sobre una BD persistente hasta añadir el
-usuario personalizado (B03), para evitar crear sesiones/auth con un usuario equivocado.
+Aplicar migraciones con `python manage.py migrate` (usuario personalizado disponible).
 
 Pruebas PostgreSQL y CI: [docs/PRUEBAS.md](docs/PRUEBAS.md).
 Para regenerar locks de desarrollo usar `pip-compile --allow-unsafe --generate-hashes`.
