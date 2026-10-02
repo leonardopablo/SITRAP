@@ -15,6 +15,7 @@ from apps.sync.views import CurrentDeviceView, DeviceView
 from config.views import HealthView
 
 urlpatterns = [
+    path("api/v1/", include("apps.reports.urls")),
     path("api/v1/sync/events", SyncEventsView.as_view()),
     path("api/v1/sync/bootstrap", BootstrapView.as_view()),
     path("api/v1/sync/changes", ChangesView.as_view()),

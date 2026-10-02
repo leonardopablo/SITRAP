@@ -1127,6 +1127,65 @@ paths:
               schema:
                 $ref: '#/components/schemas/Lot'
           description: ''
+  /api/v1/metrics/milk:
+    get:
+      operationId: metrics_milk_retrieve
+      parameters:
+      - in: query
+        name: animal_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: date_from
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: date_to
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: product_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: turn_id
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - metrics
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkMetrics'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/milkings:
     get:
       operationId: milkings_list
@@ -3561,6 +3620,40 @@ components:
       - species_id
       - starts_on
       - stay_id
+    AnimalMetric:
+      type: object
+      properties:
+        animal_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        recorded_days:
+          type: integer
+        days_present:
+          type: integer
+        days_without_record:
+          type: integer
+        average_per_recorded_day:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+          nullable: true
+      required:
+      - animal_id
+      - average_per_recorded_day
+      - code
+      - days_present
+      - days_without_record
+      - liters
+      - name
+      - recorded_days
     AnimalStatusEnum:
       enum:
       - ACTIVO
@@ -4531,6 +4624,111 @@ components:
       - name
       - session_expires_at
       - username
+    MilkDay:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+          nullable: true
+        recorded_animals:
+          type: integer
+      required:
+      - date
+      - liters
+      - recorded_animals
+    MilkMetrics:
+      type: object
+      properties:
+        date_from:
+          type: string
+          format: date
+        date_to:
+          type: string
+          format: date
+        cutoff:
+          type: string
+          format: date-time
+        timezone:
+          type: string
+        synchronized_only:
+          type: boolean
+        liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        recorded_days:
+          type: integer
+        average_per_recorded_day:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+          nullable: true
+        animals:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnimalMetric'
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/MilkDay'
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/MilkRecord'
+      required:
+      - animals
+      - average_per_recorded_day
+      - cutoff
+      - date_from
+      - date_to
+      - days
+      - liters
+      - recorded_days
+      - records
+      - synchronized_only
+      - timezone
+    MilkRecord:
+      type: object
+      properties:
+        milking_id:
+          type: string
+          format: uuid
+        version_id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        turn_id:
+          type: string
+          format: uuid
+        animal_id:
+          type: string
+          format: uuid
+        liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+      required:
+      - animal_id
+      - center_id
+      - date
+      - liters
+      - milking_id
+      - product_id
+      - turn_id
+      - version_id
     Milking:
       type: object
       properties:

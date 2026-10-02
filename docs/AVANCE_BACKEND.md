@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B33**. Siguiente elegible: **B34**.
+Última tarea terminada: **B34**. Siguiente elegible: **B35**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -56,7 +56,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B32 | `4e653f7` | 23 pruebas pertinentes: 11 tipos de aviso, destinatarios/suscripciones activos, deduplicación, rollback conjunto y regresión de flujos/contrato. |
 
-| B33 | `feat: entregar avisos push (B33)` (este commit) | 35 pruebas pertinentes: leases, concurrencia, reinicio, errores HTTP/red, timeout, no redirecciones, baja de suscripciones y latido. |
+| B33 | `38d6753` | 35 pruebas pertinentes: leases, concurrencia, reinicio, errores HTTP/red, timeout, no redirecciones, baja de suscripciones y latido. |
+
+| B34 | `feat: analizar produccion (B34)` (este commit) | 7 pruebas pertinentes: cero/ausencia, cobertura, rectificacion/anulacion, filtros, ADMIN y aislamiento. Contrato OpenAPI validado. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
@@ -80,7 +82,7 @@ Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
 ## Bloqueos
 
 No hay bloqueo funcional actual. Remoto autorizado: https://github.com/leonardopablo/SITRAP.git.
-B01-B32 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
+B01-B33 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
 
 ## Decisiones que afectan al frontend
 
@@ -101,7 +103,7 @@ B01-B32 publicados y rama local sigue origin/agente-backend. No se ha verificado
 
 ## Pendientes y reanudación
 
-**B33–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B35–B39 pendientes**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -113,7 +115,7 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B33, sin rehacer B01–B32.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B35, sin rehacer B01–B34.
 
 B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
 X-Device-ID. El sobre de comandos está implementado en servicios internos,
@@ -276,3 +278,11 @@ consultar la bandeja autenticada y estado actual. B33 habilita el procesamiento.
 
 B33: worker/diagnostico en docs/PUSH.md. Entrega externa al menos una vez;
 ACEPTADO_PROVEEDOR no prueba entrega/lectura. Sin envio real a telefonos.
+
+B34: GET /metrics/milk requiere date_from/date_to inclusivos (1-366 dias); filtros
+center_id/product_id/animal_id/turn_id opcionales. Solo produccion confirmada vigente.
+Dias sin registro tienen liters=null; cero confirmado cuenta como registro. Promedio
+usa dias con registro, no dias calendario. Cobertura days_present usa estancias
+historicas, sin inferir lactancia ni expectativas por turno; no exige animal activo
+hoy. Limite 10.000 filas por conjunto; reducir filtros si REPORT_TOO_LARGE.
+Fotografia REPEATABLE READ, cutoff UTC y fechas America/Lima.
