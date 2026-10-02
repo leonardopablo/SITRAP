@@ -11,6 +11,15 @@ El proxy de desarrollo preserva `Host` para que la comprobación CSRF de Django
 compare el mismo origen que usa el navegador en `localhost:5173`; no se desactiva
 CSRF ni se necesita volver a migrar para solucionar un rechazo de login.
 
+Si se finalizó el único rol ADMIN, la cuenta seguirá pudiendo autenticarse pero
+`/auth/me` ya no mostrará funciones. No reabrir la asignación histórica ni borrar
+su auditoría. Un operador con acceso local a la BD puede crear una asignación
+nueva y auditada, únicamente si no queda ningún ADMIN activo:
+`python manage.py recover_admin --username admin-local --confirm-no-admin`.
+Hay que salir de la sesión y volver a entrar para renovar `/auth/me`. La API y
+la interfaz ahora rechazan que un administrador finalice su propia asignación o
+desactive su propia cuenta; la API también protege al último ADMIN.
+
 Verificación local: una prueba pytest con usuarios autenticados de producción,
 transporte y recepción crea y envía una entrega sobre un lote confirmado, comprueba
 el aviso a transporte, confirma recogida sin cambiar litros, comprueba el aviso a

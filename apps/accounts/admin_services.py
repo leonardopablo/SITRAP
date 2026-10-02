@@ -1,8 +1,9 @@
 from django.contrib.auth.password_validation import validate_password
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, connection, transaction
 from django.db.models import Q
+from django.utils import timezone
 
-from apps.accounts.access import require_admin
+from apps.accounts.access import active_assignments, require_admin
 from apps.accounts.models import RoleAssignment, User
 from apps.audit.services import record
 from apps.common.errors import DomainError
@@ -57,6 +58,16 @@ def update_user(actor, target_id, data):
     actor, target = lock_admin_and_target(actor, target_id)
     if target is None:
         raise DomainError("NOT_FOUND", "Cuenta no disponible.", 404)
+    if data.get("is_active") is False and target.is_active:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT pg_advisory_xact_lock(81403008)")
+        if target.pk == actor.pk or not active_assignments(actor).filter(
+            role_id="ADMIN", scope="GLOBAL"
+        ).exclude(user_id=target.pk).exists():
+            if active_assignments(target).filter(role_id="ADMIN", scope="GLOBAL").exists():
+                raise DomainError(
+                    "LAST_ADMIN", "No se puede desactivar el último administrador ni la propia cuenta.", 409
+                )
     before = user_snapshot(target)
     for key, value in data.items():
         setattr(target, key, value)
@@ -100,6 +111,8 @@ def assignment_snapshot(assignment):
 
 @transaction.atomic
 def save_assignment(actor, data, assignment_id=None):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT pg_advisory_xact_lock(81403008)")
     assignment = RoleAssignment.objects.filter(pk=assignment_id).first() if assignment_id else None
     if assignment_id and assignment is None:
         raise DomainError("NOT_FOUND", "Asignación no disponible.", 404)
@@ -109,6 +122,21 @@ def save_assignment(actor, data, assignment_id=None):
         raise DomainError("VALIDATION_ERROR", "Cuenta destino no activa.", 422)
     if assignment:
         assignment = RoleAssignment.objects.select_for_update().get(pk=assignment.pk)
+        if (
+            assignment.role_id == "ADMIN"
+            and assignment.scope == "GLOBAL"
+            and active_assignments(assignment.user).filter(pk=assignment.pk).exists()
+            and data.get("ends_at") is not None
+        ):
+            if assignment.user_id == actor.pk or not RoleAssignment.objects.filter(
+                role_id="ADMIN", scope="GLOBAL", user__is_active=True,
+                starts_at__lte=timezone.now(),
+            ).filter(Q(ends_at__isnull=True) | Q(ends_at__gt=timezone.now())).exclude(
+                pk=assignment.pk
+            ).exists():
+                raise DomainError(
+                    "LAST_ADMIN", "No se puede finalizar el último administrador ni la propia asignación.", 409
+                )
     else:
         existing = RoleAssignment.objects.filter(pk=data["id"]).first()
         if existing:

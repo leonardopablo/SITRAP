@@ -151,3 +151,43 @@ def test_bootstrap_first_admin_only(monkeypatch):
     assert User.objects.get().password_change_required
     with pytest.raises(CommandError):
         call_command("bootstrap_admin", username="another", name="Another Admin")
+
+
+def test_admin_cannot_remove_own_or_last_global_access(api, user):
+    make_admin(user)
+    assignment = RoleAssignment.objects.get(user=user, role_id="ADMIN")
+    path = f"/api/v1/role-assignments/{assignment.id}"
+    response = api.patch(path, {"ends_at": timezone.now().isoformat()}, format="json")
+    assert response.status_code == 409
+    assert response.json()["code"] == "LAST_ADMIN"
+    assignment.refresh_from_db()
+    assert assignment.ends_at is None
+    assert api.patch(f"/api/v1/users/{user.id}", {"is_active": False}, format="json").status_code == 409
+    assert api.get("/api/v1/users").status_code == 200
+
+    other = User.objects.create_user(username="other-admin", name="Other")
+    second = assign(other, "ADMIN", starts_at=timezone.now() - timedelta(days=1))
+    response = api.patch(
+        f"/api/v1/role-assignments/{second.id}",
+        {"ends_at": timezone.now().isoformat()}, format="json",
+    )
+    assert response.status_code == 200, response.data
+
+
+def test_recovery_creates_new_audited_assignment_only_when_none_active(user):
+    from django.core.management import call_command
+    from django.core.management.base import CommandError
+
+    make_admin(user)
+    old = RoleAssignment.objects.get(user=user, role_id="ADMIN")
+    old.ends_at = timezone.now()
+    old.save(update_fields=["ends_at"])
+    with pytest.raises(CommandError):
+        call_command("recover_admin", username=user.username)
+    call_command("recover_admin", username=user.username, confirm_no_admin=True)
+    old.refresh_from_db()
+    assert old.ends_at is not None
+    assert RoleAssignment.objects.filter(user=user, role_id="ADMIN").count() == 2
+    assert AuditEntry.objects.filter(action="RECOVER_ADMIN", actor=user).count() == 1
+    with pytest.raises(CommandError):
+        call_command("recover_admin", username=user.username, confirm_no_admin=True)
