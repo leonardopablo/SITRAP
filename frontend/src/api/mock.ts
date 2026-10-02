@@ -19,8 +19,9 @@ const demoLots: Lot[] = [{ id: '11111111-1111-4111-8111-111111111111', code: 'DE
 const demoPresentation: Presentation = { id: '22222222-2222-4222-8222-222222222222', product_id: 'milk-demo', name: 'Bolsa de 1 L', content_base: '1.000', admits_fraction: false, active: true }
 const demoOptions: AssignmentOptions = { destinations: [{ id: 'destination-demo', name: 'Punto de venta demo' }], drivers: [{ id: demoAccounts[1].id, name: demoAccounts[1].name }], receivers: [{ id: demoAccounts[2].id, name: demoAccounts[2].name }], defaults: { destination_id: 'destination-demo', driver_id: demoAccounts[1].id, receiver_id: demoAccounts[2].id } }
 const demoTransferId = '33333333-3333-4333-8333-333333333333'
-const demoTransfers = new Map([[demoTransferId, { id: demoTransferId, code: 'DEMO-ENTREGA-01', state: 'PENDIENTE_RECOGIDA', lock_version: 1, version_id: '44444444-4444-4444-8444-444444444444', units_presentation: 20, origin_name: 'Centro demo', destination_name: 'Punto de venta demo', driver_name: 'Cuenta demo transporte', receiver_name: 'Cuenta demo recepcion' }]])
-demoTransfers.set('55555555-5555-4555-8555-555555555555', { id: '55555555-5555-4555-8555-555555555555', code: 'DEMO-EN-CAMINO', state: 'EN_CAMINO', lock_version: 2, version_id: '66666666-6666-4666-8666-666666666666', units_presentation: 15, origin_name: 'Centro demo', destination_name: 'Punto de venta demo', driver_name: 'Cuenta demo transporte', receiver_name: 'Cuenta demo recepcion' })
+const demoTransfers = new Map([[demoTransferId, { id: demoTransferId, code: 'DEMO-ENTREGA-01', state: 'PENDIENTE_RECOGIDA', lock_version: 1, version_id: '44444444-4444-4444-8444-444444444444', units_presentation: 20, origin_name: 'Centro demo', destination_name: 'Punto de venta demo', driver_name: 'Cuenta demo transporte', receiver_name: 'Cuenta demo recepcion', correction_pending: false }]])
+const demoCorrections = new Map<string, { id: string; transfer_id: string; original_quantity: number; proposed_quantity: number; reason: string; state: string; proposal_version_id: string; approver_transport: string; approver_reception: string; lock_version: number; decisions: { role: string; decision: string; user_id: string }[] }>()
+demoTransfers.set('55555555-5555-4555-8555-555555555555', { id: '55555555-5555-4555-8555-555555555555', code: 'DEMO-EN-CAMINO', state: 'EN_CAMINO', lock_version: 2, version_id: '66666666-6666-4666-8666-666666666666', units_presentation: 15, origin_name: 'Centro demo', destination_name: 'Punto de venta demo', driver_name: 'Cuenta demo transporte', receiver_name: 'Cuenta demo recepcion', correction_pending: false })
 export function seedDemoNotifications(accountId: string, items: Notification[]) { notifications.set(accountId, structuredClone(items)) }
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
 const error = (code: string, message: string, status: number) => json({ code, message, field_errors: {}, retryable: false }, status)
@@ -112,6 +113,26 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     else record.state = 'CANCELADO'
     record.lock_version++
     return json({ event_id: data.event_id, status: 'APLICADA', entity_id: record.id, lock_version: record.lock_version, result: { ...record }, server_received_at: new Date().toISOString() })
+  }
+  if (path.startsWith('/transfers/') && path.endsWith('/corrections') && method === 'POST') {
+    const record = demoTransfers.get(path.split('/')[2])
+    if (!record || session.assignments[0].role !== 'PRODUCCION') return error('PERMISSION_DENIED', 'Solo producción de origen propone cambios.', 403)
+    if (!['EN_CAMINO', 'RECIBIDO'].includes(record.state)) return error('INVALID_STATE', 'Solo después de recogida.', 409)
+    if (record.lock_version !== data.expected_version) return error('VERSION_CONFLICT', 'La entrega cambió.', 409)
+    if (demoCorrections.has(record.id)) return error('CORRECTION_PENDING', 'Ya hay una corrección pendiente.', 409)
+    if (!Number.isInteger(data.payload?.new_quantity) || data.payload.new_quantity <= 0 || !data.payload?.reason?.trim()) return error('VALIDATION_ERROR', 'Cantidad positiva y motivo son obligatorios.', 422)
+    const correction = { id: data.payload.correction_id, transfer_id: record.id, original_quantity: record.units_presentation, proposed_quantity: data.payload.new_quantity, reason: data.payload.reason, state: 'PENDIENTE', proposal_version_id: data.payload.proposal_version_id, approver_transport: demoAccounts[1].id, approver_reception: demoAccounts[2].id, lock_version: 1, decisions: [] }
+    demoCorrections.set(record.id, correction)
+    record.correction_pending = true
+    record.lock_version++
+    return json({ event_id: data.event_id, entity_id: record.id, status: 'APLICADA', lock_version: record.lock_version, result: correction, server_received_at: new Date().toISOString() })
+  }
+  if (path === '/corrections' && method === 'GET') return json({ results: [...demoCorrections.values()], next: null, count: demoCorrections.size })
+  if (path.startsWith('/corrections/') && method === 'GET') {
+    const found = [...demoCorrections.values()].find(item => item.id === path.split('/')[2])
+    if (!found) return error('VALIDATION_ERROR', 'Corrección no encontrada.', 404)
+    if (!['ADMIN', 'PRODUCCION'].includes(session.assignments[0].role) && ![found.approver_transport, found.approver_reception].includes(session.id)) return error('PERMISSION_DENIED', 'Sin acceso a la propuesta.', 403)
+    return json(found)
   }
   if (path === '/devices' && method === 'POST') return json({ device_id: data.device_id, prepared_until: new Date(Date.now() + 7 * 86400000).toISOString() })
   if (path === '/sync/bootstrap') return json({ cursor: 'demo-1', prepared_until: new Date(Date.now() + 7 * 86400000).toISOString(), copies: [], tombstones: [] })

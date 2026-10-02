@@ -8,6 +8,7 @@ import { useAuth } from '../auth/AuthProvider'
 import { useWorkspace } from '../auth/workspace'
 import { db, enqueue, getDevice, readCopy, saveCopy } from '../offline/db'
 import { Button, Notice } from '../components/ui'
+import { ProposeCorrection } from '../corrections/ProposeCorrection'
 
 interface LocalTransfer { version_id: string; lot_id: string; units_presentation: number; destination_id: string; driver_id: string; receiver_id: string; event_id: string; send_event_id?: string }
 interface ServerTransfer { id: string; code: string; state: string; lock_version: number; version_id: string; units_presentation: number; origin_name: string; destination_name: string; driver_name: string; receiver_name: string }
@@ -71,6 +72,7 @@ export function TransferDetailPage() {
         <div className="row"><Button busy={busy} onClick={() => void change(revising ? 'revise' : 'cancel')}>{revising ? 'Publicar revisión' : 'Confirmar cancelación'}</Button><Button variant="secondary" onClick={() => setEditing(false)}>Volver</Button></div>
       </section>}
     </article>}
+    {!draft && server.data && ['EN_CAMINO', 'RECIBIDO'].includes(server.data.state) && assignment?.role === 'PRODUCCION' && <ProposeCorrection transfer={server.data} />}
     {!draft && server.isError && <Notice tone="error">No se pudo consultar esta entrega o no tienes autorización. Un aviso antiguo no acredita permisos actuales.</Notice>}
     {error && <Notice tone="error">{error}</Notice>}
     <Link to="/sincronizacion">Ver estado de sincronización</Link>
