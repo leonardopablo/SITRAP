@@ -15,8 +15,10 @@ def registry():
         create_milking,
         update_milking,
     )
+    from apps.traceability.commands import transfer_commands
 
     return {
+        **transfer_commands(),
         "MILKING_CONFIRM": (MilkingConfirmCommand, confirm_milking, authorize_milking),
         "MILKING_CREATE": (MilkingCreateCommand, create_milking, authorize_milking),
         "MILKING_UPDATE": (MilkingUpdateCommand, update_milking, authorize_milking),

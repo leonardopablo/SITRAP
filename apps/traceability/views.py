@@ -1,9 +1,34 @@
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
 from rest_framework import generics
 from rest_framework.response import Response
 
+from apps.common.errors import ErrorSerializer
+from apps.sync.commands import dispatch
+from apps.sync.serializers import OperationResultSerializer
+from apps.traceability.commands import TransferCreateCommand, TransferUpdateCommand
 from apps.traceability.reads import lot_data, scoped_lots, scoped_transfers, timeline, transfer_data
 from apps.traceability.serializers import LotSerializer, TimelineSerializer, TransferSerializer
+
+
+class TransferReceipt(OperationResultSerializer):
+    result = TransferSerializer()
+
+
+def command_responses():
+    error = PolymorphicProxySerializer(
+        component_name="TransferCommandError",
+        serializers=[OperationResultSerializer, ErrorSerializer],
+        resource_type_field_name=None,
+    )
+    return {
+        200: TransferReceipt,
+        202: OperationResultSerializer,
+        401: ErrorSerializer,
+        403: ErrorSerializer,
+        404: ErrorSerializer,
+        409: error,
+        422: error,
+    }
 
 
 class LotsView(generics.ListAPIView):
@@ -30,6 +55,11 @@ class LotDetailView(generics.RetrieveAPIView):
 
 
 class TransfersView(generics.ListAPIView):
+    @extend_schema(request=TransferCreateCommand, responses=command_responses())
+    def post(self, request):
+        body, status = dispatch(request.user, request.data, fixed_type="TRANSFER_CREATE")
+        return Response(body, status=status)
+
     serializer_class = TransferSerializer
 
     def get_queryset(self):
@@ -43,6 +73,13 @@ class TransfersView(generics.ListAPIView):
 
 
 class TransferDetailView(generics.RetrieveAPIView):
+    @extend_schema(request=TransferUpdateCommand, responses=command_responses())
+    def patch(self, request, pk):
+        body, status = dispatch(
+            request.user, request.data, fixed_type="TRANSFER_UPDATE", entity_id=pk
+        )
+        return Response(body, status=status)
+
     serializer_class = TransferSerializer
 
     def get_queryset(self):
@@ -53,6 +90,8 @@ class TransferDetailView(generics.RetrieveAPIView):
 
 
 class TimelineView(TransferDetailView):
+    http_method_names = ["get", "head", "options"]
+
     @extend_schema(responses=TimelineSerializer(many=True))
     def get(self, request, *args, **kwargs):
         return Response(TimelineSerializer(timeline(self.get_object()), many=True).data)

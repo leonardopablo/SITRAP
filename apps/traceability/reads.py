@@ -86,7 +86,10 @@ def transfer_data(transfer, actor):
         "version_id": transfer.current_version_id,
         "current_version": version_data(transfer.current_version),
         "versions": [version_data(version) for version in transfer.versions.order_by("number")],
-        "capabilities": [],
+        "capabilities": ["update"]
+        if transfer.state == "BORRADOR"
+        and transfer.current_version.origin_id in location_ids(actor, "PRODUCCION")
+        else [],
     }
 
 

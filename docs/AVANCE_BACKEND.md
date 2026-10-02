@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B16**. Siguiente elegible: **B17**.
+Última tarea terminada: **B17**. Siguiente elegible: **B18**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -12,30 +12,19 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 | B02 | `043fb22` | PostgreSQL 18 aislado, runner pytest y CI: 3 pruebas acumuladas; migraciones reales y rollback. Workflow remoto aún no ejecutado. |
 | B03 | `bed8229` | Usuario UUID, roles sembrados, ámbitos GLOBAL/UBICACION, períodos, unicidad y FK protegidas: 11 pruebas acumuladas; migración limpia. |
 | B04 | `f3919dc` | 17 pruebas acumuladas: CSRF en login/mutaciones, cookies, expiración/logout, contraseñas y revocación de otras sesiones, inactivos y límite de intentos; Ruff y OpenAPI válidos. |
-
 | B05 | `416efcb` | 22 pruebas acumuladas; aislamiento por centro/ID, vigencias, revocaciones, ADMIN sin permisos operativos y capacidades en me. |
-
 | B06 | `62e1310` | 27 pruebas acumuladas; dispositivos propios, hash canónico, replay, conflictos, rollback y duplicado concurrente en PostgreSQL. |
-
 | B07 | `a2d8a87` | 32 pruebas acumuladas; auditoría atómica, rollback ante fallo, redacción de secretos y trigger PostgreSQL contra UPDATE/DELETE. |
-
 | B08 | `da76a5e` | 37 pruebas acumuladas; API ADMIN, contraseña temporal, reset, revocación de sesiones, bajas, ámbitos sin superposición y bootstrap inicial. |
-
 | B09 | `f84b2f0` | 40 pruebas acumuladas; catálogos autorizados, altas idempotentes, bajas auditadas, centro válido y ausencia de stock. |
-
 | B10 | `553001f` | 42 pruebas acumuladas; unidades/presentaciones/especies/turnos, contenido positivo, bolsa indivisible, sin conversión KG/L; OpenAPI sin warnings y conexiones de test cerradas. |
-
 | B11 | `5d19be6` | 44 pruebas acumuladas; opciones mínimas por origen/destino, defaults solo con una opción, inactivos excluidos y acceso entre centros negado. |
-
 | B12 | `7ea58a5` + `de2aff2` | 48 pruebas acumuladas; animales/estancias, centros válidos, movimientos solo ADMIN y exclusión de solapamiento incluso con dos transacciones concurrentes. |
-
 | B13 | `07f505e` | 51 pruebas acumuladas; UUID, vacío/cero, vaca/fecha/centro válidos, replay y carrera de edición con una sola versión ganadora; contrato exacto. |
-
 | B14 | `7f48032` | Suite completa: 54 pruebas; luego 4 de confirmación al parametrizar cero/vacío. Suma, versión exacta, lote único, carrera entre productores e inmutabilidad publicada. |
-
 | B15 | `4f29ffc` | Suite 58 pruebas; luego 6 de borrador/anulación, incluida carrera con dos productores. Unicidad parcial, historia conservada y reemplazo con lote propio. Sin endpoint público. |
-
-| B16 | `feat: consultar entregas (B16)` (este commit) | 60 pruebas de suite; consultas P/T/R/A, borradores ocultos a T/R, procedencia sin detalle por vaca, versiones/timeline y catálogos vinculados. |
+| B16 | `7f1d82c` | 60 pruebas de suite; consultas P/T/R/A, borradores ocultos a T/R, procedencia sin detalle por vaca, versiones/timeline y catálogos vinculados. |
+| B17 | `feat: preparar entregas (B17)` (este commit) | 62 pruebas: borrador y línea atómicos, participantes, bolsas enteras, replay y versión obsoleta. OpenAPI validado. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
@@ -59,7 +48,7 @@ Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
 ## Bloqueos
 
 No hay bloqueo funcional actual. Remoto autorizado: https://github.com/leonardopablo/SITRAP.git.
-B01-B12 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
+B01-B16 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
 
 ## Decisiones que afectan al frontend
 
@@ -80,7 +69,7 @@ B01-B12 publicados y rama local sigue origin/agente-backend. No se ha verificado
 
 ## Pendientes y reanudación
 
-**B17–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B18–B39 pendientes**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -92,7 +81,7 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B17, sin rehacer B01–B16.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B18, sin rehacer B01–B17.
 
 B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
 X-Device-ID. El sobre de comandos está implementado en servicios internos,
@@ -162,3 +151,8 @@ Procedencia del lote no expone detalles por vaca a T/R. Catálogos incluyen
 productos/presentaciones/ubicaciones de sus entregas autorizadas para resolver IDs.
 Modelos de conformidad introducidos para consultas históricas; creación por
 servicios se habilita en B19/B21/B22. Capacidades no anuncian acciones aún no implementadas.
+
+B17: POST/PATCH /transfers usa sobre TRANSFER_CREATE/UPDATE; payload completo con
+version_id, line_id, lot_id, presentation_id, units, destination_id, driver_id, receiver_id.
+El piloto opera una línea por entrega; no reserva cantidades ni notifica en borrador.
+Transportista y receptor deben ser cuentas diferentes con asignación vigente.

@@ -1666,6 +1666,67 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedTransferList'
           description: ''
+    post:
+      operationId: transfers_create
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferCreateCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransferCreateCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransferCreateCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
   /api/v1/transfers/{id}:
     get:
       operationId: transfers_retrieve
@@ -1686,6 +1747,73 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Transfer'
+          description: ''
+    patch:
+      operationId: transfers_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTransferUpdateCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTransferUpdateCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTransferUpdateCommandRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
           description: ''
   /api/v1/transfers/{id}/timeline:
     get:
@@ -2461,6 +2589,43 @@ components:
       required:
       - id
       - name
+    DraftPayloadRequest:
+      type: object
+      properties:
+        version_id:
+          type: string
+          format: uuid
+        line_id:
+          type: string
+          format: uuid
+        lot_id:
+          type: string
+          format: uuid
+        presentation_id:
+          type: string
+          format: uuid
+        units:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        destination_id:
+          type: string
+          format: uuid
+        driver_id:
+          type: string
+          format: uuid
+        receiver_id:
+          type: string
+          format: uuid
+      required:
+      - destination_id
+      - driver_id
+      - line_id
+      - lot_id
+      - presentation_id
+      - receiver_id
+      - units
+      - version_id
     Error:
       type: object
       properties:
@@ -3562,6 +3727,36 @@ components:
         active:
           type: boolean
           default: true
+    PatchedTransferUpdateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferUpdateCommandTypeEnum'
+          default: TRANSFER_UPDATE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/DraftPayloadRequest'
     PatchedTurnInputRequest:
       type: object
       properties:
@@ -3938,6 +4133,83 @@ components:
       - state
       - version_id
       - versions
+    TransferCommandError:
+      oneOf:
+      - $ref: '#/components/schemas/OperationResult'
+      - $ref: '#/components/schemas/Error'
+    TransferCreateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferCreateCommandTypeEnum'
+          default: TRANSFER_CREATE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/DraftPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+    TransferCreateCommandTypeEnum:
+      enum:
+      - TRANSFER_CREATE
+      type: string
+      description: '* `TRANSFER_CREATE` - TRANSFER_CREATE'
+    TransferReceipt:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/OperationStateEnum'
+        entity_id:
+          type: string
+          format: uuid
+        lock_version:
+          type: integer
+          nullable: true
+        result:
+          $ref: '#/components/schemas/Transfer'
+        error:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        server_received_at:
+          type: string
+          format: date-time
+      required:
+      - entity_id
+      - error
+      - event_id
+      - lock_version
+      - result
+      - server_received_at
+      - status
     TransferStateEnum:
       enum:
       - BORRADOR
@@ -3952,6 +4224,11 @@ components:
         * `EN_CAMINO` - EN_CAMINO
         * `RECIBIDO` - RECIBIDO
         * `CANCELADO` - CANCELADO
+    TransferUpdateCommandTypeEnum:
+      enum:
+      - TRANSFER_UPDATE
+      type: string
+      description: '* `TRANSFER_UPDATE` - TRANSFER_UPDATE'
     TransferVersion:
       type: object
       properties:
