@@ -8,6 +8,7 @@ from apps.sync.commands import dispatch
 from apps.sync.serializers import OperationResultSerializer
 from apps.traceability.commands import TransferCreateCommand, TransferUpdateCommand
 from apps.traceability.lifecycle import TransferSendCommand
+from apps.traceability.physical import TransferPickupCommand
 from apps.traceability.reads import lot_data, scoped_lots, scoped_transfers, timeline, transfer_data
 from apps.traceability.revision import TransferCancelCommand, TransferReviseCommand
 from apps.traceability.serializers import LotSerializer, TimelineSerializer, TransferSerializer
@@ -123,5 +124,14 @@ class CancelTransferView(APIView):
     def post(self, request, pk):
         body, status = dispatch(
             request.user, request.data, fixed_type="TRANSFER_CANCEL", entity_id=pk
+        )
+        return Response(body, status=status)
+
+
+class PickupTransferView(APIView):
+    @extend_schema(request=TransferPickupCommand, responses=command_responses())
+    def post(self, request, pk):
+        body, status = dispatch(
+            request.user, request.data, fixed_type="TRANSFER_PICKUP", entity_id=pk
         )
         return Response(body, status=status)

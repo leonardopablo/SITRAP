@@ -116,9 +116,17 @@ def timeline(transfer):
 
 
 def transfer_capabilities(transfer, actor):
-    if transfer.current_version.origin_id in location_ids(actor, "PRODUCCION"):
+    result = []
+    version = transfer.current_version
+    if version.origin_id in location_ids(actor, "PRODUCCION"):
         if transfer.state == "BORRADOR":
-            return ["update", "send", "cancel"]
+            result += ["update", "send", "cancel"]
         if transfer.state == "PENDIENTE_RECOGIDA":
-            return ["revise", "cancel"]
-    return []
+            result += ["revise", "cancel"]
+    if (
+        transfer.state == "PENDIENTE_RECOGIDA"
+        and version.driver_id == actor.id
+        and version.origin_id in location_ids(actor, "TRANSPORTE")
+    ):
+        result.append("pickup")
+    return result

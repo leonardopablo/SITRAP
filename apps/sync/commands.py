@@ -17,10 +17,12 @@ def registry():
     )
     from apps.traceability.commands import transfer_commands
     from apps.traceability.lifecycle import lifecycle_commands
+    from apps.traceability.physical import physical_commands
     from apps.traceability.revision import revision_commands
 
     return {
         **transfer_commands(),
+        **physical_commands(),
         **revision_commands(),
         **lifecycle_commands(),
         "MILKING_CONFIRM": (MilkingConfirmCommand, confirm_milking, authorize_milking),
