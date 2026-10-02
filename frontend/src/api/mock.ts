@@ -22,6 +22,7 @@ const demoTransferId = '33333333-3333-4333-8333-333333333333'
 const demoTransfers = new Map([[demoTransferId, { id: demoTransferId, code: 'DEMO-ENTREGA-01', state: 'PENDIENTE_RECOGIDA', lock_version: 1, version_id: '44444444-4444-4444-8444-444444444444', units_presentation: 20, origin_name: 'Centro demo', destination_name: 'Punto de venta demo', driver_name: 'Cuenta demo transporte', receiver_name: 'Cuenta demo recepcion', correction_pending: false }]])
 const demoCorrections = new Map<string, { id: string; transfer_id: string; original_quantity: number; proposed_quantity: number; reason: string; state: string; proposal_version_id: string; approver_transport: string; approver_reception: string; lock_version: number; decisions: { role: string; decision: string; user_id: string }[] }>()
 demoTransfers.set('55555555-5555-4555-8555-555555555555', { id: '55555555-5555-4555-8555-555555555555', code: 'DEMO-EN-CAMINO', state: 'EN_CAMINO', lock_version: 2, version_id: '66666666-6666-4666-8666-666666666666', units_presentation: 15, origin_name: 'Centro demo', destination_name: 'Punto de venta demo', driver_name: 'Cuenta demo transporte', receiver_name: 'Cuenta demo recepcion', correction_pending: false })
+const demoReceived = { id: '77777777-7777-4777-8777-777777777777', code: 'DEMO-RECIBIDA', state: 'RECIBIDO', lock_version: 4, version_id: '88888888-8888-4888-8888-888888888888', units_presentation: 18, original_quantity: 20, received_date: new Date().toISOString().slice(0, 10), origin_name: 'Centro demo', destination_name: 'Punto de venta demo', driver_name: 'Cuenta demo transporte', receiver_name: 'Cuenta demo recepcion', correction_pending: false }
 export function seedDemoNotifications(accountId: string, items: Notification[]) { notifications.set(accountId, structuredClone(items)) }
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
 const error = (code: string, message: string, status: number) => json({ code, message, field_errors: {}, retryable: false }, status)
@@ -103,7 +104,9 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
   }
   if (path === '/transfers' && method === 'GET') {
     const role = session.assignments[0].role
-    return json({ results: ['PRODUCCION', 'TRANSPORTE', 'RECEPCION', 'ADMIN'].includes(role) ? [...demoTransfers.values()] : [], next: null, count: demoTransfers.size })
+    const params = new URL(input, 'http://localhost').searchParams
+    const results = params.get('status') === 'RECIBIDO' ? [demoReceived].filter(item => item.received_date >= (params.get('from') ?? '') && item.received_date <= (params.get('to') ?? '9999-12-31')) : [...demoTransfers.values(), demoReceived]
+    return json({ results: ['PRODUCCION', 'TRANSPORTE', 'RECEPCION', 'ADMIN'].includes(role) ? results : [], next: null, count: results.length })
   }
   if (path === '/metrics/transfers' && method === 'GET') {
     const params = new URL(input, 'http://localhost').searchParams
