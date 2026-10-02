@@ -119,3 +119,12 @@ class ConformityDetail(models.Model):
 
 
 from .correction_models import Correction, CorrectionDecision  # noqa: E402,F401
+
+
+class ReceiverReassignment(models.Model):
+    id = models.UUIDField(primary_key=True)
+    transfer = models.ForeignKey(Transfer, on_delete=models.PROTECT)
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    payload_hash = models.CharField(max_length=64)
+    response = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)

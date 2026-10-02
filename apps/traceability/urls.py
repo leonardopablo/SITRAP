@@ -21,8 +21,10 @@ from .correction_views import (
     RejectCorrectionView,
     WithdrawCorrectionView,
 )
+from .reassignment import ReassignReceiverView
 
 urlpatterns = [
+    path("transfers/<uuid:pk>/reassign-receiver", ReassignReceiverView.as_view()),
     path("corrections/<uuid:pk>/reject", RejectCorrectionView.as_view()),
     path("corrections/<uuid:pk>/withdraw", WithdrawCorrectionView.as_view()),
     path("corrections/<uuid:pk>/accept", AcceptCorrectionView.as_view()),

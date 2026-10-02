@@ -165,4 +165,6 @@ def transfer_capabilities(transfer, actor):
         and not transfer.corrections.filter(state="PENDIENTE").exists()
     ):
         result.append("request_correction")
+    if is_admin(actor) and transfer.state == "EN_CAMINO" and not transfer.corrections.exists():
+        result.append("reassign_receiver")
     return result

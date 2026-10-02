@@ -2312,6 +2312,63 @@ paths:
               schema:
                 $ref: '#/components/schemas/TransferCommandError'
           description: ''
+  /api/v1/transfers/{id}/reassign-receiver:
+    post:
+      operationId: transfers_reassign_receiver_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReceiverReassignmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReceiverReassignmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReceiverReassignmentRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transfer'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/transfers/{id}/receive:
     post:
       operationId: transfers_receive_create
@@ -5124,6 +5181,36 @@ components:
           maxLength: 2000
       required:
       - reason
+    ReceiverReassignmentRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: UUID estable de esta acción online.
+        expected_version:
+          type: integer
+          minimum: 1
+        version_id:
+          type: string
+          format: uuid
+        line_id:
+          type: string
+          format: uuid
+        receiver_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - expected_version
+      - id
+      - line_id
+      - reason
+      - receiver_id
+      - version_id
     RejectPayloadRequest:
       type: object
       properties:
