@@ -68,7 +68,7 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B38 | `c7bc7b3` | 6 pruebas pertinentes: ADMIN exclusivo, centro/producto, mismo corte en resumen, metricas separadas y PDF real revisado visualmente. |
 
-| B39 | `docs: cerrar contrato del piloto` (este commit) | Contrato generado comparado con OpenAPI, demo de ordeño confirmado y métricas, guardas de desarrollo/repetición. |
+| B39 | `d09c2f9` | 153 pruebas de suite; contrato generado comparado con OpenAPI, demo de ordeño confirmado y métricas, guardas de desarrollo/repetición. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
@@ -92,7 +92,7 @@ Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
 ## Bloqueos
 
 No hay bloqueo funcional actual. Remoto autorizado: https://github.com/leonardopablo/SITRAP.git.
-B01-B38 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
+B01-B39 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
 
 ## Decisiones que afectan al frontend
 
@@ -120,9 +120,10 @@ B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
 B31 requiere B18; B32 requiere B25/B26/B31; B33 worker.
 B34–B38 métricas/PDF y B39 contrato/demo solo tras B30/B33/B38.
 
-**B40 pendiente de preparación** después de B39. Dejar configuración e instrucciones
-de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda reservado
-hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
+**B40 solo preparación** después de B39: `docs/B40_PREPARACION.md` deja instrucciones
+de web/worker, secretos, HTTPS, backup/restauración y limpieza de snapshots vencidos.
+El despliegue real queda reservado hasta integrar frontend. No declarar B40 terminado
+ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
 aplicar migraciones y ejecutar las pruebas pertinentes; preparar B40 sin desplegar.
