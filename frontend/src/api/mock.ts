@@ -1,4 +1,5 @@
 import type { Account, Role } from './types'
+import type { Notification } from '../notifications/types'
 
 const roles: Role[] = ['PRODUCCION', 'TRANSPORTE', 'RECEPCION', 'ADMIN']
 export const demoAccounts: Account[] = roles.map((role, index) => ({
@@ -10,6 +11,8 @@ export const demoAccounts: Account[] = roles.map((role, index) => ({
 }))
 let session: Account | null = null
 let expiresAt = 0
+const notifications = new Map<string, Notification[]>()
+export function seedDemoNotifications(accountId: string, items: Notification[]) { notifications.set(accountId, structuredClone(items)) }
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
 const error = (code: string, message: string, status: number) => json({ code, message, field_errors: {}, retryable: false }, status)
 
@@ -35,6 +38,17 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     if (typeof data.new_password !== 'string' || data.new_password.length < 12) return error('VALIDATION_ERROR', 'Usa al menos 12 caracteres.', 422)
     session = { ...session, change_password_required: false }
     return json({ changed: true })
+  }
+  if (path === '/notifications' && method === 'GET') {
+    const items = notifications.get(session.id) ?? []
+    return json({ results: items, next: null, count: items.length, unread_count: items.filter(item => !item.read_at).length })
+  }
+  if (path.startsWith('/notifications/') && path.endsWith('/read') && method === 'POST') {
+    const id = path.split('/')[2]
+    const found = notifications.get(session.id)?.find(item => item.id === id)
+    if (!found) return error('PERMISSION_DENIED', 'Aviso no disponible para esta cuenta.', 403)
+    found.read_at ??= new Date().toISOString()
+    return json(found)
   }
   if (path === '/devices' && method === 'POST') return json({ device_id: data.device_id, prepared_until: new Date(Date.now() + 7 * 86400000).toISOString() })
   if (path === '/sync/bootstrap') return json({ cursor: 'demo-1', prepared_until: new Date(Date.now() + 7 * 86400000).toISOString(), copies: [], tombstones: [] })

@@ -23,8 +23,9 @@
 | F08 | Implementado | `c754e68` | Build, 10 unitarias; Playwright 1: worker único, recarga offline, SVG, sin caché API | Instalación y actualización en Android real; captura autorizada F11 |
 | F09 | Implementado | `d126c51` | IndexedDB persistente: UUID/reinicio/cuenta/versión/preparación; build y 13 pruebas | B06 registro real de dispositivo; preparar offline por B28/F11 |
 | F10 | Implementado contra contrato provisional | `57c4527` | Padre/hijo, acuse ausente, replay, sesión vencida, rechazo y ciclo; build y 17 pruebas | B29 batch y estados reales |
-| F11 | Implementado con mock limitado | `feat: mostrar estado de conexion` | Bootstrap/cambios, aislamiento por cuenta, panel, sesión/pending; build y 18 pruebas | B28/B30, DTO bootstrap real; mock no sincroniza ni confirma; revocación central tras logout offline requiere prueba con Django/F24 |
-| F12–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F11 | Implementado con mock limitado | `6efe1ee` | Bootstrap/cambios, aislamiento por cuenta, panel, sesión/pending; build, 18 unitarias, PWA e2e | B28/B30, DTO bootstrap real; mock no sincroniza ni confirma; revocación central tras logout offline requiere prueba con Django/F24 |
+| F12 | Implementado con mock limitado | `feat: consultar avisos` | Bandeja/contador/leer no confirma; polling 10 s visible, online/foco/manual; build y pruebas | B18; DTO de avisos, paginación y detalle vigente cuando existan F17/F21 |
+| F13–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -35,7 +36,8 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 - `VITE_API_MODE=mock` por defecto, `http` para API real. Un solo cliente, adaptador elegido al compilar; sin fallback silencioso. Mock de sesión solo en memoria (recarga exige login), sin persistir contraseñas/tokens. Cambio de clave simulado valida la UI, no cambia una credencial real.
 - F07: `frontend/contracts/openapi.provisional.json` es un subconjunto explícitamente provisional, derivado del documento, NO extraído del backend. `npm run api:generate` reproduce tipos. Supuesto batch `{events}` / `{results}`; confirmar con B29. Payload específico se añadirá junto al incremento que lo consume. TypeScript fijado a 5.9.3 por peer compatible de openapi-typescript 7.13.0 (sin forzar dependencias).
 - F11: DTO supuesto de `/sync/bootstrap` y `/sync/changes`: `{cursor,prepared_until?,copies:[{kind,entity_id,document}],tombstones:[{kind,entity_id}]}`; respuesta de POST `/devices`: `{device_id,prepared_until?}`. Si el servidor devuelve otra forma, adaptar SOLO `prepare.ts` tras OpenAPI. Se reemplaza el caché de esa cuenta atómicamente conservando su outbox. No hay sync en mock; no se presenta preparación demo como permisos reales.
+- F12: DTO supuesto de GET `/notifications`: `{results,next,count,unread_count}`; aviso `{id,type,title,text,created_at,read_at,entity_type,entity_id,version_id}`. POST `/notifications/{id}/read` sin comando de negocio. Confirmar forma, cursor de páginas y filtros con B18. El mock inicia bandeja vacía, no inventa avisos de operaciones locales.
 
 ## Continuación
 
-Siguiente: F12. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F13. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.

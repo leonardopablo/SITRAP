@@ -9,6 +9,7 @@ import { pendingCount } from '../offline/db'
 import { applyChanges } from '../offline/prepare'
 import { syncAccount } from '../offline/sync'
 import { apiMode } from '../api/client'
+import { InboxBell } from '../notifications/Inbox'
 
 export function Shell() {
   const { account, logout, lock } = useAuth()
@@ -51,6 +52,7 @@ export function Shell() {
         </select></div>}
         <Link to="/cuenta/clave">Cambiar contraseña</Link>
         <SyncStatus />
+        <InboxBell />
         <Button variant="secondary" busy={busy} onClick={async () => { if (account && await pendingCount(account.id)) setConfirm(true); else await closeSession() }}>Cerrar sesión</Button>
         {!online && <Notice tone="warning">Sin conexión: al cerrar solo se bloquea este teléfono. La sesión central seguirá activa hasta recuperar conexión y revocarla.</Notice>}
         <Dialog open={confirm} title="Operaciones pendientes" onClose={() => setConfirm(false)}><p>Hay registros guardados solo en este teléfono. Puedes sincronizarlos primero o cerrar conservándolos bloqueados para esta misma cuenta.</p><div className="row"><Button variant="secondary" onClick={() => { setConfirm(false); navigate('/sincronizacion') }}>Sincronizar primero</Button><Button onClick={() => void closeSession()}>Cerrar y conservar</Button></div></Dialog>
