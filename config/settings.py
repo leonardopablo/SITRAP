@@ -90,3 +90,5 @@ REST_FRAMEWORK["EXCEPTION_HANDLER"] = "apps.common.errors.error_handler"
 LOGIN_WINDOW_SECONDS = env.int("LOGIN_WINDOW_SECONDS", default=300)
 LOGIN_USER_LIMIT = env.int("LOGIN_USER_LIMIT", default=5)
 LOGIN_IP_LIMIT = env.int("LOGIN_IP_LIMIT", default=100)
+
+SPECTACULAR_SETTINGS["SERVE_PERMISSIONS"] = ["apps.accounts.authentication.ReadyAccount"]

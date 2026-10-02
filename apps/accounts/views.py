@@ -4,7 +4,6 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.password_validation import validate_password
 from django.db import transaction
-from django.db.models import Q
 from django.middleware.csrf import get_token
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -25,17 +24,7 @@ from apps.common.errors import DomainError, ErrorSerializer
 
 
 def me_data(user):
-    now = timezone.now()
-    data = MeSerializer(user).data
-    data["assignments"] = [
-        item
-        for item in data["assignments"]
-        if user.assignments.filter(id=item["id"], starts_at__lte=now)
-        .filter(Q(ends_at__isnull=True) | Q(ends_at__gt=now))
-        .filter(Q(location__isnull=True) | Q(location__active=True))
-        .exists()
-    ]
-    return data
+    return MeSerializer(user).data
 
 
 def consume_login_budget(request, username):

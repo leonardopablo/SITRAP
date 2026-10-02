@@ -198,6 +198,18 @@ components:
           type: string
       required:
       - csrf_token
+    Capability:
+      type: object
+      properties:
+        code:
+          type: string
+        location_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - code
+      - location_id
     Error:
       type: object
       properties:
@@ -222,6 +234,34 @@ components:
           $ref: '#/components/schemas/StatusEnum'
       required:
       - status
+    KindEnum:
+      enum:
+      - CENTRO
+      - PUNTO_VENTA
+      type: string
+      description: |-
+        * `CENTRO` - Centro
+        * `PUNTO_VENTA` - Punto Venta
+    LocationSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        code:
+          type: string
+          maxLength: 32
+        name:
+          type: string
+          maxLength: 150
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+      required:
+      - code
+      - id
+      - kind
+      - name
     LoginRequest:
       type: object
       properties:
@@ -261,9 +301,21 @@ components:
           items:
             $ref: '#/components/schemas/Assignment'
           readOnly: true
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationSummary'
+          readOnly: true
+        capabilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Capability'
+          readOnly: true
       required:
       - assignments
+      - capabilities
       - id
+      - locations
       - name
       - username
     PasswordRequest:

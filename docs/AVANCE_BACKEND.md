@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B04**. Siguiente elegible: **B05**.
+Última tarea terminada: **B05**. Siguiente elegible: **B06**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -11,7 +11,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 | B01 | `e85720a` | Django/DRF, configuración por entorno, lock con hashes, health y arranque WSGI/ASGI: 2 pruebas; check y OpenAPI correctos. |
 | B02 | `043fb22` | PostgreSQL 18 aislado, runner pytest y CI: 3 pruebas acumuladas; migraciones reales y rollback. Workflow remoto aún no ejecutado. |
 | B03 | `bed8229` | Usuario UUID, roles sembrados, ámbitos GLOBAL/UBICACION, períodos, unicidad y FK protegidas: 11 pruebas acumuladas; migración limpia. |
-| B04 | commit que contiene esta fila: `feat: autenticar usuarios (B04)` | 17 pruebas acumuladas: CSRF en login/mutaciones, cookies, expiración/logout, contraseñas y revocación de otras sesiones, inactivos y límite de intentos; Ruff y OpenAPI válidos. |
+| B04 | `f3919dc` | 17 pruebas acumuladas: CSRF en login/mutaciones, cookies, expiración/logout, contraseñas y revocación de otras sesiones, inactivos y límite de intentos; Ruff y OpenAPI válidos. |
+
+| B05 | `feat: validar ambitos (B05)` (este commit) | 22 pruebas acumuladas; aislamiento por centro/ID, vigencias, revocaciones, ADMIN sin permisos operativos y capacidades en me. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit; no se publica hasta disponer del remoto.
@@ -44,7 +46,7 @@ ni ejecución de CI remoto verificados**. Continuar tareas independientes.
 - Autenticación por cookie de sesión, no bearer tokens. Pedir `GET /auth/csrf`,
   enviar `X-CSRFToken` en login y mutaciones, renovar CSRF tras login.
 - `GET /auth/me` devuelve UUID, username, name, password_change_required y asignaciones
-  vigentes. Capacidades/ubicaciones se incorporan en B05.
+  vigentes. Incluye ubicaciones y capacidades por rol y ubicación.
 - Sesión de 12 horas y preparación offline de 7 días configurables.
 - `401 SESSION_EXPIRED` conserva la cola; `403 CSRF_FAILED` exige renovar CSRF.
   Errores uniformes: code, message, field_errors, retryable. Validación: 422.
@@ -57,7 +59,7 @@ ni ejecución de CI remoto verificados**. Continuar tareas independientes.
 
 ## Pendientes y reanudación
 
-**B05–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B06–B39 pendientes**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -69,4 +71,4 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B05, sin rehacer B01–B04.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B06, sin rehacer B01–B05.
