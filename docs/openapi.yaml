@@ -150,6 +150,138 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: ''
+  /api/v1/center-products:
+    get:
+      operationId: center_products_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - center-products
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCenterProductInputList'
+          description: ''
+    post:
+      operationId: center_products_create
+      tags:
+      - center-products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CenterProductInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CenterProductInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CenterProductInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CenterProductInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/center-products/{id}:
+    patch:
+      operationId: center_products_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - center-products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCenterProductInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCenterProductInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCenterProductInputRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CenterProductInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/devices:
     post:
       operationId: devices_create
@@ -250,6 +382,270 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
+          description: ''
+  /api/v1/locations:
+    get:
+      operationId: locations_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - locations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLocationInputList'
+          description: ''
+    post:
+      operationId: locations_create
+      tags:
+      - locations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LocationInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LocationInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/locations/{id}:
+    patch:
+      operationId: locations_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - locations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedLocationInputRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/products:
+    get:
+      operationId: products_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - products
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProductInputList'
+          description: ''
+    post:
+      operationId: products_create
+      tags:
+      - products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/products/{id}:
+    patch:
+      operationId: products_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProductInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProductInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProductInputRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductInput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
           description: ''
   /api/v1/role-assignments:
     get:
@@ -620,6 +1016,44 @@ components:
       required:
       - code
       - location_id
+    CenterProductInput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        enabled:
+          type: boolean
+          default: true
+      required:
+      - center_id
+      - id
+      - product_id
+    CenterProductInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        enabled:
+          type: boolean
+          default: true
+      required:
+      - center_id
+      - id
+      - product_id
     CreateAssignmentRequest:
       type: object
       properties:
@@ -746,14 +1180,60 @@ components:
           $ref: '#/components/schemas/StatusEnum'
       required:
       - status
-    KindEnum:
+    LocationInput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          maxLength: 32
+        name:
+          type: string
+          maxLength: 150
+        kind:
+          $ref: '#/components/schemas/LocationInputKindEnum'
+        active:
+          type: boolean
+          default: true
+      required:
+      - code
+      - id
+      - kind
+      - name
+    LocationInputKindEnum:
       enum:
       - CENTRO
       - PUNTO_VENTA
       type: string
       description: |-
-        * `CENTRO` - Centro
-        * `PUNTO_VENTA` - Punto Venta
+        * `CENTRO` - CENTRO
+        * `PUNTO_VENTA` - PUNTO_VENTA
+    LocationInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        kind:
+          $ref: '#/components/schemas/LocationInputKindEnum'
+        active:
+          type: boolean
+          default: true
+      required:
+      - code
+      - id
+      - kind
+      - name
     LocationSummary:
       type: object
       properties:
@@ -768,12 +1248,20 @@ components:
           type: string
           maxLength: 150
         kind:
-          $ref: '#/components/schemas/KindEnum'
+          $ref: '#/components/schemas/LocationSummaryKindEnum'
       required:
       - code
       - id
       - kind
       - name
+    LocationSummaryKindEnum:
+      enum:
+      - CENTRO
+      - PUNTO_VENTA
+      type: string
+      description: |-
+        * `CENTRO` - Centro
+        * `PUNTO_VENTA` - Punto Venta
     LoginRequest:
       type: object
       properties:
@@ -830,6 +1318,75 @@ components:
       - locations
       - name
       - username
+    PaginatedCenterProductInputList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CenterProductInput'
+    PaginatedLocationInputList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationInput'
+    PaginatedProductInputList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductInput'
     PaginatedRoleAssignmentAdminList:
       type: object
       required:
@@ -892,6 +1449,59 @@ components:
       required:
       - new_password
       - old_password
+    PatchedCenterProductInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        enabled:
+          type: boolean
+          default: true
+    PatchedLocationInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        kind:
+          $ref: '#/components/schemas/LocationInputKindEnum'
+        active:
+          type: boolean
+          default: true
+    PatchedProductInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        unit_id:
+          $ref: '#/components/schemas/UnitIdEnum'
+        active:
+          type: boolean
+          default: true
     PatchedUpdateAssignmentRequest:
       type: object
       properties:
@@ -912,6 +1522,52 @@ components:
           maxLength: 150
         is_active:
           type: boolean
+    ProductInput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          maxLength: 32
+        name:
+          type: string
+          maxLength: 150
+        unit_id:
+          $ref: '#/components/schemas/UnitIdEnum'
+        active:
+          type: boolean
+          default: true
+      required:
+      - code
+      - id
+      - name
+      - unit_id
+    ProductInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        unit_id:
+          $ref: '#/components/schemas/UnitIdEnum'
+        active:
+          type: boolean
+          default: true
+      required:
+      - code
+      - id
+      - name
+      - unit_id
     ResetPasswordRequest:
       type: object
       properties:
@@ -984,6 +1640,16 @@ components:
       - ok
       type: string
       description: '* `ok` - ok'
+    UnitIdEnum:
+      enum:
+      - L
+      - KG
+      - UN
+      type: string
+      description: |-
+        * `L` - L
+        * `KG` - KG
+        * `UN` - UN
     UserAdmin:
       type: object
       properties:
