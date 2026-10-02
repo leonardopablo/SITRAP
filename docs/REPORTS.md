@@ -40,3 +40,8 @@ Pruebas generan PDF real y extraen texto con pypdf. PDF_QA_DIR=.local/pdf-qa per
 guardar muestras para renderizar con Poppler y revisar visualmente; esas muestras
 son datos de prueba ignorados por Git. Se revisaron el informe normal y las cuatro
 páginas de una tabla de 100 filas, sin cortes ni solapamientos.
+
+B37: /reports/transfers.pdf permite P del origen, T propio o A;
+/reports/receptions.pdf permite R propio o A. Ambos usan filtros de
+metrics/transfers y muestran cantidades vigentes/corregidas y fechas fisicas.
+Recepciones incluye solo recepciones fisicas dentro del periodo.
