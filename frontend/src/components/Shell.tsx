@@ -73,6 +73,7 @@ export function TodayPage() {
     {assignment?.role === 'PRODUCCION' && apiMode === 'mock' && <p><Link to="/entregas/33333333-3333-4333-8333-333333333333">Explorar revisión/cancelación de solicitud de demostración</Link></p>}
     {assignment?.role === 'TRANSPORTE' && <p><Link to="/recogidas">Ver solicitudes por recoger</Link></p>}
     {assignment?.role === 'RECEPCION' && <p><Link to="/recibir">Ver recepciones pendientes</Link></p>}
+    {(assignment?.role === 'TRANSPORTE' || assignment?.role === 'RECEPCION') && <p><Link to="/pendientes">Ver correcciones pendientes</Link></p>}
   </section>
 }
 export function PendingFeature({ title }: { title: string }) {

@@ -16,6 +16,7 @@ import { PreparePage } from './transfers/PreparePage'
 import { TransferDetailPage } from './transfers/TransferDetailPage'
 import { TransportToday } from './transfers/TransportToday'
 import { ReceptionToday } from './transfers/ReceptionToday'
+import { CorrectionPage } from './corrections/CorrectionPage'
 
 export function App() {
   return <>
@@ -35,6 +36,7 @@ export function App() {
             <Route path="/sincronizacion" element={<SyncPanel />} />
             <Route path="/avisos" element={<InboxPage />} />
             <Route path="/entregas/:id" element={<TransferDetailPage />} />
+            <Route path="/correcciones/:id" element={<CorrectionPage />} />
             <Route element={<RequireRole roles={['PRODUCCION']} />}>
               <Route path="/produccion" element={<MilkingDraftPage />} />
               <Route path="/entregas/preparar" element={<PreparePage />} />

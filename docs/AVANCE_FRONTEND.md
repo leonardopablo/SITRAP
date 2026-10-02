@@ -33,8 +33,9 @@
 | F18 | Implementado con fixture demo | `19a1228` | Revisión/cancelación online con motivo, lock_version y conflicto; build y 27 pruebas | B20 y reserva documental; mock revisa solo fixture no una recogida real |
 | F19 | Implementado localmente | `d8f902f` | Inicio transporte, refresco 10 s/manual/foco, versión descargada y sin recaptura; build y 28 pruebas | B21: permisos, acuse, aviso a R; mock no envía conformidad central |
 | F20 | Implementado localmente | `ce9c9de` | Recibidas/pendientes, versión descargada, bloqueo corrección pendiente, sin recaptura; build y 29 pruebas | B22/B23: servidor debe bloquear recepción si hay corrección pendiente; mock no envía aviso |
-| F21 | Implementado con fixture demo | `feat: solicitar correccion` | Valor antes/después, motivo, propuesta inmutable y bloqueo visual; build/pruebas | B23: dos aprobadores reales, reserva y bloqueo transaccional; mock sin avisos |
-| F22–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F21 | Implementado con fixture demo | `5d32010` | Valor antes/después, motivo, propuesta inmutable y bloqueo visual; build y 30 pruebas | B23: dos aprobadores reales, reserva y bloqueo transaccional; mock sin avisos |
+| F22 | Implementado localmente | `feat: decidir correccion` | Dos aprobadores, accept/reject, versión descargada y sin éxito prematuro; build/pruebas | B24/B25: aplicación transaccional y rechazo real; mock no sincroniza decisiones |
+| F23–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -55,7 +56,8 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 - F19: GET `/transfers` supuesto paginado con `state,lock_version,version_id,units_presentation,origin_name,destination_name,driver_name,receiver_name`. `TRANSFER_PICKUP` solo `{version_id}`; se almacena antes de intentar sync. Mock no crea recogida ni aviso remoto. Confirmar autorización y capacidades con B21.
 - F20: `TRANSFER_RECEIVE` solo `{version_id}`; mismo detalle de traslado con `correction_pending?:boolean`. El bloqueo en UI es indicativo, backend B23 debe revalidar atómicamente. Fixture `DEMO-EN-CAMINO` se mantiene solo en memoria, no representa recepción real.
 - F21: POST `/transfers/{id}/corrections` online con `CORRECTION_CREATE` payload supuesto `{correction_id,proposal_version_id,new_quantity,reason}` y lock del traslado. GET `/corrections` supuesto paginado; la respuesta de creación trae `result` (corrección). Revisar B23/OpenAPI. No afirmar aplicación por una sola aprobación.
+- F22: DTO GET `/corrections/{id}` supuesto `{id,transfer_id,original_quantity,proposed_quantity,reason,state,proposal_version_id,approver_transport,approver_reception,lock_version,decisions}`. `CORRECTION_ACCEPT/REJECT` envían `version_id` de propuesta, rechazo agrega `reason`. En mock quedan en cola; ninguna decisión local aplica cambio. Validar B24/B25 y conflicto por versión al integrar.
 
 ## Continuación
 
-Siguiente: F22. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F23. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
