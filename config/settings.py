@@ -114,3 +114,7 @@ SPECTACULAR_SETTINGS["ENUM_NAME_OVERRIDES"].update(
 SPECTACULAR_SETTINGS["ENUM_NAME_OVERRIDES"].update(
     {"OperationStateEnum": "apps.sync.models.SyncOperation.State"}
 )
+
+SPECTACULAR_SETTINGS["ENUM_NAME_OVERRIDES"].update(
+    {"TransferStateEnum": ["BORRADOR", "PENDIENTE_RECOGIDA", "EN_CAMINO", "RECIBIDO", "CANCELADO"]}
+)

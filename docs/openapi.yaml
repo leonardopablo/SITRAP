@@ -818,6 +818,54 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: ''
+  /api/v1/lots:
+    get:
+      operationId: lots_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - lots
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLotList'
+          description: ''
+  /api/v1/lots/{id}:
+    get:
+      operationId: lots_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - lots
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lot'
+          description: ''
   /api/v1/milkings:
     get:
       operationId: milkings_list
@@ -1591,6 +1639,87 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: ''
+  /api/v1/transfers:
+    get:
+      operationId: transfers_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - transfers
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTransferList'
+          description: ''
+  /api/v1/transfers/{id}:
+    get:
+      operationId: transfers_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transfer'
+          description: ''
+  /api/v1/transfers/{id}/timeline:
+    get:
+      operationId: transfers_timeline_list
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - transfers
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTimelineList'
+          description: ''
   /api/v1/turns:
     get:
       operationId: turns_list
@@ -2361,6 +2490,37 @@ components:
       - ok
       type: string
       description: '* `ok` - ok'
+    Line:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        lot_id:
+          type: string
+          format: uuid
+        presentation_id:
+          type: string
+          format: uuid
+        units:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        content_base_snapshot:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+      required:
+      - content_base_snapshot
+      - id
+      - lot_id
+      - presentation_id
+      - quantity
+      - units
     LocationInput:
       type: object
       properties:
@@ -2458,6 +2618,53 @@ components:
       required:
       - password
       - username
+    Lot:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        production_id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        responsible_id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        turn_id:
+          type: string
+          format: uuid
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        production_state:
+          $ref: '#/components/schemas/ProductionStateEnum'
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - center_id
+      - code
+      - created_at
+      - date
+      - id
+      - product_id
+      - production_id
+      - production_state
+      - quantity
+      - responsible_id
+      - turn_id
     Me:
       type: object
       properties:
@@ -2932,6 +3139,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/LocationInput'
+    PaginatedLotList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lot'
     PaginatedMilkingList:
       type: object
       required:
@@ -3070,6 +3300,52 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Stay'
+    PaginatedTimelineList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Timeline'
+    PaginatedTransferList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transfer'
     PaginatedTurnInputList:
       type: object
       required:
@@ -3599,6 +3875,130 @@ components:
       - center_id
       - id
       - starts_on
+    Timeline:
+      type: object
+      properties:
+        type:
+          type: string
+        at:
+          type: string
+          format: date-time
+        registered_at:
+          type: string
+          format: date-time
+        version_id:
+          type: string
+          format: uuid
+        actor_id:
+          type: string
+          format: uuid
+      required:
+      - actor_id
+      - at
+      - type
+      - version_id
+    Transfer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        creator_id:
+          type: string
+          format: uuid
+        state:
+          $ref: '#/components/schemas/TransferStateEnum'
+        lock_version:
+          type: integer
+        version_id:
+          type: string
+          format: uuid
+          nullable: true
+        current_version:
+          allOf:
+          - $ref: '#/components/schemas/TransferVersion'
+          nullable: true
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransferVersion'
+        capabilities:
+          type: array
+          items:
+            type: string
+      required:
+      - capabilities
+      - code
+      - creator_id
+      - current_version
+      - id
+      - lock_version
+      - state
+      - version_id
+      - versions
+    TransferStateEnum:
+      enum:
+      - BORRADOR
+      - PENDIENTE_RECOGIDA
+      - EN_CAMINO
+      - RECIBIDO
+      - CANCELADO
+      type: string
+      description: |-
+        * `BORRADOR` - BORRADOR
+        * `PENDIENTE_RECOGIDA` - PENDIENTE_RECOGIDA
+        * `EN_CAMINO` - EN_CAMINO
+        * `RECIBIDO` - RECIBIDO
+        * `CANCELADO` - CANCELADO
+    TransferVersion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: integer
+        origin_id:
+          type: string
+          format: uuid
+        destination_id:
+          type: string
+          format: uuid
+        emitter_id:
+          type: string
+          format: uuid
+        driver_id:
+          type: string
+          format: uuid
+        receiver_id:
+          type: string
+          format: uuid
+        state:
+          type: string
+        reason:
+          type: string
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Line'
+      required:
+      - destination_id
+      - driver_id
+      - emitter_id
+      - id
+      - lines
+      - number
+      - origin_id
+      - published_at
+      - reason
+      - receiver_id
+      - state
     TurnInput:
       type: object
       properties:

@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import IntegrityError, transaction
+from django.db.models import Q
 
 from apps.accounts.access import is_admin, location_ids, require_admin
 from apps.accounts.models import User
@@ -10,22 +11,37 @@ from apps.common.errors import DomainError
 from apps.sync.services import ensure_actor
 
 
+def linked_lines(user):
+    from apps.traceability.models import TransferLine
+    from apps.traceability.reads import scoped_transfers
+
+    return TransferLine.objects.filter(version__transfer__in=scoped_transfers(user))
+
+
 def scoped_locations(user):
-    return (
-        Location.objects.all()
-        if is_admin(user)
-        else Location.objects.filter(active=True, id__in=location_ids(user))
-    )
+    if is_admin(user):
+        return Location.objects.all()
+    from apps.traceability.reads import scoped_transfers
+
+    transfers = scoped_transfers(user)
+    return Location.objects.filter(
+        Q(active=True, id__in=location_ids(user))
+        | Q(id__in=transfers.values("current_version__origin_id"))
+        | Q(id__in=transfers.values("current_version__destination_id"))
+    ).distinct()
 
 
 def scoped_products(user):
     if is_admin(user):
         return Product.objects.all()
     return Product.objects.filter(
-        active=True,
-        centerproduct__enabled=True,
-        centerproduct__center__active=True,
-        centerproduct__center_id__in=location_ids(user),
+        Q(
+            active=True,
+            centerproduct__enabled=True,
+            centerproduct__center__active=True,
+            centerproduct__center_id__in=location_ids(user),
+        )
+        | Q(id__in=linked_lines(user).values("lot__production__product_id"))
     ).distinct()
 
 
@@ -96,7 +112,10 @@ def save_catalog(actor, model, data, *, pk=None, immutable=()):
 def scoped_presentations(user):
     if is_admin(user):
         return Presentation.objects.all()
-    return Presentation.objects.filter(active=True, product__in=scoped_products(user))
+    return Presentation.objects.filter(
+        Q(active=True, product__in=scoped_products(user))
+        | Q(id__in=linked_lines(user).values("presentation_id"))
+    ).distinct()
 
 
 def scoped_units(user):
