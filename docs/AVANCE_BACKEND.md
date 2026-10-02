@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B05**. Siguiente elegible: **B06**.
+Última tarea terminada: **B06**. Siguiente elegible: **B07**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -13,7 +13,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 | B03 | `bed8229` | Usuario UUID, roles sembrados, ámbitos GLOBAL/UBICACION, períodos, unicidad y FK protegidas: 11 pruebas acumuladas; migración limpia. |
 | B04 | `f3919dc` | 17 pruebas acumuladas: CSRF en login/mutaciones, cookies, expiración/logout, contraseñas y revocación de otras sesiones, inactivos y límite de intentos; Ruff y OpenAPI válidos. |
 
-| B05 | `feat: validar ambitos (B05)` (este commit) | 22 pruebas acumuladas; aislamiento por centro/ID, vigencias, revocaciones, ADMIN sin permisos operativos y capacidades en me. |
+| B05 | `416efcb` | 22 pruebas acumuladas; aislamiento por centro/ID, vigencias, revocaciones, ADMIN sin permisos operativos y capacidades en me. |
+
+| B06 | `feat: registrar operaciones (B06)` (este commit) | 27 pruebas acumuladas; dispositivos propios, hash canónico, replay, conflictos, rollback y duplicado concurrente en PostgreSQL. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit; no se publica hasta disponer del remoto.
@@ -59,7 +61,7 @@ ni ejecución de CI remoto verificados**. Continuar tareas independientes.
 
 ## Pendientes y reanudación
 
-**B06–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B07–B39 pendientes**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -71,4 +73,9 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B06, sin rehacer B01–B05.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B07, sin rehacer B01–B06.
+
+B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
+X-Device-ID. El sobre de comandos está implementado en servicios internos,
+no hay aún endpoint /sync/events (B29). Replays revalidan permisos actuales;
+authorize solo verifica permisos, y el handler verifica estados dentro de la transacción.
