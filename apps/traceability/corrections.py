@@ -39,6 +39,16 @@ class PendingApproverSerializer(serializers.Serializer):
     user_id = serializers.UUIDField()
 
 
+class DecisionSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    function = serializers.ChoiceField(choices=["TRANSPORTE", "RECEPCION"])
+    user_id = serializers.UUIDField()
+    decision = serializers.ChoiceField(choices=["ACEPTAR", "RECHAZAR"])
+    reason = serializers.CharField()
+    decided_at = serializers.DateTimeField()
+    registered_at = serializers.DateTimeField()
+
+
 class CorrectionSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     transfer_id = serializers.UUIDField()
@@ -53,7 +63,7 @@ class CorrectionSerializer(serializers.Serializer):
     proposed_version = TransferVersionSerializer()
     created_at = serializers.DateTimeField()
     finished_at = serializers.DateTimeField(allow_null=True)
-    decisions = serializers.ListField(child=serializers.DictField())
+    decisions = DecisionSerializer(many=True)
     pending_approvers = PendingApproverSerializer(many=True)
     capabilities = serializers.ListField(child=serializers.CharField())
 
@@ -96,17 +106,22 @@ def correction_data(correction, actor):
         "proposed_version": version_data(correction.proposed_version),
         "created_at": correction.created_at,
         "finished_at": correction.finished_at,
-        "decisions": [],
+        "decisions": list(
+            correction.decisions.order_by("registered_at", "id").values(
+                "id", "function", "user_id", "decision", "reason", "decided_at", "registered_at"
+            )
+        ),
         "pending_approvers": [
             {"function": role, "user_id": user_id}
             for role, user_id in [
                 ("TRANSPORTE", correction.transport_approver_id),
                 ("RECEPCION", correction.reception_approver_id),
             ]
+            if not correction.decisions.filter(function=role).exists()
         ]
         if correction.state == "PENDIENTE"
         else [],
-        "capabilities": [],
+        "capabilities": correction_capabilities(correction, actor),
     }
 
 
@@ -200,3 +215,15 @@ def create_correction(actor, command, operation):
 
 def correction_commands():
     return {"CORRECTION_CREATE": (CorrectionCreateCommand, create_correction, authorize_producer)}
+
+
+def correction_capabilities(correction, actor):
+    from .decisions import approver_function
+
+    if correction.state != "PENDIENTE":
+        return []
+    try:
+        function = approver_function(actor, correction)
+    except DomainError:
+        return []
+    return [] if correction.decisions.filter(function=function).exists() else ["accept"]

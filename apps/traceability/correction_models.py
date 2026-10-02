@@ -45,3 +45,27 @@ class Correction(models.Model):
                 name="correction_distinct_approvers",
             ),
         ]
+
+
+class CorrectionDecision(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    correction = models.ForeignKey(Correction, on_delete=models.PROTECT, related_name="decisions")
+    function = models.CharField(
+        max_length=16, choices=[(v, v) for v in ["TRANSPORTE", "RECEPCION"]]
+    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    decision = models.CharField(max_length=16, choices=[(v, v) for v in ["ACEPTAR", "RECHAZAR"]])
+    reason = models.TextField(blank=True)
+    decided_at = models.DateTimeField()
+    registered_at = models.DateTimeField(auto_now_add=True)
+    operation = models.ForeignKey("sync.SyncOperation", on_delete=models.PROTECT)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["correction", "function"], name="one_decision_per_function"
+            ),
+            models.CheckConstraint(
+                condition=~Q(decision="RECHAZAR") | ~Q(reason=""), name="rejection_requires_reason"
+            ),
+        ]

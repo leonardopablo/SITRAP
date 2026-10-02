@@ -14,6 +14,7 @@ from .corrections import (
     correction_data,
     scoped_corrections,
 )
+from .decisions import CorrectionAcceptCommand
 from .views import command_responses
 
 
@@ -51,3 +52,19 @@ class CorrectionDetailView(APIView):
     def get(self, request, pk):
         correction = get_object_or_404(scoped_corrections(request.user), pk=pk)
         return Response(CorrectionSerializer(correction_data(correction, request.user)).data)
+
+
+class CorrectionDecisionReceipt(OperationResultSerializer):
+    result = CorrectionSerializer()
+
+
+class AcceptCorrectionView(APIView):
+    @extend_schema(
+        request=CorrectionAcceptCommand,
+        responses={**command_responses(), 200: CorrectionDecisionReceipt},
+    )
+    def post(self, request, pk):
+        body, status = dispatch(
+            request.user, request.data, fixed_type="CORRECTION_ACCEPT", entity_id=pk
+        )
+        return Response(body, status=status)

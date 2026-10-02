@@ -124,6 +124,17 @@ def timeline(transfer):
                 "actor_id": correction.requester_id,
             }
         )
+    for correction in transfer.corrections.all():
+        for decision in correction.decisions.all():
+            events.append(
+                {
+                    "type": "CORRECTION_" + decision.decision,
+                    "at": decision.decided_at,
+                    "registered_at": decision.registered_at,
+                    "version_id": correction.proposed_version_id,
+                    "actor_id": decision.user_id,
+                }
+            )
     return sorted(events, key=lambda item: (item["at"], str(item["version_id"]), item["type"]))
 
 

@@ -118,4 +118,4 @@ class ConformityDetail(models.Model):
         ]
 
 
-from .correction_models import Correction  # noqa: E402,F401
+from .correction_models import Correction, CorrectionDecision  # noqa: E402,F401
