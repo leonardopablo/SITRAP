@@ -53,6 +53,7 @@ export function Shell() {
         <Link to="/cuenta/clave">Cambiar contraseña</Link>
         <SyncStatus />
         <InboxBell />
+        <Link to="/preferencias/avisos">Notificaciones del teléfono</Link>
         <Button variant="secondary" busy={busy} onClick={async () => { if (account && await pendingCount(account.id)) setConfirm(true); else await closeSession() }}>Cerrar sesión</Button>
         {!online && <Notice tone="warning">Sin conexión: al cerrar solo se bloquea este teléfono. La sesión central seguirá activa hasta recuperar conexión y revocarla.</Notice>}
         <Dialog open={confirm} title="Operaciones pendientes" onClose={() => setConfirm(false)}><p>Hay registros guardados solo en este teléfono. Puedes sincronizarlos primero o cerrar conservándolos bloqueados para esta misma cuenta.</p><div className="row"><Button variant="secondary" onClick={() => { setConfirm(false); navigate('/sincronizacion') }}>Sincronizar primero</Button><Button onClick={() => void closeSession()}>Cerrar y conservar</Button></div></Dialog>

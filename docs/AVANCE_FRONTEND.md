@@ -35,8 +35,9 @@
 | F20 | Implementado localmente | `ce9c9de` | Recibidas/pendientes, versión descargada, bloqueo corrección pendiente, sin recaptura; build y 29 pruebas | B22/B23: servidor debe bloquear recepción si hay corrección pendiente; mock no envía aviso |
 | F21 | Implementado con fixture demo | `5d32010` | Valor antes/después, motivo, propuesta inmutable y bloqueo visual; build y 30 pruebas | B23: dos aprobadores reales, reserva y bloqueo transaccional; mock sin avisos |
 | F22 | Implementado localmente | `63a9512` | Dos aprobadores, accept/reject, versión descargada y sin éxito prematuro; build y 31 pruebas | B24/B25: aplicación transaccional y rechazo real; mock no sincroniza decisiones |
-| F23 | Implementado con fixture demo | `feat: consultar revisiones` | Retiro con motivo, historial y cantidad original, sin reciclaje; build/pruebas | B25: historial/paginación y decisiones reales; mock solo prueba retiro |
-| F24–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F23 | Implementado con fixture demo | `5ce2269` | Retiro con motivo, historial y cantidad original, sin reciclaje; build y 32 pruebas | B25: historial/paginación y decisiones reales; mock solo prueba retiro |
+| F24 | Implementado sin activar push en mock | `feat: activar avisos del telefono` | Permiso solo por gesto, soporte/denegación/propietario, logout; build/pruebas | B31 VAPID/suscripciones reales, Android; no hay entrega push todavía |
+| F25–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -59,7 +60,8 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 - F21: POST `/transfers/{id}/corrections` online con `CORRECTION_CREATE` payload supuesto `{correction_id,proposal_version_id,new_quantity,reason}` y lock del traslado. GET `/corrections` supuesto paginado; la respuesta de creación trae `result` (corrección). Revisar B23/OpenAPI. No afirmar aplicación por una sola aprobación.
 - F22: DTO GET `/corrections/{id}` supuesto `{id,transfer_id,original_quantity,proposed_quantity,reason,state,proposal_version_id,approver_transport,approver_reception,lock_version,decisions}`. `CORRECTION_ACCEPT/REJECT` envían `version_id` de propuesta, rechazo agrega `reason`. En mock quedan en cola; ninguna decisión local aplica cambio. Validar B24/B25 y conflicto por versión al integrar.
 - F23: `CORRECTION_WITHDRAW` online payload `{reason}` con `expected_version` de propuesta. Historial GET `/corrections` paginado, conserva decisiones previas. Mock retira sin aplicar la propuesta y desbloquea el fixture. Confirmar B25 y versiones históricas con API real.
+- F24: GET `/push/config` supuesto `{enabled,vapid_public_key}`, GET `/push/subscriptions` `{results:[{id,device_id,endpoint,active}]}`, POST suscripción `{device_id,endpoint,p256dh,auth}`, DELETE id. Activación solo en modo http con soporte, conexión, dispositivo preparado y clic; no declarar éxito si falla registro. Logout revoca sesión en backend y desuscribe navegador. Validar B31/Android y política de re-login para otra cuenta.
 
 ## Continuación
 
-Siguiente: F24. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F25. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.

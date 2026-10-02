@@ -18,6 +18,7 @@ import { TransportToday } from './transfers/TransportToday'
 import { ReceptionToday } from './transfers/ReceptionToday'
 import { CorrectionPage } from './corrections/CorrectionPage'
 import { CorrectionHistory } from './corrections/CorrectionHistory'
+import { PushPreferences } from './push/PushPreferences'
 
 export function App() {
   return <>
@@ -39,6 +40,7 @@ export function App() {
             <Route path="/entregas/:id" element={<TransferDetailPage />} />
             <Route path="/correcciones/:id" element={<CorrectionPage />} />
             <Route path="/correcciones" element={<CorrectionHistory />} />
+            <Route path="/preferencias/avisos" element={<PushPreferences />} />
             <Route element={<RequireRole roles={['PRODUCCION']} />}>
               <Route path="/produccion" element={<MilkingDraftPage />} />
               <Route path="/entregas/preparar" element={<PreparePage />} />

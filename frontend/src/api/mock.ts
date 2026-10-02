@@ -53,6 +53,8 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     const items = notifications.get(session.id) ?? []
     return json({ results: items, next: null, count: items.length, unread_count: items.filter(item => !item.read_at).length })
   }
+  if (path === '/push/config' && method === 'GET') return json({ enabled: false, vapid_public_key: null })
+  if (path === '/push/subscriptions' && method === 'GET') return json({ results: [] })
   if (path.startsWith('/notifications/') && path.endsWith('/read') && method === 'POST') {
     const id = path.split('/')[2]
     const found = notifications.get(session.id)?.find(item => item.id === id)

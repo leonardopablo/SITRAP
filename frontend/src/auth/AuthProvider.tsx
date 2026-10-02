@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { api, ApiError } from '../api/client'
 import type { Account } from '../api/types'
 import { db, getDevice } from '../offline/db'
+import { unsubscribeBrowserOnLogout } from '../push/subscription'
 
 interface AuthState {
   account: Account | null; loading: boolean; expiredAccount: Account | null; error: string | null
@@ -48,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
   async function logout() {
     await api.post('/auth/logout')
+    await unsubscribeBrowserOnLogout().catch(() => { /* server session is already revoked; browser may be offline */ })
     cache.clear(); setAccount(null); setExpiredAccount(null)
   }
   async function lock() { if (account) { await getDevice(account.id); await db.devices.update(account.id, { needs_revoke: true }) } cache.clear(); setAccount(null); setExpiredAccount(null) }
