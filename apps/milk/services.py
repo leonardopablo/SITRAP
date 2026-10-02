@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.db import IntegrityError, transaction
 from django.db.models import Q
+from django.utils import timezone
 
 from apps.accounts.access import is_admin, location_ids, require_role
 from apps.audit.services import record
@@ -9,8 +10,9 @@ from apps.catalog.models import Animal, AnimalStay, CenterProduct, Turn
 from apps.common.errors import DomainError
 from apps.common.services import check_version
 from apps.milk.models import Milking, MilkingDetail
-from apps.milk.serializers import MilkingCreatePayload, MilkingUpdatePayload
+from apps.milk.serializers import MilkingConfirmPayload, MilkingCreatePayload, MilkingUpdatePayload
 from apps.production.models import Production, ProductionVersion
+from apps.traceability.models import Lot
 
 
 def scoped_milkings(actor):
@@ -42,6 +44,11 @@ def milking_data(milking, actor):
         allowed = ["update", "confirm"]
     return {
         "id": str(milking.id),
+        "lot_id": str(lot_id)
+        if (
+            lot_id := Lot.objects.filter(production=production).values_list("id", flat=True).first()
+        )
+        else None,
         "production_id": str(production.id),
         "product_id": str(production.product_id),
         "center_id": str(milking.center_id),
@@ -198,6 +205,59 @@ def update_milking(actor, command, operation):
         "production",
         production.id,
         "UPDATE_MILKING",
+        before=before,
+        after=result,
+        operation=operation,
+    )
+    return result
+
+
+def confirm_milking(actor, command, operation):
+    data = parse_payload(MilkingConfirmPayload, command["payload"])
+    milking = locked_milking(command)
+    production = milking.production
+    if production.state != "BORRADOR":
+        raise DomainError("INVALID_STATE", "La producción ya no es borrador.")
+    version = production.current_version
+    if version.id != data["version_id"]:
+        raise DomainError("VERSION_CONFLICT", "Documento de producción obsoleto.")
+    before = milking_data(milking, actor)
+    rows = list(version.details.values("animal_id", "liters"))
+    quantity = validate_details(milking.center_id, milking.date, milking.turn_id, rows)
+    if not before["complete"] or quantity <= 0:
+        raise DomainError(
+            "VALIDATION_ERROR", "Complete cada vaca y registre un total positivo.", 422
+        )
+    if not CenterProduct.objects.filter(
+        center_id=milking.center_id,
+        product_id=production.product_id,
+        enabled=True,
+        product__active=True,
+        center__active=True,
+    ).exists():
+        raise DomainError("VALIDATION_ERROR", "Producto o centro ya no habilitado.", 422)
+    try:
+        with transaction.atomic():
+            Lot.objects.create(
+                id=data["lot_id"],
+                production=production,
+                code=f"L-{milking.date:%Y%m%d}-{data['lot_id'].hex}",
+            )
+    except IntegrityError:
+        raise DomainError("IDEMPOTENCY_CONFLICT", "UUID de lote ya utilizado.")
+    version.quantity = quantity
+    version.state = "PUBLICADA"
+    version.published_at = timezone.now()
+    version.save(update_fields=["quantity", "state", "published_at"])
+    production.state = "CONFIRMADA"
+    production.lock_version += 1
+    production.save(update_fields=["state", "lock_version"])
+    result = milking_data(milking, actor)
+    record(
+        actor,
+        "production",
+        production.id,
+        "CONFIRM_MILKING",
         before=before,
         after=result,
         operation=operation,

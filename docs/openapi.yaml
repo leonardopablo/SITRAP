@@ -994,6 +994,75 @@ paths:
               schema:
                 $ref: '#/components/schemas/MilkingCommandError'
           description: ''
+  /api/v1/milkings/{id}/confirm:
+    post:
+      operationId: milkings_confirm_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - milkings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MilkingConfirmCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MilkingConfirmCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MilkingConfirmCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
   /api/v1/presentations:
     get:
       operationId: presentations_list
@@ -2433,6 +2502,10 @@ components:
     Milking:
       type: object
       properties:
+        lot_id:
+          type: string
+          format: uuid
+          nullable: true
         id:
           type: string
           format: uuid
@@ -2485,6 +2558,7 @@ components:
       - details
       - id
       - lock_version
+      - lot_id
       - product_id
       - production_id
       - quantity
@@ -2497,6 +2571,60 @@ components:
       oneOf:
       - $ref: '#/components/schemas/OperationResult'
       - $ref: '#/components/schemas/Error'
+    MilkingConfirmCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/MilkingConfirmCommandTypeEnum'
+          default: MILKING_CONFIRM
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/MilkingConfirmPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    MilkingConfirmCommandTypeEnum:
+      enum:
+      - MILKING_CONFIRM
+      type: string
+      description: '* `MILKING_CONFIRM` - MILKING_CONFIRM'
+    MilkingConfirmPayloadRequest:
+      type: object
+      properties:
+        version_id:
+          type: string
+          format: uuid
+        lot_id:
+          type: string
+          format: uuid
+      required:
+      - lot_id
+      - version_id
     MilkingCreateCommandRequest:
       type: object
       properties:

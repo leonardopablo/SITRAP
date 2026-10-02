@@ -4,10 +4,20 @@ from apps.sync.services import execute
 
 def registry():
     # Imported lazily so models/apps load before domain commands.
-    from apps.milk.serializers import MilkingCreateCommand, MilkingUpdateCommand
-    from apps.milk.services import authorize_milking, create_milking, update_milking
+    from apps.milk.serializers import (
+        MilkingConfirmCommand,
+        MilkingCreateCommand,
+        MilkingUpdateCommand,
+    )
+    from apps.milk.services import (
+        authorize_milking,
+        confirm_milking,
+        create_milking,
+        update_milking,
+    )
 
     return {
+        "MILKING_CONFIRM": (MilkingConfirmCommand, confirm_milking, authorize_milking),
         "MILKING_CREATE": (MilkingCreateCommand, create_milking, authorize_milking),
         "MILKING_UPDATE": (MilkingUpdateCommand, update_milking, authorize_milking),
     }

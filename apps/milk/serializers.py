@@ -47,6 +47,7 @@ class MilkingUpdateCommand(EnvelopeSerializer):
 
 
 class MilkingSerializer(serializers.Serializer):
+    lot_id = serializers.UUIDField(allow_null=True)
     id = serializers.UUIDField()
     production_id = serializers.UUIDField()
     product_id = serializers.UUIDField()
@@ -66,3 +67,14 @@ class MilkingSerializer(serializers.Serializer):
 
 class MilkingReceipt(OperationResultSerializer):
     result = MilkingSerializer()
+
+
+class MilkingConfirmPayload(StrictSerializer):
+    version_id = serializers.UUIDField()
+    lot_id = serializers.UUIDField()
+
+
+class MilkingConfirmCommand(EnvelopeSerializer):
+    type = serializers.ChoiceField(choices=["MILKING_CONFIRM"], default="MILKING_CONFIRM")
+    expected_version = serializers.IntegerField(min_value=1)
+    payload = MilkingConfirmPayload()

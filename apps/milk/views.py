@@ -1,9 +1,11 @@
 from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
 from rest_framework import generics
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.common.errors import ErrorSerializer
 from apps.milk.serializers import (
+    MilkingConfirmCommand,
     MilkingCreateCommand,
     MilkingReceipt,
     MilkingSerializer,
@@ -60,5 +62,14 @@ class MilkingDetailView(generics.RetrieveAPIView):
     def patch(self, request, pk):
         body, status = dispatch(
             request.user, request.data, fixed_type="MILKING_UPDATE", entity_id=pk
+        )
+        return Response(body, status=status)
+
+
+class MilkingConfirmView(APIView):
+    @extend_schema(request=MilkingConfirmCommand, responses=command_responses())
+    def post(self, request, pk):
+        body, status = dispatch(
+            request.user, request.data, fixed_type="MILKING_CONFIRM", entity_id=pk
         )
         return Response(body, status=status)
