@@ -1,5 +1,6 @@
 from django.urls import path
 
+from apps.catalog.animal_api import AnimalDetailView, AnimalsView, StaysView
 from apps.catalog.views import (
     CenterProductDetailView,
     CenterProductsView,
@@ -35,4 +36,10 @@ urlpatterns += [
     path("species/<uuid:pk>", SpeciesDetailView.as_view()),
     path("turns", TurnsView.as_view()),
     path("turns/<uuid:pk>", TurnDetailView.as_view()),
+]
+
+urlpatterns += [
+    path("animals", AnimalsView.as_view()),
+    path("animals/<uuid:pk>", AnimalDetailView.as_view()),
+    path("animals/<uuid:pk>/stays", StaysView.as_view()),
 ]

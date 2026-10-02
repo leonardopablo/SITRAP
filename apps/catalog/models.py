@@ -1,5 +1,7 @@
 import uuid
 
+from django.contrib.postgres.constraints import ExclusionConstraint
+from django.contrib.postgres.fields import DateRangeField, RangeOperators
 from django.db import models
 from django.db.models import Q
 
@@ -84,3 +86,62 @@ class Turn(models.Model):
     code = models.CharField(max_length=32, unique=True)
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
+
+
+class Animal(models.Model):
+    class Sex(models.TextChoices):
+        HEMBRA = "HEMBRA"
+        MACHO = "MACHO"
+
+    class Status(models.TextChoices):
+        ACTIVO = "ACTIVO"
+        INACTIVO = "INACTIVO"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=32, unique=True)
+    species = models.ForeignKey(Species, on_delete=models.PROTECT)
+    sex = models.CharField(max_length=8, choices=Sex.choices)
+    name = models.CharField(max_length=100, blank=True)
+    status = models.CharField(max_length=8, choices=Status.choices, default=Status.ACTIVO)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(sex__in=["HEMBRA", "MACHO"]), name="animal_sex_valid"
+            ),
+            models.CheckConstraint(
+                condition=Q(status__in=["ACTIVO", "INACTIVO"]), name="animal_status_valid"
+            ),
+        ]
+
+
+class AnimalStay(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    animal = models.ForeignKey(Animal, on_delete=models.PROTECT, related_name="stays")
+    center = models.ForeignKey(Location, on_delete=models.PROTECT)
+    starts_on = models.DateField()
+    ends_on = models.DateField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(ends_on__isnull=True) | Q(ends_on__gt=models.F("starts_on")),
+                name="animal_stay_period_valid",
+            ),
+            ExclusionConstraint(
+                name="animal_stays_no_overlap",
+                expressions=[
+                    ("animal", RangeOperators.EQUAL),
+                    (
+                        models.Func(
+                            "starts_on",
+                            "ends_on",
+                            models.Value("[)"),
+                            function="DATERANGE",
+                            output_field=DateRangeField(),
+                        ),
+                        RangeOperators.OVERLAPS,
+                    ),
+                ],
+            ),
+        ]

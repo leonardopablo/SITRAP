@@ -96,3 +96,7 @@ LOGIN_IP_LIMIT = env.int("LOGIN_IP_LIMIT", default=100)
 SPECTACULAR_SETTINGS["SERVE_PERMISSIONS"] = ["apps.accounts.authentication.ReadyAccount"]
 
 SPECTACULAR_SETTINGS["ENUM_NAME_OVERRIDES"] = {"UnitCodeEnum": ["L", "KG", "UN"]}
+
+SPECTACULAR_SETTINGS["ENUM_NAME_OVERRIDES"].update(
+    {"AnimalStatusEnum": ["ACTIVO", "INACTIVO"], "HealthStatusEnum": ["ok"]}
+)

@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B11**. Siguiente elegible: **B12**.
+Última tarea terminada: **B12**. Siguiente elegible: **B13**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -25,10 +25,12 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B10 | `553001f` | 42 pruebas acumuladas; unidades/presentaciones/especies/turnos, contenido positivo, bolsa indivisible, sin conversión KG/L; OpenAPI sin warnings y conexiones de test cerradas. |
 
-| B11 | `feat: consultar asignaciones posibles (B11)` (este commit) | 44 pruebas acumuladas; opciones mínimas por origen/destino, defaults solo con una opción, inactivos excluidos y acceso entre centros negado. |
+| B11 | `5d19be6` | 44 pruebas acumuladas; opciones mínimas por origen/destino, defaults solo con una opción, inactivos excluidos y acceso entre centros negado. |
+
+| B12 | `feat: registrar vacas (B12)` (este commit) | 47 pruebas acumuladas; animales/estancias, centros válidos, movimientos solo ADMIN y exclusión de solapamiento incluso con dos transacciones concurrentes. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
-Cada funcionalidad tiene su propio commit; no se publica hasta disponer del remoto.
+Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
 
 ## Entorno reproducible
 
@@ -48,9 +50,9 @@ Cada funcionalidad tiene su propio commit; no se publica hasta disponer del remo
 
 ## Bloqueos
 
-No hay bloqueo funcional actual. No hay remoto Git configurado; URL de GitHub
-solicitada al usuario y pendiente. Commits locales disponibles; **ningún push
-ni ejecución de CI remoto verificados**. Continuar tareas independientes.
+No hay bloqueo funcional actual. Remoto autorizado: https://github.com/leonardopablo/SITRAP.git.
+B01-B11 publicados y rama local sigue origin/agente-backend. B12 se publica al cerrar
+su commit. No se ha verificado todavía el resultado del workflow remoto.
 
 ## Decisiones que afectan al frontend
 
@@ -71,7 +73,7 @@ ni ejecución de CI remoto verificados**. Continuar tareas independientes.
 
 ## Pendientes y reanudación
 
-**B12–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B13–B39 pendientes**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -83,7 +85,7 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B12, sin rehacer B01–B11.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B13, sin rehacer B01–B12.
 
 B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
 X-Device-ID. El sobre de comandos está implementado en servicios internos,
@@ -114,3 +116,11 @@ B11: GET /assignment-options exige origin_id; destination_id opcional. Sin desti
 y con varios disponibles, receivers queda vacío hasta elegir uno. Destinos son
 puntos de venta activos con receptor vigente; no existe en el modelo una restricción
 de rutas centro-destino adicional. Solo id/name, sin datos de cuenta privados.
+
+B12: estancias por fecha operativa en intervalos [starts_on,ends_on); fin null abierto.
+Alta animal requiere stay_id, center_id y starts_on. Un movimiento ADMIN cierra
+atómicamente la estancia abierta anterior; PRODUCCION no mueve entre centros.
+Lectura de animal conserva acceso histórico a sus centros autorizados; PATCH exige
+estancia actual en el centro autorizado. GET stays filtra centros del operador.
+Migración usa btree_gist y ExclusionConstraint, conforme a
+https://docs.djangoproject.com/en/5.2/ref/contrib/postgres/constraints/.
