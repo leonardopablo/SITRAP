@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
   async function lock() { if (account) { await getDevice(account.id); await db.devices.update(account.id, { needs_revoke: true }) } cache.clear(); setAccount(null); setExpiredAccount(null) }
   async function changePassword(current: string, next: string) {
-    await api.post('/auth/change-password', { current_password: current, new_password: next })
+    await api.post('/auth/change-password', { old_password: current, new_password: next })
     await api.refreshCsrf()
     setAccount(await api.request<Account>('/auth/me'))
   }

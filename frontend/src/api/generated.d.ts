@@ -135,7 +135,7 @@ export interface components {
             /** Format: uuid */
             event_id: string;
             /** @enum {string} */
-            status: "RECIBIDA" | "ESPERA_DEPENDENCIA" | "APLICADA" | "RECHAZADA";
+            status: "RECIBIDA" | "ESPERA_DEPENDENCIA" | "APLICADA" | "RECHAZADA" | "NO_PROCESADA";
             /** Format: uuid */
             entity_id: string;
             lock_version?: number;

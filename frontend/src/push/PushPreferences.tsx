@@ -5,6 +5,7 @@ import { api, apiMode } from '../api/client'
 import { Button, Notice } from '../components/ui'
 import { useConnection } from '../offline/SyncPanel'
 import { pushSupported, subscribePhone, unsubscribePhone, type PushConfig, type PushRecord } from './subscription'
+import { getDevice } from '../offline/db'
 
 export function PushPreferences() {
   const { account } = useAuth()
@@ -15,7 +16,7 @@ export function PushPreferences() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const config = useQuery({ queryKey: ['push-config', account?.id], queryFn: () => api.request<PushConfig>('/push/config'), enabled: !!account && online })
-  const records = useQuery({ queryKey: ['push-records', account?.id], queryFn: () => api.request<{ results: PushRecord[] }>('/push/subscriptions'), enabled: !!account && online })
+  const records = useQuery({ queryKey: ['push-records', account?.id], queryFn: async () => { const device = await getDevice(account!.id); return api.request<{ results: PushRecord[] }>('/push/subscriptions', { headers: { 'X-Device-ID': device.device_id } }) }, enabled: !!account && online })
   const [subscription, setSubscription] = useState<PushSubscription | null>(null)
   useEffect(() => { if (pushSupported()) void navigator.serviceWorker.ready.then(reg => reg.pushManager.getSubscription()).then(setSubscription).catch(() => setSubscription(null)) }, [account?.id])
   const active = records.data?.results.find(item => item.active && !!subscription && item.endpoint === subscription.endpoint)
@@ -28,7 +29,7 @@ export function PushPreferences() {
   }
   async function disable(id: string) {
     setBusy(true); setError(''); setMessage('')
-    try { await unsubscribePhone(id); await cache.invalidateQueries({ queryKey: ['push-records', account?.id] }); setSubscription(null); setMessage('Suscripción desactivada. Consulta tus avisos dentro de SITRAP.') }
+    try { await unsubscribePhone(id, account!.id); await cache.invalidateQueries({ queryKey: ['push-records', account?.id] }); setSubscription(null); setMessage('Suscripción desactivada. Consulta tus avisos dentro de SITRAP.') }
     catch (cause) { setError((cause as Error).message) }
     finally { setBusy(false) }
   }

@@ -24,11 +24,12 @@ export async function subscribePhone(accountId: string, key: string): Promise<Pu
   const subscription = existing ?? await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: vapidBytes(key) })
   const json = subscription.toJSON()
   if (!subscription.endpoint || !json.keys?.p256dh || !json.keys.auth) throw new Error('No se pudo obtener una suscripción válida.')
-  try { return await api.post<PushRecord>('/push/subscriptions', { device_id: device.device_id, endpoint: subscription.endpoint, p256dh: json.keys.p256dh, auth: json.keys.auth }) }
+  try { return await api.post<PushRecord>('/push/subscriptions', { device_id: device.device_id, endpoint: subscription.endpoint, keys: { p256dh: json.keys.p256dh, auth: json.keys.auth } }) }
   catch (error) { if (!existing) await subscription.unsubscribe(); throw error }
 }
-export async function unsubscribePhone(id: string) {
-  await api.request(`/push/subscriptions/${encodeURIComponent(id)}`, { method: 'DELETE' })
+export async function unsubscribePhone(id: string, accountId: string) {
+  const device = await getDevice(accountId)
+  await api.request(`/push/subscriptions/${encodeURIComponent(id)}`, { method: 'DELETE', headers: { 'X-Device-ID': device.device_id } })
   const registration = await navigator.serviceWorker.ready
   await (await registration.pushManager.getSubscription())?.unsubscribe()
 }

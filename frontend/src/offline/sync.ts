@@ -4,7 +4,6 @@ import { db, listEvents, type LocalEvent, type SitrapDB, type LocalStatus } from
 
 type Send = (commands: Command[]) => Promise<Acknowledgement[]>
 export async function sendBatch(commands: Command[]): Promise<Acknowledgement[]> {
-  // 04 §5; envelope is provisional until B29 OpenAPI confirms exact batch DTO.
   const response = await api.post<{ results: Acknowledgement[] }>('/sync/events', { events: commands })
   if (!Array.isArray(response.results)) throw new Error('La respuesta de sincronización no incluye acuses individuales.')
   return response.results
@@ -57,6 +56,8 @@ export async function syncAccount(accountId: string, send: Send = sendBatch, sto
         await setStatus(store, entry, 'APLICADA', undefined, ack.result); entry.status = 'APLICADA'; outcome.applied++
       } else if (ack.status === 'RECHAZADA') {
         await setStatus(store, entry, 'RECHAZADA', ack.error ?? { code: 'REJECTED', message: 'Rechazada por el servidor. Revisa el registro.', retryable: false }); entry.status = 'RECHAZADA'; outcome.rejected++
+      } else if (ack.status === 'NO_PROCESADA' && ack.error && !ack.error.retryable) {
+        await setStatus(store, entry, 'RECHAZADA', ack.error); entry.status = 'RECHAZADA'; outcome.rejected++
       } else {
         await setStatus(store, entry, 'ESPERA_DEPENDENCIA', ack.error); entry.status = 'ESPERA_DEPENDENCIA'; outcome.waiting++
       }

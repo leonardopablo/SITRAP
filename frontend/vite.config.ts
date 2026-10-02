@@ -1,9 +1,10 @@
 import { defineConfig } from 'vitest/config'
+import { loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react(), tailwindcss(), VitePWA({
     strategies: 'injectManifest', srcDir: 'src', filename: 'sw.ts', registerType: 'prompt', injectRegister: null,
     includeAssets: ['brand/*', 'illustrations/*'],
@@ -13,6 +14,6 @@ export default defineConfig({
     ] },
     injectManifest: { globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'] },
   })],
-  server: { proxy: { '/api/v1': 'http://127.0.0.1:8000' } },
-  test: { globals: true, environment: 'jsdom', setupFiles: ['./src/test/setup.ts'], include: ['src/**/*.test.{ts,tsx}'] },
-})
+  server: { proxy: { '/api/v1': loadEnv(mode, process.cwd(), 'VITE_').VITE_API_PROXY_TARGET || 'http://127.0.0.1:8000' } },
+  test: { env: { VITE_API_MODE: 'mock' }, globals: true, environment: 'jsdom', setupFiles: ['./src/test/setup.ts'], include: ['src/**/*.test.{ts,tsx}'] },
+}))
