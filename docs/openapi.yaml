@@ -1186,6 +1186,60 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: ''
+  /api/v1/metrics/transfers:
+    get:
+      operationId: metrics_transfers_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: date_from
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: date_to
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: destination_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: product_id
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - metrics
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferMetrics'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/milkings:
     get:
       operationId: milkings_list
@@ -6627,6 +6681,137 @@ components:
       - TRANSFER_CREATE
       type: string
       description: '* `TRANSFER_CREATE` - TRANSFER_CREATE'
+    TransferDay:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        picked_up_liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        received_liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        picked_up_count:
+          type: integer
+        received_count:
+          type: integer
+      required:
+      - date
+      - picked_up_count
+      - picked_up_liters
+      - received_count
+      - received_liters
+    TransferMetricRow:
+      type: object
+      properties:
+        transfer_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        version_id:
+          type: string
+          format: uuid
+        version_number:
+          type: integer
+        origin_id:
+          type: string
+          format: uuid
+        origin_name:
+          type: string
+        destination_id:
+          type: string
+          format: uuid
+        destination_name:
+          type: string
+        state:
+          type: string
+        liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        corrected:
+          type: boolean
+        pickup_at:
+          type: string
+          format: date-time
+          nullable: true
+        reception_at:
+          type: string
+          format: date-time
+          nullable: true
+        pickup_in_period:
+          type: boolean
+        reception_in_period:
+          type: boolean
+      required:
+      - code
+      - corrected
+      - destination_id
+      - destination_name
+      - liters
+      - origin_id
+      - origin_name
+      - pickup_at
+      - pickup_in_period
+      - reception_at
+      - reception_in_period
+      - state
+      - transfer_id
+      - version_id
+      - version_number
+    TransferMetrics:
+      type: object
+      properties:
+        date_from:
+          type: string
+          format: date
+        date_to:
+          type: string
+          format: date
+        cutoff:
+          type: string
+          format: date-time
+        timezone:
+          type: string
+        synchronized_only:
+          type: boolean
+        picked_up_liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        received_liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        picked_up_count:
+          type: integer
+        received_count:
+          type: integer
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransferDay'
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransferMetricRow'
+      required:
+      - cutoff
+      - date_from
+      - date_to
+      - days
+      - picked_up_count
+      - picked_up_liters
+      - received_count
+      - received_liters
+      - records
+      - synchronized_only
+      - timezone
     TransferPickupCommandRequest:
       type: object
       properties:
