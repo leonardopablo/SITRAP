@@ -13,6 +13,7 @@ from apps.sync.views import CurrentDeviceView, DeviceView
 from config.views import HealthView
 
 urlpatterns = [
+    path("api/v1/", include("apps.notifications.urls")),
     path("api/v1/", include("apps.traceability.urls")),
     path("api/v1/", include("apps.milk.urls")),
     path("api/v1/assignment-options", AssignmentOptionsView.as_view()),

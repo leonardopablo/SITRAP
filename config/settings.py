@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.sync",
     "apps.audit",
+    "apps.notifications",
     "apps.production",
     "apps.milk",
     "apps.traceability",

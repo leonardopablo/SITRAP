@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B17**. Siguiente elegible: **B18**.
+Última tarea terminada: **B18**. Siguiente elegible: **B19**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -24,7 +24,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 | B14 | `7f48032` | Suite completa: 54 pruebas; luego 4 de confirmación al parametrizar cero/vacío. Suma, versión exacta, lote único, carrera entre productores e inmutabilidad publicada. |
 | B15 | `4f29ffc` | Suite 58 pruebas; luego 6 de borrador/anulación, incluida carrera con dos productores. Unicidad parcial, historia conservada y reemplazo con lote propio. Sin endpoint público. |
 | B16 | `7f1d82c` | 60 pruebas de suite; consultas P/T/R/A, borradores ocultos a T/R, procedencia sin detalle por vaca, versiones/timeline y catálogos vinculados. |
-| B17 | `feat: preparar entregas (B17)` (este commit) | 62 pruebas: borrador y línea atómicos, participantes, bolsas enteras, replay y versión obsoleta. OpenAPI validado. |
+| B17 | `3310aa9` | 62 pruebas: borrador y línea atómicos, participantes, bolsas enteras, replay y versión obsoleta. OpenAPI validado. |
+
+| B18 | `feat: crear bandeja de avisos (B18)` (este commit) | 64 pruebas: destinatario, unicidad, lectura idempotente y rollback transaccional. Migración aplicada y OpenAPI validado. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
@@ -48,7 +50,7 @@ Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
 ## Bloqueos
 
 No hay bloqueo funcional actual. Remoto autorizado: https://github.com/leonardopablo/SITRAP.git.
-B01-B16 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
+B01-B17 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
 
 ## Decisiones que afectan al frontend
 
@@ -69,7 +71,7 @@ B01-B16 publicados y rama local sigue origin/agente-backend. No se ha verificado
 
 ## Pendientes y reanudación
 
-**B18–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B19–B39 pendientes**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -81,7 +83,7 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B18, sin rehacer B01–B17.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B19, sin rehacer B01–B18.
 
 B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
 X-Device-ID. El sobre de comandos está implementado en servicios internos,
@@ -156,3 +158,7 @@ B17: POST/PATCH /transfers usa sobre TRANSFER_CREATE/UPDATE; payload completo co
 version_id, line_id, lot_id, presentation_id, units, destination_id, driver_id, receiver_id.
 El piloto opera una línea por entrega; no reserva cantidades ni notifica en borrador.
 Transportista y receptor deben ser cuentas diferentes con asignación vigente.
+
+B18: GET /notifications devuelve resultados paginados y unread_count propio.
+POST /notifications/{id}/read con objeto vacío marca lectura sin confirmar negocio.
+El aviso interno comparte transacción con el hecho; push se incorporará en B31-B33.
