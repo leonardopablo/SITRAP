@@ -26,8 +26,9 @@
 | F11 | Implementado con mock limitado | `6efe1ee` | Bootstrap/cambios, aislamiento por cuenta, panel, sesión/pending; build, 18 unitarias, PWA e2e | B28/B30, DTO bootstrap real; mock no sincroniza ni confirma; revocación central tras logout offline requiere prueba con Django/F24 |
 | F12 | Implementado con mock limitado | `a91c7aa` | Bandeja/contador/leer no confirma; polling 10 s visible, online/foco/manual; build y 19 pruebas | B18; DTO de avisos, paginación y detalle vigente cuando existan F17/F21 |
 | F13 | Implementado con mock limitado | `8998933` | Alta, lista, detalle y edición/desactivación; guardas de rol/centro; build y 20 pruebas | B12: IDs de especie, estancias, paginación real; prueba de permisos central |
-| F14 | Implementado localmente | `feat: registrar ordeno` | Vacío/0, suma exacta en ml, borrador y cadena de eventos; build/pruebas | B13; turno/catálogo/ediciones reales; requiere preparar dispositivo; mock no envía |
-| F15–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F14 | Implementado localmente | `2e84526` | Vacío/0, suma exacta en ml, borrador y cadena de eventos; build y 22 pruebas | B13; turno/catálogo/ediciones reales; requiere preparar dispositivo; mock no envía |
+| F15 | Implementado localmente | `feat: confirmar produccion` | Revisión, total positivo, lote UUID una vez, cadena y estado local; build/pruebas | B14 acuse central/versión/lote; mock no crea lote en servidor ni habilita entrega |
+| F16–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -41,7 +42,8 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 - F12: DTO supuesto de GET `/notifications`: `{results,next,count,unread_count}`; aviso `{id,type,title,text,created_at,read_at,entity_type,entity_id,version_id}`. POST `/notifications/{id}/read` sin comando de negocio. Confirmar forma, cursor de páginas y filtros con B18. El mock inicia bandeja vacía, no inventa avisos de operaciones locales.
 - F13: DTO provisional animal `{id,code,name,species_id,sex,status,center_id,center_name}`; POST y PATCH exigen conexión. `bovina-demo` es identificador de simulación, no ID de catálogo real. Antes de conectar B12 cargar especie y estancias autorizadas desde catálogo/bootstrap. Mock guarda solo en memoria, se pierde al recargar.
 - F14: payload supuesto `MILKING_CREATE/UPDATE`: `{center_id,date,shift_id,version_id,details:[{animal_id,litros:string|null}]}`. `diario-demo` es turno de muestra, se debe reemplazar por `/turns`. Borrador local tiene UUID independiente y dependencia explícita para ediciones; `expected_version` local calculada debe contrastarse con B13. No afirmar aceptación remota ni crear lote en frontend.
+- F15: payload supuesto `MILKING_CONFIRM`: `{version_id,lot_id}`, `expected_version` del borrador y dependencia sobre último guardado; UUID lote es intención cliente, no existencia central. Acuse B14 debe aportar lote/versión final y habilitar F16 solo después de `APLICADA`.
 
 ## Continuación
 
-Siguiente: F15. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F16. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.

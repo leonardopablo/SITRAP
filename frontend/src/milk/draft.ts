@@ -13,3 +13,13 @@ export function formatLitres(ml: number) { return `${(ml / 1000).toLocaleString(
 export function draftDetails(animals: Animal[], values: Record<string, string>) {
   return animals.map(animal => ({ animal_id: animal.id, litros: values[animal.id] === '' ? null : ((parseLitres(values[animal.id] ?? '') ?? 0) / 1000).toFixed(3) }))
 }
+export function confirmable(animals: Animal[], values: Record<string, string>) {
+  if (!animals.length) return false
+  let total = 0
+  for (const animal of animals) {
+    const litres = parseLitres(values[animal.id] ?? '')
+    if (litres === null) return false
+    total += litres
+  }
+  return total > 0
+}

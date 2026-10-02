@@ -10,9 +10,10 @@ import { createCommand } from '../api/commands'
 import { db, enqueue, getDevice, readCopy, saveCopy } from '../offline/db'
 import { useConnection } from '../offline/SyncPanel'
 import { Button, Field, Notice } from '../components/ui'
-import { draftDetails, formatLitres, parseLitres } from './draft'
+import { confirmable, draftDetails, formatLitres, parseLitres } from './draft'
+import { useLiveQuery } from 'dexie-react-hooks'
 
-interface Draft { id: string; version_id: string; center_id: string; date: string; shift_id: string; values: Record<string, string>; last_event_id: string; next_version: number }
+interface Draft { id: string; version_id: string; center_id: string; date: string; shift_id: string; values: Record<string, string>; last_event_id: string; next_version: number; confirm_event_id?: string; lot_id?: string }
 const todayLima = () => { const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Lima', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date()); const get = (key: string) => parts.find(part => part.type === key)?.value ?? ''; return `${get('year')}-${get('month')}-${get('day')}` }
 export function MilkingDraftPage() {
   const { account } = useAuth()
@@ -26,7 +27,9 @@ export function MilkingDraftPage() {
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const [ready, setReady] = useState(false)
+  const [review, setReview] = useState(false)
   const [animals, setAnimals] = useState<Animal[]>([])
+  const confirmation = useLiveQuery(() => draft?.confirm_event_id ? db.events.get(draft.confirm_event_id) : undefined, [draft?.confirm_event_id])
   const source = useQuery({ queryKey: ['milking-animals', account?.id, assignment?.id], queryFn: () => api.request<Page<Animal>>('/animals'), enabled: !!account && !!assignment && online })
   useEffect(() => {
     if (!account || !assignment) return
@@ -58,6 +61,7 @@ export function MilkingDraftPage() {
     setError('')
     if (invalid) { setError(invalid); return }
     if (!animals.length) { setError('Necesitas vacas descargadas para guardar el ordeño.'); return }
+    if (draft?.confirm_event_id) { setError('La confirmación ya está guardada. Comprueba su estado en Pendientes.'); return }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !shift) { setError('Revisa fecha y turno.'); return }
     setSaving(true)
     try {
@@ -72,6 +76,27 @@ export function MilkingDraftPage() {
       next.last_event_id = command.event_id
       await saveCopy(account.id, 'milking-draft', assignment.location_id, next)
       setDraft(next)
+      setReview(false)
+    } catch (cause) { setError((cause as Error).message) }
+    finally { setSaving(false) }
+  }
+  const unchanged = !!draft && draft.date === date && draft.shift_id === shift && JSON.stringify(draft.values) === JSON.stringify(values)
+  async function confirm() {
+    if (!account || !assignment?.location_id || !draft || draft.confirm_event_id || saving) return
+    setError('')
+    if (!unchanged) { setError('Guarda los cambios antes de confirmar.'); return }
+    if (!confirmable(animals, draft.values)) { setError('Registra los litros de todas las vacas y un total mayor que 0 L. Cero explícito sí está permitido.'); return }
+    setSaving(true)
+    try {
+      const parent = await db.events.get(draft.last_event_id)
+      if (!parent || parent.status === 'RECHAZADA') throw new Error('El borrador no es confirmable; revisa el registro anterior.')
+      const device = await getDevice(account.id)
+      const lotId = crypto.randomUUID()
+      const command = createCommand({ type: 'MILKING_CONFIRM', entity_id: draft.id, device_id: device.device_id, expected_version: draft.next_version, depends_on: [draft.last_event_id], payload: { version_id: draft.version_id, lot_id: lotId } })
+      await enqueue(account.id, command)
+      const updated = { ...draft, confirm_event_id: command.event_id, lot_id: lotId }
+      await saveCopy(account.id, 'milking-draft', assignment.location_id, updated)
+      setDraft(updated); setReview(false)
     } catch (cause) { setError((cause as Error).message) }
     finally { setSaving(false) }
   }
@@ -86,7 +111,15 @@ export function MilkingDraftPage() {
     <p className="quantity">Total: {formatLitres(total)}</p>
     {invalid && <Notice tone="error">{invalid}</Notice>}
     {error && <Notice tone="error">{error}</Notice>}
-    <div className="row"><Button busy={saving} disabled={!ready || !animals.length || !!invalid} onClick={() => void save()}>Guardar borrador</Button><Button variant="secondary" onClick={() => navigate('/sincronizacion')}>Ver pendientes</Button></div>
-    {draft && <Notice tone="warning">Borrador guardado en este teléfono. Pendiente de enviar. Evento {draft.last_event_id}. No confirmado en el sistema.</Notice>}
+    <div className="row"><Button busy={saving} disabled={!ready || !animals.length || !!invalid || !!draft?.confirm_event_id} onClick={() => void save()}>Guardar borrador</Button><Button variant="secondary" disabled={!draft || !!draft.confirm_event_id || !unchanged} onClick={() => setReview(true)}>Revisar producción</Button><Button variant="secondary" onClick={() => navigate('/sincronizacion')}>Ver pendientes</Button></div>
+    {review && draft && !draft.confirm_event_id && <section className="card stack"><h2>Revisar antes de confirmar</h2><p>Fecha: {draft.date} · Turno: {draft.shift_id} · Centro: {assignment?.location_name}</p>
+      <ul>{animals.map(animal => <li key={animal.id}>{animal.code}: {draft.values[animal.id] === '' || draft.values[animal.id] === undefined ? 'Sin dato' : formatLitres(parseLitres(draft.values[animal.id]) ?? 0)}</li>)}</ul>
+      <p className="quantity">Total: {formatLitres(total)}</p>
+      {!confirmable(animals, draft.values) && <Notice tone="warning">Completa cada vaca; el total debe ser mayor que 0 L.</Notice>}
+      <div className="row"><Button busy={saving} disabled={!confirmable(animals, draft.values)} onClick={() => void confirm()}>Confirmar producción</Button><Button variant="secondary" onClick={() => setReview(false)}>Volver a editar</Button></div>
+    </section>}
+    {draft && !draft.confirm_event_id && <Notice tone="warning">Borrador guardado en este teléfono. Pendiente de enviar. Evento {draft.last_event_id}. No confirmado en el sistema.</Notice>}
+    {draft?.confirm_event_id && confirmation?.status !== 'APLICADA' && <Notice tone="warning">Confirmación guardada solo en este teléfono. Evento {draft.confirm_event_id}. El lote {draft.lot_id} todavía no existe en el servidor; no puedes enviar una entrega a otra persona hasta recibir acuse.</Notice>}
+    {confirmation?.status === 'APLICADA' && <Notice tone="success">Producción confirmada por el servidor. Lote {draft?.lot_id}. La preparación de la entrega se incorpora en F16.</Notice>}
   </section>
 }
