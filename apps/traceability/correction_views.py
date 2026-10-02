@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from apps.sync.commands import dispatch
 from apps.sync.serializers import OperationResultSerializer
 
+from .correction_closing import CorrectionRejectCommand, CorrectionWithdrawCommand
 from .corrections import (
     CorrectionCreateCommand,
     CorrectionCreatedSerializer,
@@ -66,5 +67,29 @@ class AcceptCorrectionView(APIView):
     def post(self, request, pk):
         body, status = dispatch(
             request.user, request.data, fixed_type="CORRECTION_ACCEPT", entity_id=pk
+        )
+        return Response(body, status=status)
+
+
+class RejectCorrectionView(APIView):
+    @extend_schema(
+        request=CorrectionRejectCommand,
+        responses={**command_responses(), 200: CorrectionDecisionReceipt},
+    )
+    def post(self, request, pk):
+        body, status = dispatch(
+            request.user, request.data, fixed_type="CORRECTION_REJECT", entity_id=pk
+        )
+        return Response(body, status=status)
+
+
+class WithdrawCorrectionView(APIView):
+    @extend_schema(
+        request=CorrectionWithdrawCommand,
+        responses={**command_responses(), 200: CorrectionDecisionReceipt},
+    )
+    def post(self, request, pk):
+        body, status = dispatch(
+            request.user, request.data, fixed_type="CORRECTION_WITHDRAW", entity_id=pk
         )
         return Response(body, status=status)

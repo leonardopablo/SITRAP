@@ -16,6 +16,7 @@ def registry():
         update_milking,
     )
     from apps.traceability.commands import transfer_commands
+    from apps.traceability.correction_closing import closing_commands
     from apps.traceability.corrections import correction_commands
     from apps.traceability.decisions import decision_commands
     from apps.traceability.lifecycle import lifecycle_commands
@@ -24,6 +25,7 @@ def registry():
 
     return {
         **transfer_commands(),
+        **closing_commands(),
         **decision_commands(),
         **correction_commands(),
         **physical_commands(),

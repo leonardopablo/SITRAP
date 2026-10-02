@@ -18,9 +18,13 @@ from .correction_views import (
     CorrectionDetailView,
     CorrectionsView,
     CreateCorrectionView,
+    RejectCorrectionView,
+    WithdrawCorrectionView,
 )
 
 urlpatterns = [
+    path("corrections/<uuid:pk>/reject", RejectCorrectionView.as_view()),
+    path("corrections/<uuid:pk>/withdraw", WithdrawCorrectionView.as_view()),
     path("corrections/<uuid:pk>/accept", AcceptCorrectionView.as_view()),
     path("transfers/<uuid:pk>/corrections", CreateCorrectionView.as_view()),
     path("corrections", CorrectionsView.as_view()),

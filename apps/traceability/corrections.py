@@ -222,8 +222,16 @@ def correction_capabilities(correction, actor):
 
     if correction.state != "PENDIENTE":
         return []
+    result = []
+    if (
+        correction.requester_id == actor.id
+        and correction.original_version.origin_id in location_ids(actor, "PRODUCCION")
+    ):
+        result.append("withdraw")
     try:
         function = approver_function(actor, correction)
     except DomainError:
-        return []
-    return [] if correction.decisions.filter(function=function).exists() else ["accept"]
+        return result
+    if not correction.decisions.filter(function=function).exists():
+        result += ["accept", "reject"]
+    return result
