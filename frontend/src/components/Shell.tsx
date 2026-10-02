@@ -80,6 +80,7 @@ export function TodayPage() {
     {assignment?.role === 'PRODUCCION' && <p><Link to="/informes/produccion">Descargar PDF de producción</Link></p>}
     {(assignment?.role === 'TRANSPORTE' || assignment?.role === 'RECEPCION') && <p><Link to="/informes/entregas">Descargar PDF de {assignment.role === 'TRANSPORTE' ? 'transporte' : 'recepciones'}</Link></p>}
     {assignment?.role === 'ADMIN' && <p><Link to="/administracion/usuarios">Administrar usuarios y ámbitos</Link></p>}
+    {assignment?.role === 'ADMIN' && <p><Link to="/administracion/catalogos">Administrar catálogos</Link></p>}
   </section>
 }
 export function PendingFeature({ title }: { title: string }) {

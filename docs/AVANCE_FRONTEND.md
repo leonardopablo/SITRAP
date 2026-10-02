@@ -45,8 +45,9 @@
 | F30 | UI/descarga real preparada, no simulada | `a03dba1` | Filtros, advertencia de pendientes y MIME PDF, build y 40 pruebas | B36 endpoint PDF; mock deshabilita descargar |
 | F31 | UI/descarga real preparada, no simulada | `668b66d` | PDF por rol/período y advertencia local; build y 41 pruebas | B37 ámbitos, cortes e historial corregido; mock deshabilita descargar |
 | F32 | Resumen mock, PDF real preparado | `2ace065` | Centro/producto/período, métricas separadas y ninguna aprobación ADMIN; build y 42 pruebas | B38 PDF y cortes coherentes; mock deshabilita PDF |
-| F33 | Implementado con mock | `feat: administrar accesos` | Cuenta, temporal, rol/ámbito, desactivar sin borrar historial; build/pruebas | B08: políticas credenciales, autorización/ámbitos central, entrega segura de temporal |
-| F34–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F33 | Implementado con mock | `f9ef3bf` | Cuenta, temporal, rol/ámbito, desactivar sin borrar historial; build y 43 pruebas | B08: políticas credenciales, autorización/ámbitos central, entrega segura de temporal |
+| F34 | Implementado con mock | `feat: administrar catalogos` | Centros, productos/centro, presentaciones, turnos/especies, desactivar sin stock; build/pruebas | B09/B10 compatibilidades, referencias históricas y unidad real; animales ADMIN B12 |
+| F35–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -79,7 +80,8 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 - F31: GET `/reports/transfers.pdf` para TRANSPORTE y `/reports/receptions.pdf` para RECEPCION con `from/to`; el rol no se envía para ampliar permisos, servidor B37 valida ámbito. Mock no devuelve archivos ni éxito falso. Advertencia incluye operaciones locales no aceptadas.
 - F32: GET `/locations`, `/products`, `/metrics/milk`, `/metrics/transfers` y GET `/reports/overview.pdf?from=&to=&center_id?=&product_id?=`. Mock solo ofrece resumen ficticio; PDF deshabilitado. B38 debe garantizar ámbito global, corte consistente y datos vigentes; ADMIN no decide correcciones.
 - F33: GET/POST `/users`, PATCH `/users/{id}`, POST `/users/{id}/reset-password`, GET/POST `/role-assignments`, PATCH `/role-assignments/{id}`. DTO supuesto `{id,username,name,active,change_password_required}` y `{id,user_id,role,scope,location_id,active}`; POST/reset devuelve `{temporary_password}` para entrega controlada. Nunca se persiste en frontend; comprobar B08/OpenAPI y canal seguro real.
+- F34: GET/POST/PATCH `/locations`, `/products`, `/center-products`, `/presentations`, `/turns`, `/species`. Mock no maneja existencias físicas y preserva filas al desactivar. `unit:'L'` solo demo para producto; elegir unidad real del catálogo B10 antes de permitir otros productos. ADMIN animales/estancias se enlazará al contrato B12; no inventar movimiento sin permiso.
 
 ## Continuación
 
-Siguiente: F34. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F35. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.

@@ -1,7 +1,7 @@
 import type { Account, Role } from './types'
 import type { Notification } from '../notifications/types'
 import type { Animal } from '../animals/types'
-import type { AssignmentOptions, Lot, Presentation } from '../transfers/types'
+import type { AssignmentOptions, Lot } from '../transfers/types'
 
 const roles: Role[] = ['PRODUCCION', 'TRANSPORTE', 'RECEPCION', 'ADMIN']
 export const demoAccounts: Account[] = roles.map((role, index) => ({
@@ -17,8 +17,15 @@ const notifications = new Map<string, Notification[]>()
 const animals: Animal[] = []
 const mockUsers = demoAccounts.map(item => ({ id: item.id, username: item.username, name: item.name, active: true, change_password_required: item.change_password_required }))
 const mockAssignments = demoAccounts.flatMap(item => item.assignments.map(assignment => ({ ...assignment, user_id: item.id, active: true })))
+const catalogs: Record<string, { id: string; code?: string; name?: string; active?: boolean; type?: string; product_id?: string; center_id?: string; enabled?: boolean; content_base?: string; admits_fraction?: boolean }[]> = {
+  locations: [{ id: 'center-demo', code: 'CENTRO-DEMO', name: 'Centro demo', type: 'CENTRO', active: true }, { id: 'destination-demo', code: 'PV-DEMO', name: 'Punto de venta demo', type: 'PUNTO_VENTA', active: true }],
+  products: [{ id: 'milk-demo', code: 'LECHE', name: 'Leche', active: true }],
+  'center-products': [{ id: 'center-milk-demo', center_id: 'center-demo', product_id: 'milk-demo', enabled: true }],
+  presentations: [{ id: '22222222-2222-4222-8222-222222222222', name: 'Bolsa de 1 L', product_id: 'milk-demo', content_base: '1.000', admits_fraction: false, active: true }],
+  turns: [{ id: 'diario-demo', code: 'DIARIO', name: 'Diario (demo)', active: true }],
+  species: [{ id: 'bovina-demo', code: 'BOVINA', name: 'Bovina', active: true }],
+}
 const demoLots: Lot[] = [{ id: '11111111-1111-4111-8111-111111111111', code: 'DEMO-LOTE-01', center_id: 'center-demo', product_id: 'milk-demo', produced_litres: '23.500', unlinked_litres: '23.500', confirmed: true }]
-const demoPresentation: Presentation = { id: '22222222-2222-4222-8222-222222222222', product_id: 'milk-demo', name: 'Bolsa de 1 L', content_base: '1.000', admits_fraction: false, active: true }
 const demoOptions: AssignmentOptions = { destinations: [{ id: 'destination-demo', name: 'Punto de venta demo' }], drivers: [{ id: demoAccounts[1].id, name: demoAccounts[1].name }], receivers: [{ id: demoAccounts[2].id, name: demoAccounts[2].name }], defaults: { destination_id: 'destination-demo', driver_id: demoAccounts[1].id, receiver_id: demoAccounts[2].id } }
 const demoTransferId = '33333333-3333-4333-8333-333333333333'
 const demoTransfers = new Map([[demoTransferId, { id: demoTransferId, code: 'DEMO-ENTREGA-01', state: 'PENDIENTE_RECOGIDA', lock_version: 1, version_id: '44444444-4444-4444-8444-444444444444', units_presentation: 20, origin_name: 'Centro demo', destination_name: 'Punto de venta demo', driver_name: 'Cuenta demo transporte', receiver_name: 'Cuenta demo recepcion', correction_pending: false }]])
@@ -94,7 +101,6 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     if (!['PRODUCCION', 'ADMIN'].includes(session.assignments[0].role)) return error('PERMISSION_DENIED', 'Sin acceso a lotes.', 403)
     return json({ results: demoLots.filter(lot => session!.assignments[0].scope === 'GLOBAL' || lot.center_id === session!.assignments[0].location_id), next: null, count: 1 })
   }
-  if (path === '/presentations' && method === 'GET') return json({ results: [demoPresentation], next: null, count: 1 })
   if (path === '/assignment-options' && method === 'GET') {
     if (!['PRODUCCION', 'ADMIN'].includes(session.assignments[0].role)) return error('PERMISSION_DENIED', 'Sin acceso a opciones.', 403)
     return json(demoOptions)
@@ -124,8 +130,23 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     const inside = date >= (params.get('from') ?? '') && date <= (params.get('to') ?? '')
     return json({ points: inside ? [{ date, animal_id: 'demo-vaca-a', code: 'V-01 DEMO', litres: '0.000' }, { date, animal_id: 'demo-vaca-b', code: 'V-02 DEMO', litres: '8.500' }] : [], days_registered: inside ? 1 : 0, expected_days: 30, total_litres: inside ? '8.500' : '0.000', average_per_registered_day: inside ? '8.500' : '0.000', cutoff_at: new Date().toISOString(), time_zone: 'America/Lima' })
   }
-  if (path === '/locations' && method === 'GET') return json({ results: [{ id: 'center-demo', name: 'Centro demo', type: 'CENTRO', active: true }, { id: 'destination-demo', name: 'Punto de venta demo', type: 'PUNTO_VENTA', active: true }], next: null, count: 2 })
-  if (path === '/products' && method === 'GET') return json({ results: [{ id: 'milk-demo', name: 'Leche', code: 'LECHE', unit: 'L', active: true }], next: null, count: 1 })
+  for (const [catalog, rows] of Object.entries(catalogs)) {
+    if (path === `/${catalog}` && method === 'GET') return json({ results: rows, next: null, count: rows.length })
+    if (path === `/${catalog}` && method === 'POST') {
+      if (session.assignments[0].role !== 'ADMIN') return error('PERMISSION_DENIED', 'Solo ADMIN modifica catálogos.', 403)
+      if (catalog === 'center-products' ? !data.center_id || !data.product_id : !data.name) return error('VALIDATION_ERROR', 'Faltan datos obligatorios.', 422)
+      if (catalog === 'center-products' && rows.some(row => row.center_id === data.center_id && row.product_id === data.product_id)) return error('VALIDATION_ERROR', 'Producto ya configurado para este centro.', 422)
+      if (catalog === 'presentations' && (!data.product_id || Number(data.content_base) <= 0)) return error('VALIDATION_ERROR', 'La presentación requiere producto y contenido positivo.', 422)
+      const row = { id: crypto.randomUUID(), ...data }; rows.push(row); return json(row, 201)
+    }
+    if (path.startsWith(`/${catalog}/`) && method === 'PATCH') {
+      if (session.assignments[0].role !== 'ADMIN') return error('PERMISSION_DENIED', 'Solo ADMIN modifica catálogos.', 403)
+      const row = rows.find(item => item.id === path.split('/')[2])
+      if (!row) return error('VALIDATION_ERROR', 'Catálogo no encontrado.', 404)
+      if (data.stock !== undefined || data.quantity !== undefined) return error('VALIDATION_ERROR', 'No se administra inventario físico en catálogos.', 422)
+      Object.assign(row, data); return json(row)
+    }
+  }
   if (path === '/users' && method === 'GET') return session.assignments[0].role === 'ADMIN' ? json({ results: mockUsers, next: null, count: mockUsers.length }) : error('PERMISSION_DENIED', 'Solo ADMIN consulta cuentas.', 403)
   if (path === '/users' && method === 'POST') {
     if (session.assignments[0].role !== 'ADMIN') return error('PERMISSION_DENIED', 'Solo ADMIN crea cuentas.', 403)
