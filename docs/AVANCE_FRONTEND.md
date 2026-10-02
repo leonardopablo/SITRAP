@@ -41,8 +41,9 @@
 | F26 | Implementado con métrica mock | `71e0eb6` | Mes/día, medidas separadas y lista equivalente; build y 35 pruebas | B35: filtros y fechas físicas, paginación, validación en Lima y PDF F31 |
 | F27 | Implementado con fixture demo | `534abd7` | Filtro período, valor vigente/original sin duplicar, detalle; build y 36 pruebas | B35: consulta por ámbito/paginación y fecha física real |
 | F28 | Implementado con métricas mock | `244f328` | Vaca, cobertura, cero/ausente, total/promedio, período/gráfico; build y 37 pruebas | B34: valores vigentes, ámbito, comparación de períodos equivalentes |
-| F29 | Implementado con fixture demo | `feat: corregir produccion` | Rectificar/anular online, motivo, vínculos, versión obsoleta, entregas intactas; build/pruebas | B27: reservas máximas, historia/reemplazo real y errores de vínculo |
-| F30–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F29 | Implementado con fixture demo | `b023428` | Rectificar/anular online, motivo, vínculos, versión obsoleta, entregas intactas; build y 38 pruebas | B27: reservas máximas, historia/reemplazo real y errores de vínculo |
+| F30 | UI/descarga real preparada, no simulada | `feat: descargar produccion` | Filtros, advertencia de pendientes y MIME PDF, build/pruebas | B36 endpoint PDF; mock deshabilita descargar |
+| F31–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -71,7 +72,8 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 - F27: GET `/transfers?status=RECIBIDO&from=&to=` paginado con `{received_date,units_presentation,original_quantity?}`. Mock aporta un RECIBIDO ficticio corregido 20→18 L; no inventa una segunda recepción. Confirmar DTO, filtros y fecha física B35.
 - F28: GET `/metrics/milk?from=&to=&center_id=` DTO supuesto `{points:[{date,animal_id,code,litres:string|null}],days_registered,expected_days,total_litres,average_per_registered_day,cutoff_at,time_zone}`. Mock incluye 0 y 8,5 L ficticios; comparar B34/OpenAPI y no mezclar ausente con cero.
 - F29: GET `/milkings` y `/milkings/{id}` con detalle `{id,state,center_id,date,shift_name,lock_version,version_id,total_litres,linked_litres,details:[{animal_id,code,litres}]}`; POST `rectify {new_version_id,details,reason}` o `void {reason}` con sobre/expected_version. Fixture sin vínculos; backend B27 decide prohibición sobre vínculos y propuestas. No rectifica entrega automáticamente.
+- F30: GET `/reports/production.pdf?from=&to=&center_id=` con cookies de mismo origen; exige `Content-Type: application/pdf`, guarda Blob descargable. Mock deshabilita acción; el frontend advierte cantidad local no aceptada (incluye rechazadas) antes de solicitar. PDF real/corte/permisos dependen B36.
 
 ## Continuación
 
-Siguiente: F30. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F31. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.

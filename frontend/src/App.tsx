@@ -24,6 +24,7 @@ import { TransportCalendar } from './reports/TransportCalendar'
 import { ReceptionHistory } from './reports/ReceptionHistory'
 import { ProductionHistory } from './milk/ProductionHistory'
 import { ProductionRevision } from './milk/ProductionRevision'
+import { PdfProduction } from './reports/PdfProduction'
 const MilkAnalytics = lazy(() => import('./reports/MilkAnalytics').then(module => ({ default: module.MilkAnalytics })))
 
 export function App() {
@@ -53,6 +54,7 @@ export function App() {
               <Route path="/vacas" element={<AnimalsPage />} />
               <Route path="/historial" element={<ProductionHistory />} />
               <Route path="/producciones/:id" element={<ProductionRevision />} />
+              <Route path="/informes/produccion" element={<PdfProduction />} />
               <Route path="/analisis" element={<Suspense fallback={<Notice>Cargando análisis…</Notice>}><MilkAnalytics /></Suspense>} />
             </Route>
             <Route element={<RequireRole roles={['TRANSPORTE']} />}><Route path="/diario" element={<TransportCalendar />} /></Route>

@@ -36,6 +36,19 @@ export function createApiClient(transport: Transport, onExpired = () => window.d
     csrf = body.csrf_token
     if (!csrf) throw new Error('Falta csrf_token en el contrato de acceso')
   }
-  return { request, refreshCsrf, post: <T>(path: string, body: unknown = {}) => request<T>(path, { method: 'POST', body: JSON.stringify(body) }), patch: <T>(path: string, body: unknown) => request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }) }
+  async function pdf(path: string): Promise<Blob> {
+    if (!path.startsWith('/reports/') || !path.includes('.pdf') || path.startsWith('//')) throw new Error('Informe no autorizado por este cliente.')
+    let response: Response
+    try { response = await transport(`/api/v1${path}`, { credentials: 'same-origin', headers: { Accept: 'application/pdf' } }) }
+    catch { throw new ApiError(0, { code: 'NETWORK_ERROR', message: 'Conéctate para descargar el PDF.', retryable: true }) }
+    if (!response.ok) {
+      const raw = await response.json().catch(() => null)
+      if (response.status === 401) onExpired()
+      throw new ApiError(response.status, { code: raw?.code ?? 'REPORT_ERROR', message: raw?.message ?? 'No se pudo generar el PDF.', retryable: response.status >= 500 })
+    }
+    if (!response.headers.get('Content-Type')?.toLowerCase().includes('application/pdf')) throw new Error('El servidor no devolvió un PDF. No se descargó un informe incompleto.')
+    return response.blob()
+  }
+  return { request, refreshCsrf, pdf, post: <T>(path: string, body: unknown = {}) => request<T>(path, { method: 'POST', body: JSON.stringify(body) }), patch: <T>(path: string, body: unknown) => request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }) }
 }
 export const api = createApiClient(apiMode === 'mock' ? mockFetch : (input, init) => fetch(input, init))
