@@ -29,6 +29,7 @@ import { PdfDeliveries } from './reports/PdfDeliveries'
 import { AdminOverview } from './reports/AdminOverview'
 import { UsersPage } from './admin/UsersPage'
 import { CatalogPage } from './admin/CatalogPage'
+import { ReassignReceiver } from './admin/ReassignReceiver'
 const MilkAnalytics = lazy(() => import('./reports/MilkAnalytics').then(module => ({ default: module.MilkAnalytics })))
 
 export function App() {
@@ -69,6 +70,7 @@ export function App() {
               <Route path="/administracion" element={<AdminOverview />} />
               <Route path="/administracion/usuarios" element={<UsersPage />} />
               <Route path="/administracion/catalogos" element={<CatalogPage />} />
+              <Route path="/administracion/reasignar" element={<ReassignReceiver />} />
               <Route path="/reportes" element={<PendingFeature title="Reportes" />} />
             </Route>
           </Route>

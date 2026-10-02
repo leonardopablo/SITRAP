@@ -27,6 +27,7 @@ const catalogs: Record<string, { id: string; code?: string; name?: string; activ
 }
 const demoLots: Lot[] = [{ id: '11111111-1111-4111-8111-111111111111', code: 'DEMO-LOTE-01', center_id: 'center-demo', product_id: 'milk-demo', produced_litres: '23.500', unlinked_litres: '23.500', confirmed: true }]
 const demoOptions: AssignmentOptions = { destinations: [{ id: 'destination-demo', name: 'Punto de venta demo' }], drivers: [{ id: demoAccounts[1].id, name: demoAccounts[1].name }], receivers: [{ id: demoAccounts[2].id, name: demoAccounts[2].name }], defaults: { destination_id: 'destination-demo', driver_id: demoAccounts[1].id, receiver_id: demoAccounts[2].id } }
+const replacementReceiver = { id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', name: 'Receptor sustituto (demo)' }
 const demoTransferId = '33333333-3333-4333-8333-333333333333'
 const demoTransfers = new Map([[demoTransferId, { id: demoTransferId, code: 'DEMO-ENTREGA-01', state: 'PENDIENTE_RECOGIDA', lock_version: 1, version_id: '44444444-4444-4444-8444-444444444444', units_presentation: 20, origin_name: 'Centro demo', destination_name: 'Punto de venta demo', driver_name: 'Cuenta demo transporte', receiver_name: 'Cuenta demo recepcion', correction_pending: false }]])
 const demoCorrections = new Map<string, { id: string; transfer_id: string; original_quantity: number; proposed_quantity: number; reason: string; state: string; proposal_version_id: string; approver_transport: string; approver_reception: string; lock_version: number; decisions: { role: string; decision: string; user_id: string }[] }>()
@@ -103,7 +104,7 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
   }
   if (path === '/assignment-options' && method === 'GET') {
     if (!['PRODUCCION', 'ADMIN'].includes(session.assignments[0].role)) return error('PERMISSION_DENIED', 'Sin acceso a opciones.', 403)
-    return json(demoOptions)
+    return json(session.assignments[0].role === 'ADMIN' ? { ...demoOptions, receivers: [...demoOptions.receivers, replacementReceiver] } : demoOptions)
   }
   if (path.startsWith('/transfers/') && method === 'GET') {
     const record = demoTransfers.get(path.split('/')[2])
@@ -220,6 +221,15 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     else record.state = 'CANCELADO'
     record.lock_version++
     return json({ event_id: data.event_id, status: 'APLICADA', entity_id: record.id, lock_version: record.lock_version, result: { ...record }, server_received_at: new Date().toISOString() })
+  }
+  if (path.startsWith('/transfers/') && path.endsWith('/reassign-receiver') && method === 'POST') {
+    const record = demoTransfers.get(path.split('/')[2])
+    if (session.assignments[0].role !== 'ADMIN') return error('PERMISSION_DENIED', 'Solo ADMIN puede reasignar receptor.', 403)
+    if (!record || record.state !== 'EN_CAMINO' || [...demoCorrections.values()].some(item => item.transfer_id === record.id)) return error('INVALID_STATE', 'No se puede reasignar tras recepción o cualquier propuesta histórica.', 409)
+    if (record.lock_version !== data.expected_version) return error('VERSION_CONFLICT', 'La entrega cambió.', 409)
+    if (!data.payload?.reason?.trim() || data.payload?.receiver_id !== replacementReceiver.id || record.receiver_name === replacementReceiver.name) return error('VALIDATION_ERROR', 'Indica receptor nuevo y autorizado con motivo.', 422)
+    record.receiver_name = replacementReceiver.name; record.lock_version++
+    return json({ event_id: data.event_id, entity_id: record.id, status: 'APLICADA', lock_version: record.lock_version, result: record, server_received_at: new Date().toISOString() })
   }
   if (path.startsWith('/transfers/') && path.endsWith('/corrections') && method === 'POST') {
     const record = demoTransfers.get(path.split('/')[2])
