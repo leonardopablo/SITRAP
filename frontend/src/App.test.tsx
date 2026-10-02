@@ -43,3 +43,13 @@ it('muestra errores de login y obliga a cambiar la contraseña temporal', async 
   await userEvent.click(screen.getByRole('button', { name: 'Ingresar' }))
   expect(await screen.findByRole('heading', { name: 'Cambiar contraseña' })).toBeVisible()
 })
+
+it('permite al administrador encontrar y abrir la creación de cuentas desde su resumen', async () => {
+  await api.post('/auth/login', { username: 'admin', password: 'Demostracion123!' })
+  await act(async () => { renderApp('/administracion') })
+  expect(await screen.findByRole('link', { name: 'Crear cuentas y asignar funciones' })).toBeVisible()
+  await userEvent.click(screen.getByRole('link', { name: 'Crear cuentas y asignar funciones' }))
+  expect(await screen.findByRole('heading', { name: 'Crear cuenta' })).toBeVisible()
+  expect(screen.getByRole('link', { name: 'Cuentas' })).toBeVisible()
+  await api.post('/auth/logout')
+})

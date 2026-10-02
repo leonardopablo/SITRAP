@@ -10,7 +10,7 @@ export const navigation: Record<Role, { to: string; label: string }[]> = {
   PRODUCCION: [{ to: '/hoy', label: 'Hoy' }, { to: '/produccion', label: 'Producción' }, { to: '/vacas', label: 'Vacas' }, { to: '/historial', label: 'Historial' }],
   TRANSPORTE: [{ to: '/hoy', label: 'Hoy' }, { to: '/diario', label: 'Diario' }, { to: '/pendientes', label: 'Pendientes' }],
   RECEPCION: [{ to: '/hoy', label: 'Hoy' }, { to: '/recepciones', label: 'Recepciones' }, { to: '/pendientes', label: 'Pendientes' }],
-  ADMIN: [{ to: '/hoy', label: 'Resumen' }, { to: '/administracion', label: 'Administrar' }, { to: '/reportes', label: 'Reportes' }],
+  ADMIN: [{ to: '/hoy', label: 'Resumen' }, { to: '/administracion', label: 'Administrar' }, { to: '/administracion/usuarios', label: 'Cuentas' }, { to: '/administracion/catalogos', label: 'Catálogos' }],
 }
 const Context = createContext<{ assignment: Assignment | null; select: (id: string) => void }>({ assignment: null, select: () => {} })
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
