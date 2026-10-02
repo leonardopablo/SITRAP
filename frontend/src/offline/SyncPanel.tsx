@@ -7,6 +7,7 @@ import { applyChanges, prepareAccount } from './prepare'
 import { syncAccount } from './sync'
 import { Button, Notice } from '../components/ui'
 import { Link } from 'react-router-dom'
+import { AcceptedMark } from '../components/AcceptedMark'
 
 export function useConnection() {
   const [online, setOnline] = useState(navigator.onLine)
@@ -42,7 +43,7 @@ export function SyncPanel() {
       <Button variant="secondary" busy={busy} disabled={!online || apiMode !== 'http' || !device?.registered} onClick={() => run(async () => { await applyChanges(account!.id); await syncAccount(account!.id) }, 'Actualización terminada; comprueba los estados individuales.')}>Sincronizar ahora</Button></div>
     {message && <Notice>{message}</Notice>}
     {!events?.length && <p>No hay operaciones locales.</p>}
-    {events?.map(entry => <article className="card" key={entry.event_id}><h2>{entry.command.type.replaceAll('_', ' ')}</h2><p><strong>{labels[entry.status]}</strong> · {new Intl.DateTimeFormat('es-PE', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Lima' }).format(new Date(entry.created_at))}</p>
+    {events?.map(entry => <article className="card" key={entry.event_id}><h2>{entry.command.type.replaceAll('_', ' ')}</h2><p>{entry.status === 'APLICADA' ? <AcceptedMark label={labels[entry.status]} /> : <strong>{labels[entry.status]}</strong>} · {new Intl.DateTimeFormat('es-PE', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Lima' }).format(new Date(entry.created_at))}</p>
       <p className="help">Evento {entry.event_id}</p>{entry.error && <Notice tone={entry.status === 'RECHAZADA' ? 'error' : 'warning'}>{entry.error.message}</Notice>}
       {entry.status === 'RECHAZADA' && <p>Conservado para revisión. No se reenviará automáticamente ni se forzará su aceptación.</p>}
     </article>)}

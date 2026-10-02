@@ -12,6 +12,7 @@ import { useConnection } from '../offline/SyncPanel'
 import { Button, Field, Notice } from '../components/ui'
 import { confirmable, draftDetails, formatLitres, parseLitres } from './draft'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { AcceptedMark } from '../components/AcceptedMark'
 
 interface Draft { id: string; version_id: string; center_id: string; date: string; shift_id: string; values: Record<string, string>; last_event_id: string; next_version: number; confirm_event_id?: string; lot_id?: string }
 const todayLima = () => { const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Lima', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date()); const get = (key: string) => parts.find(part => part.type === key)?.value ?? ''; return `${get('year')}-${get('month')}-${get('day')}` }
@@ -120,6 +121,6 @@ export function MilkingDraftPage() {
     </section>}
     {draft && !draft.confirm_event_id && <Notice tone="warning">Borrador guardado en este teléfono. Pendiente de enviar. Evento {draft.last_event_id}. No confirmado en el sistema.</Notice>}
     {draft?.confirm_event_id && confirmation?.status !== 'APLICADA' && <Notice tone="warning">Confirmación guardada solo en este teléfono. Evento {draft.confirm_event_id}. El lote {draft.lot_id} todavía no existe en el servidor; no puedes enviar una entrega a otra persona hasta recibir acuse.</Notice>}
-    {confirmation?.status === 'APLICADA' && <Notice tone="success">Producción confirmada por el servidor. Lote {draft?.lot_id}. <Link to="/entregas/preparar">Preparar entrega</Link></Notice>}
+    {confirmation?.status === 'APLICADA' && <Notice tone="success"><AcceptedMark label="Producción confirmada por el servidor" />. Lote {draft?.lot_id}. <Link to="/entregas/preparar">Preparar entrega</Link></Notice>}
   </section>
 }

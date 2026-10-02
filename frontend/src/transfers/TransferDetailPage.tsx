@@ -9,6 +9,7 @@ import { useWorkspace } from '../auth/workspace'
 import { db, enqueue, getDevice, readCopy, saveCopy } from '../offline/db'
 import { Button, Notice } from '../components/ui'
 import { ProposeCorrection } from '../corrections/ProposeCorrection'
+import { AcceptedMark } from '../components/AcceptedMark'
 
 interface LocalTransfer { version_id: string; lot_id: string; units_presentation: number; destination_id: string; driver_id: string; receiver_id: string; event_id: string; send_event_id?: string }
 interface ServerTransfer { id: string; code: string; state: string; lock_version: number; version_id: string; units_presentation: number; origin_name: string; destination_name: string; driver_name: string; receiver_name: string }
@@ -62,7 +63,7 @@ export function TransferDetailPage() {
     {draft && <article className="card stack"><p>Documento borrador · Lote {draft.lot_id}</p><p className="quantity">{draft.units_presentation} bolsas · {draft.units_presentation} L</p><p>Destino {draft.destination_id} · Conductor {draft.driver_id} · Receptor {draft.receiver_id}</p>
       <p>Creación: {creation?.status === 'APLICADA' ? 'Guardada en el sistema' : 'Guardada en este teléfono, sin acuse central'}.</p>
       {!draft.send_event_id && assignment?.role === 'PRODUCCION' && <Button busy={busy} onClick={() => void send()}>Enviar solicitud a transporte</Button>}
-      {sending && <Notice tone={sending.status === 'APLICADA' ? 'success' : 'warning'}>{sending.status === 'APLICADA' ? 'Solicitud aceptada por el servidor. El aviso a transporte depende del backend.' : sending.status === 'RECHAZADA' ? `Solicitud rechazada: ${sending.error?.message ?? 'revisa el registro'}` : 'Envío guardado en este teléfono, pendiente de aceptar por el servidor. Nadie más lo ve todavía.'}</Notice>}
+      {sending && <Notice tone={sending.status === 'APLICADA' ? 'success' : 'warning'}>{sending.status === 'APLICADA' ? <AcceptedMark label="Solicitud aceptada por el servidor. El aviso a transporte depende del backend." /> : sending.status === 'RECHAZADA' ? `Solicitud rechazada: ${sending.error?.message ?? 'revisa el registro'}` : 'Envío guardado en este teléfono, pendiente de aceptar por el servidor. Nadie más lo ve todavía.'}</Notice>}
     </article>}
     {!draft && server.data && <article className="card stack"><h2>{server.data.code}</h2><p>{server.data.state} · Versión {server.data.lock_version}</p><p className="quantity">{server.data.units_presentation} bolsas · {server.data.units_presentation} L</p><p>{server.data.origin_name} → {server.data.destination_name}</p><p>Conductor {server.data.driver_name} · Receptor {server.data.receiver_name}</p>
       {server.data.state === 'PENDIENTE_RECOGIDA' && assignment?.role === 'PRODUCCION' && <div className="row"><Button variant="secondary" onClick={() => { setEditing(true); setRevising(true); setBags(String(server.data?.units_presentation)) }}>Modificar solicitud</Button><Button variant="danger" onClick={() => { setEditing(true); setRevising(false) }}>Cancelar solicitud</Button></div>}

@@ -12,6 +12,7 @@ import { Button, Notice } from '../components/ui'
 import { useConnection } from '../offline/SyncPanel'
 import { Illustration } from '../components/Illustration'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { AcceptedMark } from '../components/AcceptedMark'
 
 export interface OperationalTransfer { id: string; code: string; state: string; lock_version: number; version_id: string; units_presentation: number; origin_name: string; destination_name: string; driver_name: string; receiver_name: string; correction_pending?: boolean }
 export function useOperationalTransfers() {
@@ -57,7 +58,7 @@ export function TransportToday() {
     {query.isPending && online && <Notice>Cargando solicitudes…</Notice>}
     {query.isError && <Notice tone="error">No pudimos actualizar solicitudes. Comprueba la conexión. <Button variant="secondary" onClick={() => void query.refetch()}>Actualizar</Button></Notice>}
     <Button variant="secondary" disabled={!online} onClick={() => void query.refetch()}>Actualizar solicitudes</Button>
-    {message && <Notice tone={message.includes('servidor') ? 'success' : 'warning'}>{message}</Notice>}
+    {message && <Notice tone={message.startsWith('Recogida confirmada por el servidor') ? 'success' : 'warning'}>{message.startsWith('Recogida confirmada por el servidor') ? <AcceptedMark label={message} /> : message}</Notice>}
     {(!query.isPending || !online) && !pending.length && <div className="card"><Illustration kind="empty" /><p>No tienes recogidas pendientes descargadas.</p></div>}
     {pending.map(item => <article className="card stack" key={item.id}><h2>{item.code}</h2><p>{item.origin_name} → {item.destination_name}</p><p className="quantity">{item.units_presentation} bolsas · {item.units_presentation} L</p><p>Versión {item.lock_version}. Confirma solo si estás conforme con la cantidad mostrada; no se vuelve a escribir.</p>
       <Button busy={busy === item.id} disabled={queued.includes(item.id) || operations.some(op => op.command.type === 'TRANSFER_PICKUP' && op.command.entity_id === item.id && op.status !== 'RECHAZADA')} onClick={() => void pickup(item)}>{busy === item.id ? 'Confirmando…' : queued.includes(item.id) || operations.some(op => op.command.type === 'TRANSFER_PICKUP' && op.command.entity_id === item.id && op.status !== 'RECHAZADA') ? 'Recogida registrada o pendiente' : 'Confirmar recogida'}</Button><Link to={`/entregas/${item.id}`}>Ver entrega actual</Link>

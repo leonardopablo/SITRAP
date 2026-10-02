@@ -11,6 +11,7 @@ import { useConnection } from '../offline/SyncPanel'
 import { useOperationalTransfers, type OperationalTransfer } from './TransportToday'
 import { Button, Notice } from '../components/ui'
 import { Illustration } from '../components/Illustration'
+import { AcceptedMark } from '../components/AcceptedMark'
 
 export function ReceptionToday() {
   const { account } = useAuth()
@@ -48,7 +49,7 @@ export function ReceptionToday() {
     <Button variant="secondary" disabled={!online} onClick={() => void query.refetch()}>Actualizar recepciones</Button>
     {query.isPending && online && <Notice>Cargando entregas…</Notice>}
     {query.isError && <Notice tone="error">No se pudo consultar el estado actual. Reintenta con conexión.</Notice>}
-    {message && <Notice tone={message.includes('servidor') ? 'success' : 'warning'}>{message}</Notice>}
+    {message && <Notice tone={message.startsWith('Recepción física confirmada por el servidor') ? 'success' : 'warning'}>{message.startsWith('Recepción física confirmada por el servidor') ? <AcceptedMark label={message} /> : message}</Notice>}
     {!underway.length && !query.isPending && <div className="card"><Illustration kind="empty" /><p>No tienes recepciones físicas pendientes descargadas.</p></div>}
     {underway.map(item => <article key={item.id} className="card stack"><h2>{item.code}</h2><p>Transporta: {item.driver_name} · Origen: {item.origin_name}</p><p className="quantity">{item.units_presentation} bolsas · {item.units_presentation} L</p>
       {item.correction_pending && <Notice tone="warning">Hay una corrección por aprobar antes de confirmar la recepción. Esta acción permanece bloqueada hasta que termine.</Notice>}

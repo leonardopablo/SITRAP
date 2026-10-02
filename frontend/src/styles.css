@@ -93,6 +93,9 @@ a, button, input, select, textarea { touch-action: manipulation; }
 .notice.warning { background: var(--color-warning-soft); color: var(--color-warning); }
 .notice.error { background: var(--color-danger-soft); color: var(--color-danger); }
 .notice.success { background: var(--color-brand-soft); color: var(--color-success); }
+.accepted-mark { display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 700; }
+.accepted-mark__symbol { display: inline-grid; place-items: center; inline-size: 1.75rem; block-size: 1.75rem; border-radius: 50%; background: var(--color-success); color: #fff; animation: accepted-arrival var(--motion-illustration) ease-out both; }
+@keyframes accepted-arrival { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: scale(1); } }
 .badge { display: inline-block; padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill); font-size: var(--text-sm); background: var(--color-brand-soft); color: var(--color-brand-ink); }
 .quantity { font-size: var(--text-quantity); font-variant-numeric: tabular-nums; font-weight: 750; }
 .skip-link { position: fixed; top: -100px; left: var(--space-4); z-index: 10; background: var(--color-surface); padding: var(--space-3); }
@@ -105,8 +108,10 @@ dialog::backdrop { background: #0008; }
 }
 @media (prefers-reduced-motion: reduce) {
   :root { --motion-fast: 0ms; --motion-normal: 0ms; --motion-illustration: 0ms; }
+  .accepted-mark__symbol { animation: none; }
 }
 [data-reduce-motion='true'] { --motion-fast: 0ms; --motion-normal: 0ms; --motion-illustration: 0ms; }
+[data-reduce-motion='true'] .accepted-mark__symbol { animation: none; }
 .workspace { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: var(--space-6); margin-top: var(--space-6); }
 .workspace-sidebar { display: grid; gap: var(--space-4); align-content: start; }
 .workspace-content { min-width: 0; }
