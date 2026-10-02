@@ -122,6 +122,8 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     const inside = date >= (params.get('from') ?? '') && date <= (params.get('to') ?? '')
     return json({ points: inside ? [{ date, animal_id: 'demo-vaca-a', code: 'V-01 DEMO', litres: '0.000' }, { date, animal_id: 'demo-vaca-b', code: 'V-02 DEMO', litres: '8.500' }] : [], days_registered: inside ? 1 : 0, expected_days: 30, total_litres: inside ? '8.500' : '0.000', average_per_registered_day: inside ? '8.500' : '0.000', cutoff_at: new Date().toISOString(), time_zone: 'America/Lima' })
   }
+  if (path === '/locations' && method === 'GET') return json({ results: [{ id: 'center-demo', name: 'Centro demo', type: 'CENTRO', active: true }, { id: 'destination-demo', name: 'Punto de venta demo', type: 'PUNTO_VENTA', active: true }], next: null, count: 2 })
+  if (path === '/products' && method === 'GET') return json({ results: [{ id: 'milk-demo', name: 'Leche', code: 'LECHE', unit: 'L', active: true }], next: null, count: 1 })
   if (path === '/milkings' && method === 'GET') {
     if (!['PRODUCCION', 'ADMIN'].includes(session.assignments[0].role)) return error('PERMISSION_DENIED', 'Sin acceso a producción.', 403)
     return json({ results: [...demoMilkings.values()], next: null, count: demoMilkings.size })
