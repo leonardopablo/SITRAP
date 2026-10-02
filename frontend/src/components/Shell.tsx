@@ -76,6 +76,7 @@ export function TodayPage() {
     {assignment?.role === 'RECEPCION' && <p><Link to="/recibir">Ver recepciones pendientes</Link></p>}
     {(assignment?.role === 'TRANSPORTE' || assignment?.role === 'RECEPCION') && <p><Link to="/pendientes">Ver correcciones pendientes</Link></p>}
     {assignment?.role === 'PRODUCCION' && <p><Link to="/correcciones">Ver historial de correcciones</Link></p>}
+    {assignment?.role === 'PRODUCCION' && <p><Link to="/analisis">Analizar producción por vaca</Link></p>}
   </section>
 }
 export function PendingFeature({ title }: { title: string }) {

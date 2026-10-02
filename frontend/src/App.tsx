@@ -1,4 +1,5 @@
 import { Link, Route, Routes } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
 import { Logo } from './components/Logo'
 import { Illustration } from './components/Illustration'
 import { AccessPage, PasswordPage } from './auth/AccessPage'
@@ -21,6 +22,7 @@ import { CorrectionHistory } from './corrections/CorrectionHistory'
 import { PushPreferences } from './push/PushPreferences'
 import { TransportCalendar } from './reports/TransportCalendar'
 import { ReceptionHistory } from './reports/ReceptionHistory'
+const MilkAnalytics = lazy(() => import('./reports/MilkAnalytics').then(module => ({ default: module.MilkAnalytics })))
 
 export function App() {
   return <>
@@ -48,6 +50,7 @@ export function App() {
               <Route path="/entregas/preparar" element={<PreparePage />} />
               <Route path="/vacas" element={<AnimalsPage />} />
               <Route path="/historial" element={<PendingFeature title="Historial" />} />
+              <Route path="/analisis" element={<Suspense fallback={<Notice>Cargando análisis…</Notice>}><MilkAnalytics /></Suspense>} />
             </Route>
             <Route element={<RequireRole roles={['TRANSPORTE']} />}><Route path="/diario" element={<TransportCalendar />} /></Route>
             <Route element={<RequireRole roles={['RECEPCION']} />}><Route path="/recepciones" element={<ReceptionHistory />} /></Route>

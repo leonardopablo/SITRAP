@@ -39,8 +39,9 @@
 | F24 | Implementado sin activar push en mock | `2964844` | Permiso solo por gesto, soporte/denegación/propietario, logout; build y 33 pruebas | B31 VAPID/suscripciones reales, Android; no hay entrega push todavía |
 | F25 | Implementado en SW único | `d16df65` | Payload genérico, tag estable, ruta permitida, click consulta app autenticada; build, 34 unitarias y PWA e2e | B33/Android: llegada real cerrada/abierta, navegador/permiso y aviso obsoleto |
 | F26 | Implementado con métrica mock | `71e0eb6` | Mes/día, medidas separadas y lista equivalente; build y 35 pruebas | B35: filtros y fechas físicas, paginación, validación en Lima y PDF F31 |
-| F27 | Implementado con fixture demo | `feat: consultar recepciones` | Filtro período, valor vigente/original sin duplicar, detalle; build/pruebas | B35: consulta por ámbito/paginación y fecha física real |
-| F28–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F27 | Implementado con fixture demo | `534abd7` | Filtro período, valor vigente/original sin duplicar, detalle; build y 36 pruebas | B35: consulta por ámbito/paginación y fecha física real |
+| F28 | Implementado con métricas mock | `feat: analizar produccion` | Vaca, cobertura, cero/ausente, total/promedio, período/gráfico; build/pruebas | B34: valores vigentes, ámbito, comparación de períodos equivalentes |
+| F29–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -67,7 +68,8 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 - F25: push esperado `{notification_id,type,route}` según 04 §6; SW NO usa texto entrante, solo título/cuerpo genéricos y rutas de lectura `/avisos`, `/entregas/{UUID}`, `/correcciones/{UUID}`. Clic abre ruta interna; RequireAuth exige sesión y detalle reconsulta estado/permiso. Un push nunca ejecuta una conformidad. Test real con navegador Android/B33 pendiente.
 - F26: GET `/metrics/transfers?from=YYYY-MM-DD&to=YYYY-MM-DD` respuesta provisional `{days:[{date,picked_litres,received_litres,transfers}],cutoff_at,time_zone}`. Mock usa dato ficticio EN_CAMINO; no confundir 15 L recogidos con 15 L recibidos. Contrastar fechas físicas/atribución de B35.
 - F27: GET `/transfers?status=RECIBIDO&from=&to=` paginado con `{received_date,units_presentation,original_quantity?}`. Mock aporta un RECIBIDO ficticio corregido 20→18 L; no inventa una segunda recepción. Confirmar DTO, filtros y fecha física B35.
+- F28: GET `/metrics/milk?from=&to=&center_id=` DTO supuesto `{points:[{date,animal_id,code,litres:string|null}],days_registered,expected_days,total_litres,average_per_registered_day,cutoff_at,time_zone}`. Mock incluye 0 y 8,5 L ficticios; comparar B34/OpenAPI y no mezclar ausente con cero.
 
 ## Continuación
 
-Siguiente: F28. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F29. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.

@@ -114,6 +114,13 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     const days = date >= (params.get('from') ?? '') && date <= (params.get('to') ?? '') ? [{ date, picked_litres: '15.000', received_litres: '0.000', transfers: [{ id: '55555555-5555-4555-8555-555555555555', code: 'DEMO-EN-CAMINO', picked_litres: '15.000', received_litres: '0.000', state: 'EN_CAMINO' }] }] : []
     return json({ days, cutoff_at: new Date().toISOString(), time_zone: 'America/Lima' })
   }
+  if (path === '/metrics/milk' && method === 'GET') {
+    if (!['PRODUCCION', 'ADMIN'].includes(session.assignments[0].role)) return error('PERMISSION_DENIED', 'Métricas no autorizadas.', 403)
+    const date = new Date().toISOString().slice(0, 10)
+    const params = new URL(input, 'http://localhost').searchParams
+    const inside = date >= (params.get('from') ?? '') && date <= (params.get('to') ?? '')
+    return json({ points: inside ? [{ date, animal_id: 'demo-vaca-a', code: 'V-01 DEMO', litres: '0.000' }, { date, animal_id: 'demo-vaca-b', code: 'V-02 DEMO', litres: '8.500' }] : [], days_registered: inside ? 1 : 0, expected_days: 30, total_litres: inside ? '8.500' : '0.000', average_per_registered_day: inside ? '8.500' : '0.000', cutoff_at: new Date().toISOString(), time_zone: 'America/Lima' })
+  }
   if (path.startsWith('/transfers/') && method === 'POST' && (path.endsWith('/revise') || path.endsWith('/cancel'))) {
     const record = demoTransfers.get(path.split('/')[2])
     if (!record || session.assignments[0].role !== 'PRODUCCION') return error('PERMISSION_DENIED', 'Solo producción asignada puede revisar esta solicitud.', 403)
