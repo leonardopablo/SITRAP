@@ -6,22 +6,31 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('traceability', '0008_decision_immutable'),
+        ("traceability", "0008_decision_immutable"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ReceiverReassignment',
+            name="ReceiverReassignment",
             fields=[
-                ('id', models.UUIDField(primary_key=True, serialize=False)),
-                ('payload_hash', models.CharField(max_length=64)),
-                ('response', models.JSONField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('actor', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
-                ('transfer', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='traceability.transfer')),
+                ("id", models.UUIDField(primary_key=True, serialize=False)),
+                ("payload_hash", models.CharField(max_length=64)),
+                ("response", models.JSONField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "actor",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL
+                    ),
+                ),
+                (
+                    "transfer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to="traceability.transfer"
+                    ),
+                ),
             ],
         ),
     ]

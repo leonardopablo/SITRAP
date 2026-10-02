@@ -138,3 +138,17 @@ SPECTACULAR_SETTINGS["ENUM_NAME_OVERRIDES"]["BatchOperationStatusEnum"] = [
     "ESPERA_DEPENDENCIA",
     "NO_PROCESADA",
 ]
+
+PUSH_ENABLED = env.bool("PUSH_ENABLED", default=False)
+VAPID_PUBLIC_KEY = env("VAPID_PUBLIC_KEY", default="")
+VAPID_PRIVATE_KEY = env("VAPID_PRIVATE_KEY", default="")
+VAPID_SUBJECT = env("VAPID_SUBJECT", default="")
+PUSH_ALLOWED_HOSTS = env.list(
+    "PUSH_ALLOWED_HOSTS",
+    default=[
+        "fcm.googleapis.com",
+        "updates.push.services.mozilla.com",
+        "web.push.apple.com",
+        ".notify.windows.com",
+    ],
+)

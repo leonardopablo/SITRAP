@@ -414,6 +414,12 @@ paths:
   /api/v1/auth/logout:
     post:
       operationId: auth_logout_create
+      parameters:
+      - in: header
+        name: X-Device-ID
+        schema:
+          type: string
+          format: uuid
       tags:
       - auth
       security:
@@ -1798,6 +1804,113 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: ''
         '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/push/config:
+    get:
+      operationId: push_config_retrieve
+      tags:
+      - push
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushConfig'
+          description: ''
+  /api/v1/push/subscriptions:
+    get:
+      operationId: push_subscriptions_retrieve
+      parameters:
+      - in: header
+        name: X-Device-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - push
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionsPage'
+          description: ''
+    post:
+      operationId: push_subscriptions_create
+      tags:
+      - push
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubscriptionInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubscriptionInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/push/subscriptions/{id}:
+    delete:
+      operationId: push_subscriptions_destroy
+      parameters:
+      - in: header
+        name: X-Device-ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - push
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '404':
           content:
             application/json:
               schema:
@@ -5761,6 +5874,31 @@ components:
         * `BORRADOR` - BORRADOR
         * `CONFIRMADA` - CONFIRMADA
         * `ANULADA` - ANULADA
+    PushConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        vapid_public_key:
+          type: string
+          nullable: true
+      required:
+      - enabled
+      - vapid_public_key
+    PushKeysRequest:
+      type: object
+      properties:
+        p256dh:
+          type: string
+          minLength: 1
+          maxLength: 128
+        auth:
+          type: string
+          minLength: 1
+          maxLength: 64
+      required:
+      - auth
+      - p256dh
     ReasonPayloadRequest:
       type: object
       properties:
@@ -6051,6 +6189,74 @@ components:
       - center_id
       - id
       - starts_on
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        device_id:
+          type: string
+          format: uuid
+          readOnly: true
+        active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - created_at
+      - device_id
+      - id
+      - updated_at
+    SubscriptionInputRequest:
+      type: object
+      properties:
+        device_id:
+          type: string
+          format: uuid
+        endpoint:
+          type: string
+          minLength: 1
+          maxLength: 2048
+        keys:
+          $ref: '#/components/schemas/PushKeysRequest'
+      required:
+      - device_id
+      - endpoint
+      - keys
+    SubscriptionsPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscription'
+      required:
+      - count
+      - next
+      - previous
+      - results
     SyncEntry:
       type: object
       properties:

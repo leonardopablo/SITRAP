@@ -18,7 +18,11 @@ def check_version(aggregate, expected_version):
 def lock_rows(model, ids):
     if not connection.in_atomic_block:
         raise RuntimeError("Row locks require an atomic transaction.")
-    return list(model.objects.select_for_update().filter(pk__in=ids).order_by("pk"))
+    return list(
+        model.objects.select_for_update(no_key=model._meta.label_lower == "accounts.user")
+        .filter(pk__in=ids)
+        .order_by("pk")
+    )
 
 
 # All future domain services must acquire affected rows in this order.

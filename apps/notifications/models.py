@@ -25,3 +25,16 @@ class Notification(models.Model):
             )
         ]
         indexes = [models.Index(fields=["recipient", "-created_at", "-id"])]
+
+
+class PushSubscription(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    device = models.ForeignKey("sync.Device", on_delete=models.PROTECT)
+    endpoint = models.CharField(max_length=2048, unique=True)
+    p256dh = models.CharField(max_length=128)
+    auth = models.CharField(max_length=64)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    revoked_at = models.DateTimeField(null=True)

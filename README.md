@@ -27,3 +27,23 @@ Aplicar migraciones con `python manage.py migrate` (usuario personalizado dispon
 
 Pruebas PostgreSQL y CI: [docs/PRUEBAS.md](docs/PRUEBAS.md).
 Para regenerar locks de desarrollo usar `pip-compile --allow-unsafe --generate-hashes`.
+
+
+## Actualizar dependencias
+
+Usar el índice HTTPS esperado y conservar hashes:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/compile_locked.py --generate-hashes --allow-unsafe --strip-extras --index-url https://pypi.org/simple --output-file requirements.txt requirements.in
+.\.venv\Scripts\python.exe scripts/compile_locked.py --generate-hashes --allow-unsafe --strip-extras --index-url https://pypi.org/simple --output-file requirements-dev.txt requirements-dev.in
+.\.venv\Scripts\python.exe -m pip install --require-hashes -r requirements-dev.txt
+```
+
+El helper usa SHA-256 anunciado por el índice Simple, como pip-tools hace con la API
+JSON; si falta, descarga y calcula. Evita descargar ruedas de todas las plataformas
+cuando la API JSON no devuelve hashes. La instalación verifica los artefactos contra
+el lock; `pip download --require-hashes -r requirements.txt --dest .local/verified-wheels`
+permite verificar también paquetes ya instalados. No modifica pip-tools instalado.
+
+Avisos al teléfono: [configuración VAPID y contrato](docs/PUSH.md).
+Sincronización: [protocolo de caché/cursores/eventos](docs/SYNC_PROTOCOL.md).

@@ -9,7 +9,8 @@ from django.middleware.csrf import get_token
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
+from rest_framework import serializers
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -101,9 +102,31 @@ class MeView(APIView):
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(request=None, responses={204: None, 401: ErrorSerializer, 403: ErrorSerializer})
+    @extend_schema(
+        request=None,
+        parameters=[
+            OpenApiParameter(
+                "X-Device-ID",
+                type={"type": "string", "format": "uuid"},
+                location=OpenApiParameter.HEADER,
+                required=False,
+            )
+        ],
+        responses={204: None, 401: ErrorSerializer, 403: ErrorSerializer},
+    )
     def post(self, request):
-        logout(request)
+        from apps.notifications.subscriptions import revoke_subscriptions
+        from apps.sync.models import Device
+
+        device_id = request.headers.get("X-Device-ID") or request.session.get("device_id")
+        with transaction.atomic():
+            User.objects.select_for_update(no_key=True).get(pk=request.user.pk)
+            if device_id:
+                device_id = serializers.UUIDField().run_validation(device_id)
+                if not Device.objects.filter(pk=device_id, user=request.user).exists():
+                    raise DomainError("PERMISSION_DENIED", "Dispositivo ajeno.", 403)
+                revoke_subscriptions(request.user.id, device_id)
+            logout(request)
         return Response(status=204)
 
 

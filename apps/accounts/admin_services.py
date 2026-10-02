@@ -68,6 +68,10 @@ def update_user(actor, target_id, data):
                 target.save(update_fields=list(data))
         except IntegrityError:
             raise DomainError("VALIDATION_ERROR", "El usuario ya existe.", 422)
+        if not target.is_active:
+            from apps.notifications.subscriptions import revoke_subscriptions
+
+            revoke_subscriptions(target.id)
         record(actor, "user", target.id, "UPDATE_USER", before=before, after=after)
     return target
 
