@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B12**. Siguiente elegible: **B13**.
+Última tarea terminada: **B13**. Siguiente elegible: **B14**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -27,7 +27,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B11 | `5d19be6` | 44 pruebas acumuladas; opciones mínimas por origen/destino, defaults solo con una opción, inactivos excluidos y acceso entre centros negado. |
 
-| B12 | `7ea58a5` + `fix: actualizar contrato de animales (B12)` | 48 pruebas acumuladas; animales/estancias, centros válidos, movimientos solo ADMIN y exclusión de solapamiento incluso con dos transacciones concurrentes. |
+| B12 | `7ea58a5` + `de2aff2` | 48 pruebas acumuladas; animales/estancias, centros válidos, movimientos solo ADMIN y exclusión de solapamiento incluso con dos transacciones concurrentes. |
+
+| B13 | `feat: guardar ordenos (B13)` (este commit) | 51 pruebas acumuladas; UUID, vacío/cero, vaca/fecha/centro válidos, replay y carrera de edición con una sola versión ganadora; contrato exacto. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
@@ -72,7 +74,7 @@ B01-B12 publicados y rama local sigue origin/agente-backend. No se ha verificado
 
 ## Pendientes y reanudación
 
-**B13–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B14–B39 pendientes**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -84,7 +86,7 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B13, sin rehacer B01–B12.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B14, sin rehacer B01–B13.
 
 B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
 X-Device-ID. El sobre de comandos está implementado en servicios internos,
@@ -128,3 +130,10 @@ Corrección B12: la primera publicación conservó OpenAPI anterior por un warni
 de etiquetas del enum. Se corrigió el nombre usando las etiquetas reales, se generó
 el contrato sin warnings y se añadió test de igualdad del esquema generado/versionado.
 48 pruebas y makemigrations --check pasan. No avanzar con checks fallidos.
+
+B13: entity_id y /milkings/{id} identifican ordeño; payload de alta incluye
+production_id y version_id separados, centro/producto/fecha/turno y details.
+Cada detalle recibe animal_id y liters string o null; null nunca se convierte a cero.
+PATCH reemplaza el detalle del borrador completo y requiere expected_version.
+La confirmación llegará en B14; unicidad parcial en BD y anulación en B15.
+No habilitar piloto antes de completar esas dependencias.

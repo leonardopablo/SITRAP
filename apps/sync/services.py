@@ -2,6 +2,7 @@ import hashlib
 import json
 from datetime import date, datetime
 from datetime import timezone as dt_timezone
+from decimal import Decimal
 from uuid import UUID
 
 from django.db import IntegrityError, transaction
@@ -17,6 +18,8 @@ def json_default(value):
         return str(value)
     if isinstance(value, datetime):
         return value.astimezone(dt_timezone.utc).isoformat()
+    if isinstance(value, Decimal):
+        return str(value)
     if isinstance(value, date):
         return value.isoformat()
     raise TypeError(type(value).__name__)

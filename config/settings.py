@@ -21,6 +21,8 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.sync",
     "apps.audit",
+    "apps.production",
+    "apps.milk",
     "apps.catalog",
 ]
 MIDDLEWARE = [
@@ -103,3 +105,9 @@ SPECTACULAR_SETTINGS["ENUM_NAME_OVERRIDES"].update(
         "HealthStatusEnum": ["ok"],
     }
 )
+
+SPECTACULAR_SETTINGS["ENUM_NAME_OVERRIDES"].update(
+    {"ProductionStateEnum": ["BORRADOR", "CONFIRMADA", "ANULADA"]}
+)
+
+SPECTACULAR_SETTINGS["ENUM_NAME_OVERRIDES"].update({"OperationStateEnum": "apps.sync.models.SyncOperation.State"})

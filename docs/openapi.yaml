@@ -818,6 +818,182 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: ''
+  /api/v1/milkings:
+    get:
+      operationId: milkings_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - milkings
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMilkingList'
+          description: ''
+    post:
+      operationId: milkings_create
+      tags:
+      - milkings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MilkingCreateCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MilkingCreateCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MilkingCreateCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+  /api/v1/milkings/{id}:
+    get:
+      operationId: milkings_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - milkings
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milking'
+          description: ''
+    patch:
+      operationId: milkings_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - milkings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMilkingUpdateCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMilkingUpdateCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMilkingUpdateCommandRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
   /api/v1/presentations:
     get:
       operationId: presentations_list
@@ -1957,6 +2133,34 @@ components:
       - center_id
       - id
       - product_id
+    CowDetail:
+      type: object
+      properties:
+        animal_id:
+          type: string
+          format: uuid
+        liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+          nullable: true
+      required:
+      - animal_id
+      - liters
+    CowDetailRequest:
+      type: object
+      properties:
+        animal_id:
+          type: string
+          format: uuid
+        liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+          nullable: true
+      required:
+      - animal_id
+      - liters
     CreateAssignmentRequest:
       type: object
       properties:
@@ -2226,6 +2430,201 @@ components:
       - locations
       - name
       - username
+    Milking:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        production_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        responsible_id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        turn_id:
+          type: string
+          format: uuid
+        state:
+          $ref: '#/components/schemas/ProductionStateEnum'
+        lock_version:
+          type: integer
+        version_id:
+          type: string
+          format: uuid
+        version_number:
+          type: integer
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CowDetail'
+        complete:
+          type: boolean
+        capabilities:
+          type: array
+          items:
+            type: string
+      required:
+      - capabilities
+      - center_id
+      - complete
+      - date
+      - details
+      - id
+      - lock_version
+      - product_id
+      - production_id
+      - quantity
+      - responsible_id
+      - state
+      - turn_id
+      - version_id
+      - version_number
+    MilkingCommandError:
+      oneOf:
+      - $ref: '#/components/schemas/OperationResult'
+      - $ref: '#/components/schemas/Error'
+    MilkingCreateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/MilkingCreateCommandTypeEnum'
+          default: MILKING_CREATE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/MilkingCreatePayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+    MilkingCreateCommandTypeEnum:
+      enum:
+      - MILKING_CREATE
+      type: string
+      description: '* `MILKING_CREATE` - MILKING_CREATE'
+    MilkingCreatePayloadRequest:
+      type: object
+      properties:
+        production_id:
+          type: string
+          format: uuid
+        version_id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        turn_id:
+          type: string
+          format: uuid
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CowDetailRequest'
+      required:
+      - center_id
+      - date
+      - details
+      - product_id
+      - production_id
+      - turn_id
+      - version_id
+    MilkingReceipt:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/OperationStateEnum'
+        entity_id:
+          type: string
+          format: uuid
+        lock_version:
+          type: integer
+          nullable: true
+        result:
+          $ref: '#/components/schemas/Milking'
+        error:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        server_received_at:
+          type: string
+          format: date-time
+      required:
+      - entity_id
+      - error
+      - event_id
+      - lock_version
+      - result
+      - server_received_at
+      - status
+    MilkingUpdateCommandTypeEnum:
+      enum:
+      - MILKING_UPDATE
+      type: string
+      description: '* `MILKING_UPDATE` - MILKING_UPDATE'
+    MilkingUpdatePayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        turn_id:
+          type: string
+          format: uuid
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CowDetailRequest'
+      required:
+      - date
+      - details
+      - turn_id
     MinimalOption:
       type: object
       properties:
@@ -2237,6 +2636,50 @@ components:
       required:
       - id
       - name
+    OperationResult:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/OperationStateEnum'
+        entity_id:
+          type: string
+          format: uuid
+        lock_version:
+          type: integer
+          nullable: true
+        result:
+          type: object
+          additionalProperties: {}
+        error:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        server_received_at:
+          type: string
+          format: date-time
+      required:
+      - entity_id
+      - error
+      - event_id
+      - lock_version
+      - result
+      - server_received_at
+      - status
+    OperationStateEnum:
+      enum:
+      - RECIBIDA
+      - ESPERA_DEPENDENCIA
+      - APLICADA
+      - RECHAZADA
+      type: string
+      description: |-
+        * `RECIBIDA` - Recibida
+        * `ESPERA_DEPENDENCIA` - Espera Dependencia
+        * `APLICADA` - Aplicada
+        * `RECHAZADA` - Rechazada
     OptionDefaults:
       type: object
       properties:
@@ -2347,6 +2790,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/LocationInput'
+    PaginatedMilkingList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Milking'
     PaginatedPresentationInputList:
       type: object
       required:
@@ -2589,6 +3055,36 @@ components:
         active:
           type: boolean
           default: true
+    PatchedMilkingUpdateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/MilkingUpdateCommandTypeEnum'
+          default: MILKING_UPDATE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/MilkingUpdatePayloadRequest'
     PatchedPresentationInputRequest:
       type: object
       properties:
@@ -2795,6 +3291,16 @@ components:
       - id
       - name
       - unit_id
+    ProductionStateEnum:
+      enum:
+      - BORRADOR
+      - CONFIRMADA
+      - ANULADA
+      type: string
+      description: |-
+        * `BORRADOR` - BORRADOR
+        * `CONFIRMADA` - CONFIRMADA
+        * `ANULADA` - ANULADA
     ResetPasswordRequest:
       type: object
       properties:
