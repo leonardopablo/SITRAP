@@ -19,6 +19,7 @@ import { ReceptionToday } from './transfers/ReceptionToday'
 import { CorrectionPage } from './corrections/CorrectionPage'
 import { CorrectionHistory } from './corrections/CorrectionHistory'
 import { PushPreferences } from './push/PushPreferences'
+import { TransportCalendar } from './reports/TransportCalendar'
 
 export function App() {
   return <>
@@ -47,7 +48,7 @@ export function App() {
               <Route path="/vacas" element={<AnimalsPage />} />
               <Route path="/historial" element={<PendingFeature title="Historial" />} />
             </Route>
-            <Route element={<RequireRole roles={['TRANSPORTE']} />}><Route path="/diario" element={<PendingFeature title="Diario de transporte" />} /></Route>
+            <Route element={<RequireRole roles={['TRANSPORTE']} />}><Route path="/diario" element={<TransportCalendar />} /></Route>
             <Route element={<RequireRole roles={['RECEPCION']} />}><Route path="/recepciones" element={<PendingFeature title="Recepciones" />} /></Route>
             <Route element={<RequireRole roles={['TRANSPORTE', 'RECEPCION']} />}><Route path="/pendientes" element={<CorrectionHistory />} /></Route>
             <Route element={<RequireRole roles={['ADMIN']} />}>

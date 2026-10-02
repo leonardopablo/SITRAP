@@ -37,8 +37,9 @@
 | F22 | Implementado localmente | `63a9512` | Dos aprobadores, accept/reject, versión descargada y sin éxito prematuro; build y 31 pruebas | B24/B25: aplicación transaccional y rechazo real; mock no sincroniza decisiones |
 | F23 | Implementado con fixture demo | `5ce2269` | Retiro con motivo, historial y cantidad original, sin reciclaje; build y 32 pruebas | B25: historial/paginación y decisiones reales; mock solo prueba retiro |
 | F24 | Implementado sin activar push en mock | `2964844` | Permiso solo por gesto, soporte/denegación/propietario, logout; build y 33 pruebas | B31 VAPID/suscripciones reales, Android; no hay entrega push todavía |
-| F25 | Implementado en SW único | `feat: abrir notificaciones push` | Payload genérico, tag estable, ruta permitida, click consulta app autenticada; build/pruebas | B33/Android: llegada real cerrada/abierta, navegador/permiso y aviso obsoleto |
-| F26–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F25 | Implementado en SW único | `d16df65` | Payload genérico, tag estable, ruta permitida, click consulta app autenticada; build, 34 unitarias y PWA e2e | B33/Android: llegada real cerrada/abierta, navegador/permiso y aviso obsoleto |
+| F26 | Implementado con métrica mock | `feat: consultar diario de transporte` | Mes/día, medidas separadas y lista equivalente; build/pruebas | B35: filtros y fechas físicas, paginación, validación en Lima y PDF F31 |
+| F27–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -63,7 +64,8 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 - F23: `CORRECTION_WITHDRAW` online payload `{reason}` con `expected_version` de propuesta. Historial GET `/corrections` paginado, conserva decisiones previas. Mock retira sin aplicar la propuesta y desbloquea el fixture. Confirmar B25 y versiones históricas con API real.
 - F24: GET `/push/config` supuesto `{enabled,vapid_public_key}`, GET `/push/subscriptions` `{results:[{id,device_id,endpoint,active}]}`, POST suscripción `{device_id,endpoint,p256dh,auth}`, DELETE id. Activación solo en modo http con soporte, conexión, dispositivo preparado y clic; no declarar éxito si falla registro. Logout revoca sesión en backend y desuscribe navegador. Validar B31/Android y política de re-login para otra cuenta.
 - F25: push esperado `{notification_id,type,route}` según 04 §6; SW NO usa texto entrante, solo título/cuerpo genéricos y rutas de lectura `/avisos`, `/entregas/{UUID}`, `/correcciones/{UUID}`. Clic abre ruta interna; RequireAuth exige sesión y detalle reconsulta estado/permiso. Un push nunca ejecuta una conformidad. Test real con navegador Android/B33 pendiente.
+- F26: GET `/metrics/transfers?from=YYYY-MM-DD&to=YYYY-MM-DD` respuesta provisional `{days:[{date,picked_litres,received_litres,transfers}],cutoff_at,time_zone}`. Mock usa dato ficticio EN_CAMINO; no confundir 15 L recogidos con 15 L recibidos. Contrastar fechas físicas/atribución de B35.
 
 ## Continuación
 
-Siguiente: F26. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F27. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.

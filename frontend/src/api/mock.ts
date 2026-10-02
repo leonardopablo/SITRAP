@@ -105,6 +105,12 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     const role = session.assignments[0].role
     return json({ results: ['PRODUCCION', 'TRANSPORTE', 'RECEPCION', 'ADMIN'].includes(role) ? [...demoTransfers.values()] : [], next: null, count: demoTransfers.size })
   }
+  if (path === '/metrics/transfers' && method === 'GET') {
+    const params = new URL(input, 'http://localhost').searchParams
+    const date = new Date().toISOString().slice(0, 10)
+    const days = date >= (params.get('from') ?? '') && date <= (params.get('to') ?? '') ? [{ date, picked_litres: '15.000', received_litres: '0.000', transfers: [{ id: '55555555-5555-4555-8555-555555555555', code: 'DEMO-EN-CAMINO', picked_litres: '15.000', received_litres: '0.000', state: 'EN_CAMINO' }] }] : []
+    return json({ days, cutoff_at: new Date().toISOString(), time_zone: 'America/Lima' })
+  }
   if (path.startsWith('/transfers/') && method === 'POST' && (path.endsWith('/revise') || path.endsWith('/cancel'))) {
     const record = demoTransfers.get(path.split('/')[2])
     if (!record || session.assignments[0].role !== 'PRODUCCION') return error('PERMISSION_DENIED', 'Solo producción asignada puede revisar esta solicitud.', 403)
