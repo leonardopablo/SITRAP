@@ -15,6 +15,8 @@ from apps.milk.services import milking_data, scoped_milkings
 from apps.sync.commands import dispatch
 from apps.sync.serializers import OperationResultSerializer
 
+from .rectification import MilkingRectifyCommand, MilkingVoidCommand
+
 
 def command_responses():
     error = PolymorphicProxySerializer(
@@ -72,4 +74,20 @@ class MilkingConfirmView(APIView):
         body, status = dispatch(
             request.user, request.data, fixed_type="MILKING_CONFIRM", entity_id=pk
         )
+        return Response(body, status=status)
+
+
+class MilkingRectifyView(APIView):
+    @extend_schema(request=MilkingRectifyCommand, responses=command_responses())
+    def post(self, request, pk):
+        body, status = dispatch(
+            request.user, request.data, fixed_type="MILKING_RECTIFY", entity_id=pk
+        )
+        return Response(body, status=status)
+
+
+class MilkingVoidView(APIView):
+    @extend_schema(request=MilkingVoidCommand, responses=command_responses())
+    def post(self, request, pk):
+        body, status = dispatch(request.user, request.data, fixed_type="MILKING_VOID", entity_id=pk)
         return Response(body, status=status)

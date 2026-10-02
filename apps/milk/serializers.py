@@ -47,6 +47,17 @@ class MilkingUpdateCommand(EnvelopeSerializer):
     payload = MilkingUpdatePayload()
 
 
+class ProductionHistorySerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    number = serializers.IntegerField()
+    state = serializers.CharField()
+    quantity = serializers.DecimalField(max_digits=14, decimal_places=3)
+    author_id = serializers.UUIDField()
+    reason = serializers.CharField()
+    published_at = serializers.DateTimeField(allow_null=True)
+    details = CowDetail(many=True)
+
+
 class MilkingSerializer(serializers.Serializer):
     replaces_id = serializers.UUIDField(allow_null=True)
     voided_at = serializers.DateTimeField(allow_null=True)
@@ -62,6 +73,7 @@ class MilkingSerializer(serializers.Serializer):
     lock_version = serializers.IntegerField()
     version_id = serializers.UUIDField()
     version_number = serializers.IntegerField()
+    versions = ProductionHistorySerializer(many=True)
     quantity = serializers.DecimalField(max_digits=14, decimal_places=3)
     details = CowDetail(many=True)
     complete = serializers.BooleanField()

@@ -1366,6 +1366,144 @@ paths:
               schema:
                 $ref: '#/components/schemas/MilkingCommandError'
           description: ''
+  /api/v1/milkings/{id}/rectify:
+    post:
+      operationId: milkings_rectify_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - milkings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MilkingRectifyCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MilkingRectifyCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MilkingRectifyCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+  /api/v1/milkings/{id}/void:
+    post:
+      operationId: milkings_void_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - milkings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MilkingVoidCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MilkingVoidCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MilkingVoidCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilkingCommandError'
+          description: ''
   /api/v1/notifications:
     get:
       operationId: notifications_retrieve
@@ -4070,6 +4208,10 @@ components:
           format: uuid
         version_number:
           type: integer
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductionHistory'
         quantity:
           type: string
           format: decimal
@@ -4102,6 +4244,7 @@ components:
       - turn_id
       - version_id
       - version_number
+      - versions
       - voided_at
     MilkingCommandError:
       oneOf:
@@ -4271,6 +4414,48 @@ components:
       - result
       - server_received_at
       - status
+    MilkingRectifyCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/MilkingRectifyCommandTypeEnum'
+          default: MILKING_RECTIFY
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/RectifyPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    MilkingRectifyCommandTypeEnum:
+      enum:
+      - MILKING_RECTIFY
+      type: string
+      description: '* `MILKING_RECTIFY` - MILKING_RECTIFY'
     MilkingUpdateCommandTypeEnum:
       enum:
       - MILKING_UPDATE
@@ -4293,6 +4478,48 @@ components:
       - date
       - details
       - turn_id
+    MilkingVoidCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/MilkingVoidCommandTypeEnum'
+          default: MILKING_VOID
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/VoidPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    MilkingVoidCommandTypeEnum:
+      enum:
+      - MILKING_VOID
+      type: string
+      description: '* `MILKING_VOID` - MILKING_VOID'
     MinimalOption:
       type: object
       properties:
@@ -5162,6 +5389,42 @@ components:
       - id
       - name
       - unit_id
+    ProductionHistory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: integer
+        state:
+          type: string
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        author_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CowDetail'
+      required:
+      - author_id
+      - details
+      - id
+      - number
+      - published_at
+      - quantity
+      - reason
+      - state
     ProductionStateEnum:
       enum:
       - BORRADOR
@@ -5210,6 +5473,24 @@ components:
       - line_id
       - reason
       - receiver_id
+      - version_id
+    RectifyPayloadRequest:
+      type: object
+      properties:
+        version_id:
+          type: string
+          format: uuid
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CowDetailRequest'
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - details
+      - reason
       - version_id
     RejectPayloadRequest:
       type: object
@@ -5947,6 +6228,15 @@ components:
           format: uuid
       required:
       - version_id
+    VoidPayloadRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
   securitySchemes:
     cookieAuth:
       type: apiKey

@@ -42,7 +42,37 @@ def milking_data(milking, actor):
     allowed = []
     if production.state == "BORRADOR" and milking.center_id in location_ids(actor, "PRODUCCION"):
         allowed = ["update", "confirm"]
+    from apps.audit.services import snapshot
+    from apps.traceability.allocation import has_active_links
+
+    if production.state == "CONFIRMADA" and milking.center_id in location_ids(actor, "PRODUCCION"):
+        allowed.append("rectify")
+    if (
+        production.state != "ANULADA"
+        and milking.center_id in location_ids(actor, "PRODUCCION")
+        and not has_active_links(production.id)
+    ):
+        allowed.append("void")
+    history = []
+    for item in production.versions.order_by("number"):
+        history.append(
+            snapshot(
+                {
+                    "id": item.id,
+                    "number": item.number,
+                    "state": item.state,
+                    "quantity": f"{item.quantity:.3f}",
+                    "author_id": item.author_id,
+                    "reason": item.reason,
+                    "published_at": item.published_at,
+                    "details": list(
+                        item.details.order_by("animal_id").values("animal_id", "liters")
+                    ),
+                }
+            )
+        )
     return {
+        "versions": history,
         "id": str(milking.id),
         "replaces_id": str(milking.replaces_id) if milking.replaces_id else None,
         "voided_at": milking.voided_at.isoformat() if milking.voided_at else None,

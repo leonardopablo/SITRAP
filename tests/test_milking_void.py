@@ -50,7 +50,7 @@ def test_void_preserves_history_and_new_lot_for_replacement(user, api):
     dispatch(user, confirm_command(new))
     assert Lot.objects.count() == 2
     assert Milking.objects.count() == Production.objects.count() == 2
-    assert api.post(f"/api/v1/milkings/{old.id}/void", {}, format="json").status_code == 404
+    assert api.post(f"/api/v1/milkings/{old.id}/void", {}, format="json").status_code == 422
 
 
 def test_partial_unique_and_required_reason(user):

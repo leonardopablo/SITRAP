@@ -4,6 +4,7 @@ from apps.sync.services import execute
 
 def registry():
     # Imported lazily so models/apps load before domain commands.
+    from apps.milk.rectification import rectification_commands
     from apps.milk.serializers import (
         MilkingConfirmCommand,
         MilkingCreateCommand,
@@ -25,6 +26,7 @@ def registry():
 
     return {
         **transfer_commands(),
+        **rectification_commands(),
         **closing_commands(),
         **decision_commands(),
         **correction_commands(),
