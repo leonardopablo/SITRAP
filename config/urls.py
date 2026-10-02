@@ -1,10 +1,22 @@
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView
 
+from apps.accounts.admin_api import (
+    AssignmentDetailView,
+    AssignmentsView,
+    ResetPasswordView,
+    UserDetailView,
+    UsersView,
+)
 from apps.sync.views import CurrentDeviceView, DeviceView
 from config.views import HealthView
 
 urlpatterns = [
+    path("api/v1/users", UsersView.as_view()),
+    path("api/v1/users/<uuid:pk>", UserDetailView.as_view()),
+    path("api/v1/users/<uuid:pk>/reset-password", ResetPasswordView.as_view()),
+    path("api/v1/role-assignments", AssignmentsView.as_view()),
+    path("api/v1/role-assignments/<uuid:pk>", AssignmentDetailView.as_view()),
     path("api/v1/devices", DeviceView.as_view()),
     path("api/v1/devices/current", CurrentDeviceView.as_view()),
     path("api/v1/auth/", include("apps.accounts.urls")),

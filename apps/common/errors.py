@@ -48,7 +48,13 @@ def error_handler(exc, context):
         "message": "Revise los campos."
         if status == 400
         else str(getattr(exc, "detail", "Solicitud no válida.")),
-        "field_errors": response.data if status == 400 else {},
+        "field_errors": (
+            response.data
+            if isinstance(response.data, dict)
+            else {"non_field_errors": response.data}
+        )
+        if status == 400
+        else {},
         "retryable": status in (401, 429),
     }
     return response

@@ -72,7 +72,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["apps.accounts.authentication.SessionAuth"],
     "DEFAULT_PERMISSION_CLASSES": ["apps.accounts.authentication.ReadyAccount"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "DEFAULT_PAGINATION_CLASS": "apps.common.pagination.BoundedPagination",
     "PAGE_SIZE": 50,
     "COERCE_DECIMAL_TO_STRING": True,
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],

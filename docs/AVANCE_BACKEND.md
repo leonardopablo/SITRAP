@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B07**. Siguiente elegible: **B08**.
+Última tarea terminada: **B08**. Siguiente elegible: **B09**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -17,7 +17,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B06 | `62e1310` | 27 pruebas acumuladas; dispositivos propios, hash canónico, replay, conflictos, rollback y duplicado concurrente en PostgreSQL. |
 
-| B07 | `feat: auditar cambios (B07)` (este commit) | 32 pruebas acumuladas; auditoría atómica, rollback ante fallo, redacción de secretos y trigger PostgreSQL contra UPDATE/DELETE. |
+| B07 | `a2d8a87` | 32 pruebas acumuladas; auditoría atómica, rollback ante fallo, redacción de secretos y trigger PostgreSQL contra UPDATE/DELETE. |
+
+| B08 | `feat: administrar cuentas (B08)` (este commit) | 37 pruebas acumuladas; API ADMIN, contraseña temporal, reset, revocación de sesiones, bajas, ámbitos sin superposición y bootstrap inicial. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit; no se publica hasta disponer del remoto.
@@ -63,7 +65,7 @@ ni ejecución de CI remoto verificados**. Continuar tareas independientes.
 
 ## Pendientes y reanudación
 
-**B08–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B09–B39 pendientes**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -75,7 +77,7 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B08, sin rehacer B01–B07.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B09, sin rehacer B01–B08.
 
 B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
 X-Device-ID. El sobre de comandos está implementado en servicios internos,
@@ -85,3 +87,10 @@ authorize solo verifica permisos, y el handler verifica estados dentro de la tra
 B07: toda auditoría se escribe dentro de la transacción del cambio. El trigger
 impide UPDATE/DELETE; el rol de BD de producción deberá carecer de TRUNCATE/DDL
 y no ser propietario (preparar en B40). No se afirma inviolabilidad frente al dueño de BD.
+
+B08: alta de cuenta recibe id UUID, username, name, temporary_password; no devuelve
+la clave. Reset recibe temporary_password y obliga cambio. PATCH de asignación
+solo cierra/reabre ends_at; para cambiar rol/centro se cierra y crea otra con UUID nuevo.
+Crear primer ADMIN: manage.py bootstrap_admin --username <usuario> --name <nombre>;
+pide clave por consola (o SITRAP_BOOTSTRAP_PASSWORD en entorno protegido), obliga cambio.
+B31 deberá integrar bajas de cuenta y logout con desactivación de suscripciones push.
