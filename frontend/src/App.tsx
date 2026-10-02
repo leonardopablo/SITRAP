@@ -22,6 +22,8 @@ import { CorrectionHistory } from './corrections/CorrectionHistory'
 import { PushPreferences } from './push/PushPreferences'
 import { TransportCalendar } from './reports/TransportCalendar'
 import { ReceptionHistory } from './reports/ReceptionHistory'
+import { ProductionHistory } from './milk/ProductionHistory'
+import { ProductionRevision } from './milk/ProductionRevision'
 const MilkAnalytics = lazy(() => import('./reports/MilkAnalytics').then(module => ({ default: module.MilkAnalytics })))
 
 export function App() {
@@ -49,7 +51,8 @@ export function App() {
               <Route path="/produccion" element={<MilkingDraftPage />} />
               <Route path="/entregas/preparar" element={<PreparePage />} />
               <Route path="/vacas" element={<AnimalsPage />} />
-              <Route path="/historial" element={<PendingFeature title="Historial" />} />
+              <Route path="/historial" element={<ProductionHistory />} />
+              <Route path="/producciones/:id" element={<ProductionRevision />} />
               <Route path="/analisis" element={<Suspense fallback={<Notice>Cargando análisis…</Notice>}><MilkAnalytics /></Suspense>} />
             </Route>
             <Route element={<RequireRole roles={['TRANSPORTE']} />}><Route path="/diario" element={<TransportCalendar />} /></Route>

@@ -23,6 +23,7 @@ const demoTransfers = new Map([[demoTransferId, { id: demoTransferId, code: 'DEM
 const demoCorrections = new Map<string, { id: string; transfer_id: string; original_quantity: number; proposed_quantity: number; reason: string; state: string; proposal_version_id: string; approver_transport: string; approver_reception: string; lock_version: number; decisions: { role: string; decision: string; user_id: string }[] }>()
 demoTransfers.set('55555555-5555-4555-8555-555555555555', { id: '55555555-5555-4555-8555-555555555555', code: 'DEMO-EN-CAMINO', state: 'EN_CAMINO', lock_version: 2, version_id: '66666666-6666-4666-8666-666666666666', units_presentation: 15, origin_name: 'Centro demo', destination_name: 'Punto de venta demo', driver_name: 'Cuenta demo transporte', receiver_name: 'Cuenta demo recepcion', correction_pending: false })
 const demoReceived = { id: '77777777-7777-4777-8777-777777777777', code: 'DEMO-RECIBIDA', state: 'RECIBIDO', lock_version: 4, version_id: '88888888-8888-4888-8888-888888888888', units_presentation: 18, original_quantity: 20, received_date: new Date().toISOString().slice(0, 10), origin_name: 'Centro demo', destination_name: 'Punto de venta demo', driver_name: 'Cuenta demo transporte', receiver_name: 'Cuenta demo recepcion', correction_pending: false }
+const demoMilkings = new Map([['99999999-9999-4999-8999-999999999999', { id: '99999999-9999-4999-8999-999999999999', state: 'CONFIRMADA', center_id: 'center-demo', date: new Date().toISOString().slice(0, 10), shift_name: 'Diario demo', lock_version: 2, version_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', total_litres: '8.500', linked_litres: '0.000', details: [{ animal_id: 'demo-vaca-a', code: 'V-01 DEMO', litres: '0.000' }, { animal_id: 'demo-vaca-b', code: 'V-02 DEMO', litres: '8.500' }] }]])
 export function seedDemoNotifications(accountId: string, items: Notification[]) { notifications.set(accountId, structuredClone(items)) }
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
 const error = (code: string, message: string, status: number) => json({ code, message, field_errors: {}, retryable: false }, status)
@@ -120,6 +121,33 @@ export async function mockFetch(input: string, init: RequestInit = {}): Promise<
     const params = new URL(input, 'http://localhost').searchParams
     const inside = date >= (params.get('from') ?? '') && date <= (params.get('to') ?? '')
     return json({ points: inside ? [{ date, animal_id: 'demo-vaca-a', code: 'V-01 DEMO', litres: '0.000' }, { date, animal_id: 'demo-vaca-b', code: 'V-02 DEMO', litres: '8.500' }] : [], days_registered: inside ? 1 : 0, expected_days: 30, total_litres: inside ? '8.500' : '0.000', average_per_registered_day: inside ? '8.500' : '0.000', cutoff_at: new Date().toISOString(), time_zone: 'America/Lima' })
+  }
+  if (path === '/milkings' && method === 'GET') {
+    if (!['PRODUCCION', 'ADMIN'].includes(session.assignments[0].role)) return error('PERMISSION_DENIED', 'Sin acceso a producción.', 403)
+    return json({ results: [...demoMilkings.values()], next: null, count: demoMilkings.size })
+  }
+  if (path.startsWith('/milkings/') && method === 'GET') {
+    const found = demoMilkings.get(path.split('/')[2])
+    if (!found || !['PRODUCCION', 'ADMIN'].includes(session.assignments[0].role)) return error('PERMISSION_DENIED', 'Producción no autorizada.', 403)
+    return json(found)
+  }
+  if (path.startsWith('/milkings/') && method === 'POST' && (path.endsWith('/rectify') || path.endsWith('/void'))) {
+    const found = demoMilkings.get(path.split('/')[2])
+    if (!found || session.assignments[0].role !== 'PRODUCCION') return error('PERMISSION_DENIED', 'Solo producción puede corregir.', 403)
+    if (found.lock_version !== data.expected_version) return error('VERSION_CONFLICT', 'La producción cambió; revisa versión actual.', 409)
+    if (!data.payload?.reason?.trim()) return error('VALIDATION_ERROR', 'Motivo obligatorio.', 422)
+    if (path.endsWith('/void')) {
+      if (Number(found.linked_litres) > 0) return error('INVALID_STATE', 'Hay entregas publicadas vinculadas.', 409)
+      found.state = 'ANULADA'
+    } else {
+      const details = data.payload?.details as typeof found.details
+      if (!Array.isArray(details) || details.length !== found.details.length) return error('VALIDATION_ERROR', 'Detalle completo obligatorio.', 422)
+      const total = details.reduce((sum, item) => sum + Number(item.litres), 0)
+      if (total <= 0 || total < Number(found.linked_litres)) return error('ALLOCATION_EXCEEDED', 'El total debe cubrir entregas activas.', 409)
+      found.details = details; found.total_litres = total.toFixed(3); found.version_id = data.payload.new_version_id
+    }
+    found.lock_version++
+    return json({ event_id: data.event_id, entity_id: found.id, status: 'APLICADA', lock_version: found.lock_version, result: found, server_received_at: new Date().toISOString() })
   }
   if (path.startsWith('/transfers/') && method === 'POST' && (path.endsWith('/revise') || path.endsWith('/cancel'))) {
     const record = demoTransfers.get(path.split('/')[2])
