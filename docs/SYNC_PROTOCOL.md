@@ -32,3 +32,28 @@ timestamps mutables o de ordenar UUID al azar. Retención inicial 24 h y máximo
 entidades configurables (SYNC_CURSOR_TTL_HOURS / SYNC_MAX_ENTITIES). Limpieza operativa
 de fotografías vencidas se documentará en B40. No borrar SyncOperation ni outbox local
 como parte de esta limpieza.
+
+
+# Envío de eventos (B29)
+
+POST /sync/events: {events:[sobres...]}, hasta 100 eventos y 1 MiB, un dispositivo.
+OpenAPI enumera con oneOf los payloads offline. El lote completo se valida antes
+ de procesar; ciclos (incluso entre lotes previos) no producen efectos nuevos.
+Fechas occurred_at requieren zona explícita. Grafo limitado a 10.000 esperas.
+
+results conserva el orden enviado. Cada resultado añade http_status y persisted.
+NO_PROCESADA/persisted=false indica que esta llamada no consumió la intención
+(p. ej., permiso rechazado antes de ejecutar); no equivale a un rechazo de negocio.
+Un conflicto UUID no permite cambiar la operación original ya almacenada.
+RECHAZADA/persisted=true es definitivo: corregir con UUID nuevo tras revisión.
+401/CSRF de la petición no consumen eventos; renovar sesión/CSRF y conservar UUID.
+
+El servidor ordena por dependencias, nunca por la hora declarada. Una dependencia
+ausente queda ESPERA_DEPENDENCIA; al llegar se reprocesan hasta 500 esperas propias
+por llamada (configurable). reprocessed informa sus resultados. No se eliminan
+esperas antiguas; el cliente puede reenviar sus UUID originales para retomarlas.
+Dependencias deben pertenecer a cuenta/dispositivo y al mismo agregado o enlace
+lote/producción autorizado. Un padre rechazado propaga DEPENDENCY_REJECTED.
+
+Rectificar/anular producción, revisar/cancelar entregas, crear/retirar correcciones
+y reasignar receptor siguen exclusivamente online. Esta lista coincide con 04 §5.

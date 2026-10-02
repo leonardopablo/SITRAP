@@ -1,3 +1,7 @@
+from datetime import datetime
+
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from rest_framework import serializers
 
 from apps.common.serializers import StrictSerializer
@@ -43,12 +47,23 @@ class DeviceSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class ZonedDateTimeField(serializers.DateTimeField):
+    def to_internal_value(self, value):
+        try:
+            parsed = value if isinstance(value, datetime) else parse_datetime(value)
+        except (ValueError, TypeError):
+            parsed = None
+        if parsed is not None and timezone.is_naive(parsed):
+            raise serializers.ValidationError("Incluya zona horaria u offset.")
+        return super().to_internal_value(value)
+
+
 class EnvelopeSerializer(StrictSerializer):
     event_id = serializers.UUIDField()
     device_id = serializers.UUIDField()
     type = serializers.ChoiceField(choices=COMMAND_TYPES)
     entity_id = serializers.UUIDField()
-    occurred_at = serializers.DateTimeField()
+    occurred_at = ZonedDateTimeField()
     expected_version = serializers.IntegerField(min_value=1, required=False, allow_null=True)
     depends_on = serializers.ListField(child=serializers.UUIDField(), max_length=100, default=list)
     payload = serializers.DictField()

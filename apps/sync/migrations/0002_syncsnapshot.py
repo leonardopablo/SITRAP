@@ -7,22 +7,31 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sync', '0001_initial'),
+        ("sync", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SyncSnapshot',
+            name="SyncSnapshot",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('scope_hash', models.CharField(max_length=64)),
-                ('entries', models.JSONField()),
-                ('changes', models.JSONField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('expires_at', models.DateTimeField(db_index=True)),
-                ('device', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='sync.device')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4, editable=False, primary_key=True, serialize=False
+                    ),
+                ),
+                ("scope_hash", models.CharField(max_length=64)),
+                ("entries", models.JSONField()),
+                ("changes", models.JSONField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("expires_at", models.DateTimeField(db_index=True)),
+                (
+                    "device",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="sync.device"
+                    ),
+                ),
             ],
         ),
     ]

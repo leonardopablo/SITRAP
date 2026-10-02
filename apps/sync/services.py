@@ -100,7 +100,17 @@ def execute(actor, envelope, handler, authorize):
     actor = User.objects.select_for_update(no_key=True).get(pk=actor.pk)
     ensure_actor(actor)
     device = owned_device(actor, normalized["device_id"], lock=True)
-    authorize(actor, normalized)
+    parents = list(SyncOperation.objects.filter(pk__in=normalized["depends_on"]))
+    unresolved = len(parents) != len(normalized["depends_on"]) or any(
+        p.state != "APLICADA" for p in parents
+    )
+    try:
+        authorize(actor, normalized)
+    except DomainError as error:
+        # An entity created by a missing local parent may not exist yet. This only
+        # stores a waiting intent; authorization is repeated before any effect.
+        if not unresolved or error.detail["code"] not in ["NOT_FOUND", "VALIDATION_ERROR"]:
+            raise
     operation = SyncOperation.objects.select_for_update().filter(pk=normalized["event_id"]).first()
     if operation is None:
         try:
@@ -140,6 +150,15 @@ def execute(actor, envelope, handler, authorize):
             403,
             error=DomainError("PERMISSION_DENIED", "Dependencia ajena.", 403).detail,
         )
+    if any(not related_dependency(normalized, parent) for parent in parents):
+        return finish(
+            operation,
+            "RECHAZADA",
+            422,
+            error=DomainError(
+                "DEPENDENCY_UNRELATED", "Dependencia sin relación con esta intención.", 422
+            ).detail,
+        )
     if any(parent.state == "RECHAZADA" for parent in parents):
         return finish(
             operation,
@@ -175,3 +194,21 @@ def execute(actor, envelope, handler, authorize):
     except DomainError as error:
         return finish(operation, "RECHAZADA", error.status_code, error=error.detail)
     return finish(operation, "APLICADA", 200, result=result)
+
+
+def related_dependency(command, parent):
+    if (
+        str(parent.entity_id) == command["entity_id"]
+        and parent.type.split("_")[0] == command["type"].split("_")[0]
+    ):
+        return True
+    if command["type"].startswith("TRANSFER_") and parent.type == "MILKING_CONFIRM":
+        lot_id = parent.payload.get("lot_id")
+        if command["payload"].get("lot_id") == lot_id:
+            return True
+        from apps.traceability.models import TransferLine
+
+        return TransferLine.objects.filter(
+            version__transfer_id=command["entity_id"], lot_id=lot_id
+        ).exists()
+    return False

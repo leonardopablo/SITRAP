@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B28**. Siguiente elegible: **B29**.
+Última tarea terminada: **B29**. Siguiente elegible: **B30**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -46,7 +46,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B27 | `d33a8be` | Suite: 90 aprobadas y una expectativa antigua de B15 corregida al abrir /void; luego 8 pruebas pertinentes. Rectificación/reservas, historia, vacas inactivas posteriores, anulación y carrera con publicación. |
 
-| B28 | `feat: preparar datos offline (B28)` (este commit) | 4 pruebas pertinentes: paginación estable, abierta antigua, revocaciones/tombstones, baja de catálogo, cursor ajeno/vencido, scope cambiante y contrato. |
+| B28 | `f2ec6f2` | 4 pruebas pertinentes: paginación estable, abierta antigua, revocaciones/tombstones, baja de catálogo, cursor ajeno/vencido, scope cambiante y contrato. |
+
+| B29 | `feat: sincronizar eventos dependientes (B29)` (este commit) | 14 pruebas pertinentes: orden inverso, replay, espera/reanudación, rechazo propagado, ciclos entre lotes y carrera, límites, tipo online y contrato. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
@@ -70,7 +72,7 @@ Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
 ## Bloqueos
 
 No hay bloqueo funcional actual. Remoto autorizado: https://github.com/leonardopablo/SITRAP.git.
-B01-B27 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
+B01-B28 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
 
 ## Decisiones que afectan al frontend
 
@@ -91,7 +93,7 @@ B01-B27 publicados y rama local sigue origin/agente-backend. No se ha verificado
 
 ## Pendientes y reanudación
 
-**B29–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B30–B39 pendientes**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -103,7 +105,7 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B29, sin rehacer B01–B28.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B30, sin rehacer B01–B29.
 
 B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
 X-Device-ID. El sobre de comandos está implementado en servicios internos,
@@ -242,3 +244,8 @@ Fotografía PostgreSQL REPEATABLE READ y diferencias por entidad; sin omitir baj
 TTL inicial 24 h, límite 20.000 entidades configurable. Un cursor vencido requiere
 bootstrap nuevo conservando intenciones locales. Preparación 7 d no extiende sesión.
 B40 debe añadir limpieza de SyncSnapshot vencidos y revisar dimensionamiento.
+
+B29: /sync/events y resultados NO_PROCESADA/persisted documentados en
+docs/SYNC_PROTOCOL.md. No consumir fallos de autenticación; operaciones dependientes
+de entidades aún inexistentes solo quedan en espera, sin efectos ni auditoría de
+negocio hasta revalidar permisos. Hora local debe incluir offset; no autoeditar UUID.

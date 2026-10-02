@@ -2205,6 +2205,50 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: ''
+  /api/v1/sync/events:
+    post:
+      operationId: sync_events_create
+      tags:
+      - sync
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfflineBatchInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OfflineBatchInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OfflineBatchInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/transfers:
     get:
       operationId: transfers_list
@@ -3439,6 +3483,70 @@ components:
       - location_id
       - role
       - scope
+    BatchOperationResult:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/BatchOperationStatusEnum'
+        entity_id:
+          type: string
+          format: uuid
+        lock_version:
+          type: integer
+          nullable: true
+        result:
+          type: object
+          additionalProperties: {}
+        error:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        server_received_at:
+          type: string
+          format: date-time
+        persisted:
+          type: boolean
+        http_status:
+          type: integer
+      required:
+      - entity_id
+      - error
+      - event_id
+      - http_status
+      - lock_version
+      - persisted
+      - result
+      - server_received_at
+      - status
+    BatchOperationStatusEnum:
+      enum:
+      - APLICADA
+      - RECHAZADA
+      - ESPERA_DEPENDENCIA
+      - NO_PROCESADA
+      type: string
+      description: |-
+        * `APLICADA` - APLICADA
+        * `RECHAZADA` - RECHAZADA
+        * `ESPERA_DEPENDENCIA` - ESPERA_DEPENDENCIA
+        * `NO_PROCESADA` - NO_PROCESADA
+    BatchResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchOperationResult'
+        reprocessed:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchOperationResult'
+      required:
+      - reprocessed
+      - results
     CSRF:
       type: object
       properties:
@@ -4594,6 +4702,43 @@ components:
       - MILKING_RECTIFY
       type: string
       description: '* `MILKING_RECTIFY` - MILKING_RECTIFY'
+    MilkingUpdateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/MilkingUpdateCommandTypeEnum'
+          default: MILKING_UPDATE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/MilkingUpdatePayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
     MilkingUpdateCommandTypeEnum:
       enum:
       - MILKING_UPDATE
@@ -4739,6 +4884,40 @@ components:
       - previous
       - results
       - unread_count
+    OfflineBatchInputRequest:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfflineCommandRequest'
+      required:
+      - events
+    OfflineCommandRequest:
+      oneOf:
+      - $ref: '#/components/schemas/CorrectionAcceptCommandRequest'
+      - $ref: '#/components/schemas/CorrectionRejectCommandRequest'
+      - $ref: '#/components/schemas/MilkingConfirmCommandRequest'
+      - $ref: '#/components/schemas/MilkingCreateCommandRequest'
+      - $ref: '#/components/schemas/MilkingUpdateCommandRequest'
+      - $ref: '#/components/schemas/TransferCreateCommandRequest'
+      - $ref: '#/components/schemas/TransferPickupCommandRequest'
+      - $ref: '#/components/schemas/TransferReceiveCommandRequest'
+      - $ref: '#/components/schemas/TransferSendCommandRequest'
+      - $ref: '#/components/schemas/TransferUpdateCommandRequest'
+      discriminator:
+        propertyName: type
+        mapping:
+          CORRECTION_ACCEPT: '#/components/schemas/CorrectionAcceptCommandRequest'
+          CORRECTION_REJECT: '#/components/schemas/CorrectionRejectCommandRequest'
+          MILKING_CONFIRM: '#/components/schemas/MilkingConfirmCommandRequest'
+          MILKING_CREATE: '#/components/schemas/MilkingCreateCommandRequest'
+          MILKING_UPDATE: '#/components/schemas/MilkingUpdateCommandRequest'
+          TRANSFER_CREATE: '#/components/schemas/TransferCreateCommandRequest'
+          TRANSFER_PICKUP: '#/components/schemas/TransferPickupCommandRequest'
+          TRANSFER_RECEIVE: '#/components/schemas/TransferReceiveCommandRequest'
+          TRANSFER_SEND: '#/components/schemas/TransferSendCommandRequest'
+          TRANSFER_UPDATE: '#/components/schemas/TransferUpdateCommandRequest'
     OperationResult:
       type: object
       properties:
@@ -6248,6 +6427,43 @@ components:
         * `EN_CAMINO` - EN_CAMINO
         * `RECIBIDO` - RECIBIDO
         * `CANCELADO` - CANCELADO
+    TransferUpdateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferUpdateCommandTypeEnum'
+          default: TRANSFER_UPDATE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/DraftPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
     TransferUpdateCommandTypeEnum:
       enum:
       - TRANSFER_UPDATE
