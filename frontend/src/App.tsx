@@ -5,6 +5,8 @@ import { AccessPage, PasswordPage } from './auth/AccessPage'
 import { RequireAuth } from './auth/RequireAuth'
 import { apiMode } from './api/client'
 import { Notice } from './components/ui'
+import { Shell, TodayPage, PendingFeature } from './components/Shell'
+import { RequireRole } from './auth/workspace'
 
 export function App() {
   return <>
@@ -17,7 +19,21 @@ export function App() {
         <Route path="/acceso" element={<AccessPage />} />
         <Route element={<RequireAuth />}>
           <Route path="/cuenta/clave" element={<PasswordPage />} />
-          <Route path="/hoy" element={<><h1>Hoy</h1><p>El espacio por roles se incorpora en F06.</p></>} />
+          <Route element={<Shell />}>
+            <Route path="/hoy" element={<TodayPage />} />
+            <Route element={<RequireRole roles={['PRODUCCION']} />}>
+              <Route path="/produccion" element={<PendingFeature title="Producción" />} />
+              <Route path="/vacas" element={<PendingFeature title="Vacas" />} />
+              <Route path="/historial" element={<PendingFeature title="Historial" />} />
+            </Route>
+            <Route element={<RequireRole roles={['TRANSPORTE']} />}><Route path="/diario" element={<PendingFeature title="Diario de transporte" />} /></Route>
+            <Route element={<RequireRole roles={['RECEPCION']} />}><Route path="/recepciones" element={<PendingFeature title="Recepciones" />} /></Route>
+            <Route element={<RequireRole roles={['TRANSPORTE', 'RECEPCION']} />}><Route path="/pendientes" element={<PendingFeature title="Pendientes" />} /></Route>
+            <Route element={<RequireRole roles={['ADMIN']} />}>
+              <Route path="/administracion" element={<PendingFeature title="Administración" />} />
+              <Route path="/reportes" element={<PendingFeature title="Reportes" />} />
+            </Route>
+          </Route>
         </Route>
         <Route path="*" element={<><h1>Página no encontrada</h1><Link to="/">Volver al inicio</Link></>} />
       </Routes>
