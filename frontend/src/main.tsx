@@ -6,8 +6,10 @@ import { App } from './App'
 import './styles.css'
 import { AuthProvider } from './auth/AuthProvider'
 import { WorkspaceProvider } from './auth/workspace'
+import { registerWorker } from './pwa'
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 1 } } })
+void registerWorker()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

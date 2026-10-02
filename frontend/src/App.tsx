@@ -7,11 +7,12 @@ import { apiMode } from './api/client'
 import { Notice } from './components/ui'
 import { Shell, TodayPage, PendingFeature } from './components/Shell'
 import { RequireRole } from './auth/workspace'
+import { PwaControls } from './pwa'
 
 export function App() {
   return <>
     <a className="skip-link" href="#contenido">Saltar al contenido</a>
-    <header><Link to="/" aria-label="SITRAP, inicio"><Logo /></Link></header>
+    <header><Link to="/" aria-label="SITRAP, inicio"><Logo /></Link><PwaControls /></header>
     <main id="contenido" tabIndex={-1}>
       {apiMode === 'mock' && <Notice tone="warning">Modo simulado · Los datos no están guardados en el servidor SITRAP.</Notice>}
       <Routes>
