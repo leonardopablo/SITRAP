@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B38**. Siguiente elegible: **B39**.
+Última tarea terminada: **B39**. Siguiente elegible: **B40 (solo preparación)**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -66,7 +66,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B37 | `c7349f0` | 4 pruebas pertinentes: PDFs reales P/T/R/A, correccion visible, fecha fisica Lima, filtros y contrato. Revision visual de ambos informes. |
 
-| B38 | `feat: exportar resumen (B38)` (este commit) | 6 pruebas pertinentes: ADMIN exclusivo, centro/producto, mismo corte en resumen, metricas separadas y PDF real revisado visualmente. |
+| B38 | `c7bc7b3` | 6 pruebas pertinentes: ADMIN exclusivo, centro/producto, mismo corte en resumen, metricas separadas y PDF real revisado visualmente. |
+
+| B39 | `docs: cerrar contrato del piloto` (este commit) | Contrato generado comparado con OpenAPI, demo de ordeño confirmado y métricas, guardas de desarrollo/repetición. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
@@ -90,7 +92,7 @@ Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
 ## Bloqueos
 
 No hay bloqueo funcional actual. Remoto autorizado: https://github.com/leonardopablo/SITRAP.git.
-B01-B37 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
+B01-B38 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
 
 ## Decisiones que afectan al frontend
 
@@ -111,7 +113,7 @@ B01-B37 publicados y rama local sigue origin/agente-backend. No se ha verificado
 
 ## Pendientes y reanudación
 
-**B39 pendiente**. Seguir dependencias exactas de 04 §8:
+**B39 completada**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -123,7 +125,7 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B39, sin rehacer B01–B38.
+aplicar migraciones y ejecutar las pruebas pertinentes; preparar B40 sin desplegar.
 
 B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
 X-Device-ID. El sobre de comandos está implementado en servicios internos,

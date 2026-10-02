@@ -84,7 +84,7 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS = {
     "TITLE": "SITRAP API",
     "VERSION": "0.1.0",
-    "DESCRIPTION": "MVP de trazabilidad de leche. Contrato incremental; solo rutas implementadas.",
+    "DESCRIPTION": "Piloto de trazabilidad de leche. Solo rutas implementadas.",
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
 }

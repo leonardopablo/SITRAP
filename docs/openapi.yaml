@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: SITRAP API
   version: 0.1.0
-  description: MVP de trazabilidad de leche. Contrato incremental; solo rutas implementadas.
+  description: Piloto de trazabilidad de leche. Solo rutas implementadas.
 paths:
   /api/v1/animals:
     get:
