@@ -1,8 +1,10 @@
 from django.urls import path
 
 from apps.traceability.views import (
+    CancelTransferView,
     LotDetailView,
     LotsView,
+    ReviseTransferView,
     SendTransferView,
     TimelineView,
     TransferDetailView,
@@ -10,6 +12,8 @@ from apps.traceability.views import (
 )
 
 urlpatterns = [
+    path("transfers/<uuid:pk>/revise", ReviseTransferView.as_view()),
+    path("transfers/<uuid:pk>/cancel", CancelTransferView.as_view()),
     path("transfers/<uuid:pk>/send", SendTransferView.as_view()),
     path("lots", LotsView.as_view()),
     path("lots/<uuid:pk>", LotDetailView.as_view()),

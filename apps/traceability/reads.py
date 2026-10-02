@@ -86,10 +86,7 @@ def transfer_data(transfer, actor):
         "version_id": transfer.current_version_id,
         "current_version": version_data(transfer.current_version),
         "versions": [version_data(version) for version in transfer.versions.order_by("number")],
-        "capabilities": ["update", "send"]
-        if transfer.state == "BORRADOR"
-        and transfer.current_version.origin_id in location_ids(actor, "PRODUCCION")
-        else [],
+        "capabilities": transfer_capabilities(transfer, actor),
     }
 
 
@@ -116,3 +113,12 @@ def timeline(transfer):
                 }
             )
     return sorted(events, key=lambda item: (item["at"], str(item["version_id"]), item["type"]))
+
+
+def transfer_capabilities(transfer, actor):
+    if transfer.current_version.origin_id in location_ids(actor, "PRODUCCION"):
+        if transfer.state == "BORRADOR":
+            return ["update", "send", "cancel"]
+        if transfer.state == "PENDIENTE_RECOGIDA":
+            return ["revise", "cancel"]
+    return []

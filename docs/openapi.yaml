@@ -1850,6 +1850,144 @@ paths:
               schema:
                 $ref: '#/components/schemas/TransferCommandError'
           description: ''
+  /api/v1/transfers/{id}/cancel:
+    post:
+      operationId: transfers_cancel_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferCancelCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransferCancelCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransferCancelCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+  /api/v1/transfers/{id}/revise:
+    post:
+      operationId: transfers_revise_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferReviseCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransferReviseCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransferReviseCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
   /api/v1/transfers/{id}/send:
     post:
       operationId: transfers_send_create
@@ -4088,6 +4226,15 @@ components:
         * `BORRADOR` - BORRADOR
         * `CONFIRMADA` - CONFIRMADA
         * `ANULADA` - ANULADA
+    ReasonPayloadRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
     ResetPasswordRequest:
       type: object
       properties:
@@ -4098,6 +4245,40 @@ components:
           maxLength: 1024
       required:
       - temporary_password
+    RevisePayloadRequest:
+      type: object
+      properties:
+        version_id:
+          type: string
+          format: uuid
+        line_id:
+          type: string
+          format: uuid
+        units:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+        destination_id:
+          type: string
+          format: uuid
+        driver_id:
+          type: string
+          format: uuid
+        receiver_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - destination_id
+      - driver_id
+      - line_id
+      - reason
+      - receiver_id
+      - units
+      - version_id
     RoleAssignmentAdmin:
       type: object
       properties:
@@ -4307,6 +4488,48 @@ components:
       - state
       - version_id
       - versions
+    TransferCancelCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferCancelCommandTypeEnum'
+          default: TRANSFER_CANCEL
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/ReasonPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    TransferCancelCommandTypeEnum:
+      enum:
+      - TRANSFER_CANCEL
+      type: string
+      description: '* `TRANSFER_CANCEL` - TRANSFER_CANCEL'
     TransferCommandError:
       oneOf:
       - $ref: '#/components/schemas/OperationResult'
@@ -4384,6 +4607,48 @@ components:
       - result
       - server_received_at
       - status
+    TransferReviseCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferReviseCommandTypeEnum'
+          default: TRANSFER_REVISE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/RevisePayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    TransferReviseCommandTypeEnum:
+      enum:
+      - TRANSFER_REVISE
+      type: string
+      description: '* `TRANSFER_REVISE` - TRANSFER_REVISE'
     TransferSendCommandRequest:
       type: object
       properties:
