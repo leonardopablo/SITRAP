@@ -98,5 +98,8 @@ SPECTACULAR_SETTINGS["SERVE_PERMISSIONS"] = ["apps.accounts.authentication.Ready
 SPECTACULAR_SETTINGS["ENUM_NAME_OVERRIDES"] = {"UnitCodeEnum": ["L", "KG", "UN"]}
 
 SPECTACULAR_SETTINGS["ENUM_NAME_OVERRIDES"].update(
-    {"AnimalStatusEnum": ["ACTIVO", "INACTIVO"], "HealthStatusEnum": ["ok"]}
+    {
+        "AnimalStatusEnum": [("ACTIVO", "Activo"), ("INACTIVO", "Inactivo")],
+        "HealthStatusEnum": ["ok"],
+    }
 )

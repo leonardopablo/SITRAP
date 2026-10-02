@@ -4,6 +4,265 @@ info:
   version: 0.1.0
   description: MVP de trazabilidad de leche. Contrato incremental; solo rutas implementadas.
 paths:
+  /api/v1/animals:
+    get:
+      operationId: animals_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - animals
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAnimalList'
+          description: ''
+    post:
+      operationId: animals_create
+      tags:
+      - animals
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnimalCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AnimalCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AnimalCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/animals/{id}:
+    get:
+      operationId: animals_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - animals
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+          description: ''
+    patch:
+      operationId: animals_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - animals
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAnimalUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAnimalUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAnimalUpdateRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/animals/{id}/stays:
+    get:
+      operationId: animals_stays_list
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: limit
+        required: false
+        in: query
+        description: Número de resultados a devolver por página.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: El índice inicial a partir del cual devolver los resultados.
+        schema:
+          type: integer
+      tags:
+      - animals
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStayList'
+          description: ''
+    post:
+      operationId: animals_stays_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - animals
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StayInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StayInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StayInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stay'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/assignment-options:
     get:
       operationId: assignment_options_retrieve
@@ -1541,6 +1800,79 @@ paths:
           description: ''
 components:
   schemas:
+    Animal:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        code:
+          type: string
+          maxLength: 32
+        species_id:
+          type: string
+          format: uuid
+        sex:
+          $ref: '#/components/schemas/SexEnum'
+        name:
+          type: string
+          maxLength: 100
+        status:
+          $ref: '#/components/schemas/AnimalStatusEnum'
+      required:
+      - code
+      - id
+      - sex
+      - species_id
+    AnimalCreateRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        species_id:
+          type: string
+          format: uuid
+        sex:
+          $ref: '#/components/schemas/SexEnum'
+        name:
+          type: string
+          default: ''
+          maxLength: 100
+        status:
+          allOf:
+          - $ref: '#/components/schemas/AnimalStatusEnum'
+          default: ACTIVO
+        stay_id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        starts_on:
+          type: string
+          format: date
+      required:
+      - center_id
+      - code
+      - id
+      - sex
+      - species_id
+      - starts_on
+      - stay_id
+    AnimalStatusEnum:
+      enum:
+      - ACTIVO
+      - INACTIVO
+      type: string
+      description: |-
+        * `ACTIVO` - Activo
+        * `INACTIVO` - Inactivo
     Assignment:
       type: object
       properties:
@@ -1748,9 +2080,14 @@ components:
       type: object
       properties:
         status:
-          $ref: '#/components/schemas/StatusEnum'
+          $ref: '#/components/schemas/HealthStatusEnum'
       required:
       - status
+    HealthStatusEnum:
+      enum:
+      - ok
+      type: string
+      description: '* `ok` - ok'
     LocationInput:
       type: object
       properties:
@@ -1941,6 +2278,29 @@ components:
       - destinations
       - drivers
       - receivers
+    PaginatedAnimalList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Animal'
     PaginatedCenterProductInputList:
       type: object
       required:
@@ -2079,6 +2439,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SpeciesInput'
+    PaginatedStayList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stay'
     PaginatedTurnInputList:
       type: object
       required:
@@ -2164,6 +2547,14 @@ components:
       required:
       - new_password
       - old_password
+    PatchedAnimalUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        status:
+          $ref: '#/components/schemas/AnimalStatusEnum'
     PatchedCenterProductInputRequest:
       type: object
       properties:
@@ -2471,6 +2862,14 @@ components:
       description: |-
         * `GLOBAL` - Global
         * `UBICACION` - Ubicacion
+    SexEnum:
+      enum:
+      - HEMBRA
+      - MACHO
+      type: string
+      description: |-
+        * `HEMBRA` - Hembra
+        * `MACHO` - Macho
     SpeciesInput:
       type: object
       properties:
@@ -2511,11 +2910,47 @@ components:
       - code
       - id
       - name
-    StatusEnum:
-      enum:
-      - ok
-      type: string
-      description: '* `ok` - ok'
+    Stay:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        center_id:
+          type: string
+          format: uuid
+        starts_on:
+          type: string
+          format: date
+        ends_on:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - center_id
+      - id
+      - starts_on
+    StayInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        starts_on:
+          type: string
+          format: date
+        ends_on:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - center_id
+      - id
+      - starts_on
     TurnInput:
       type: object
       properties:

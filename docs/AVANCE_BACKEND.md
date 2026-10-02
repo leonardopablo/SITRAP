@@ -27,7 +27,7 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B11 | `5d19be6` | 44 pruebas acumuladas; opciones mínimas por origen/destino, defaults solo con una opción, inactivos excluidos y acceso entre centros negado. |
 
-| B12 | `feat: registrar vacas (B12)` (este commit) | 47 pruebas acumuladas; animales/estancias, centros válidos, movimientos solo ADMIN y exclusión de solapamiento incluso con dos transacciones concurrentes. |
+| B12 | `7ea58a5` + `fix: actualizar contrato de animales (B12)` | 48 pruebas acumuladas; animales/estancias, centros válidos, movimientos solo ADMIN y exclusión de solapamiento incluso con dos transacciones concurrentes. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
@@ -51,8 +51,7 @@ Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
 ## Bloqueos
 
 No hay bloqueo funcional actual. Remoto autorizado: https://github.com/leonardopablo/SITRAP.git.
-B01-B11 publicados y rama local sigue origin/agente-backend. B12 se publica al cerrar
-su commit. No se ha verificado todavía el resultado del workflow remoto.
+B01-B12 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
 
 ## Decisiones que afectan al frontend
 
@@ -124,3 +123,8 @@ Lectura de animal conserva acceso histórico a sus centros autorizados; PATCH ex
 estancia actual en el centro autorizado. GET stays filtra centros del operador.
 Migración usa btree_gist y ExclusionConstraint, conforme a
 https://docs.djangoproject.com/en/5.2/ref/contrib/postgres/constraints/.
+
+Corrección B12: la primera publicación conservó OpenAPI anterior por un warning
+de etiquetas del enum. Se corrigió el nombre usando las etiquetas reales, se generó
+el contrato sin warnings y se añadió test de igualdad del esquema generado/versionado.
+48 pruebas y makemigrations --check pasan. No avanzar con checks fallidos.
