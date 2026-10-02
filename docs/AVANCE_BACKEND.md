@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B37**. Siguiente elegible: **B38**.
+Última tarea terminada: **B38**. Siguiente elegible: **B39**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -64,7 +64,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B36 | `e21b004` | 5 pruebas pertinentes y luego 3 PDF incl. paginacion/escape. PDF real, permisos/filtros/corte, revision visual de 1+4 paginas. Dependencias con hashes; OpenAPI valido. |
 
-| B37 | `feat: exportar entregas (B37)` (este commit) | 4 pruebas pertinentes: PDFs reales P/T/R/A, correccion visible, fecha fisica Lima, filtros y contrato. Revision visual de ambos informes. |
+| B37 | `c7349f0` | 4 pruebas pertinentes: PDFs reales P/T/R/A, correccion visible, fecha fisica Lima, filtros y contrato. Revision visual de ambos informes. |
+
+| B38 | `feat: exportar resumen (B38)` (este commit) | 6 pruebas pertinentes: ADMIN exclusivo, centro/producto, mismo corte en resumen, metricas separadas y PDF real revisado visualmente. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
@@ -88,7 +90,7 @@ Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
 ## Bloqueos
 
 No hay bloqueo funcional actual. Remoto autorizado: https://github.com/leonardopablo/SITRAP.git.
-B01-B36 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
+B01-B37 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
 
 ## Decisiones que afectan al frontend
 
@@ -109,7 +111,7 @@ B01-B36 publicados y rama local sigue origin/agente-backend. No se ha verificado
 
 ## Pendientes y reanudación
 
-**B38–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B39 pendiente**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -121,7 +123,7 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B38, sin rehacer B01–B37.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B39, sin rehacer B01–B38.
 
 B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
 X-Device-ID. El sobre de comandos está implementado en servicios internos,
@@ -307,3 +309,7 @@ instalacion global. Fetcher deniega recursos externos/locales; texto escapado.
 B37: /reports/transfers.pdf para P/T/A; /reports/receptions.pdf para R/A.
 Filtros de B35. Recepciones selecciona solo etapas RECEPCION dentro del periodo.
 PDF muestra documento/version vigente, marca corregida y fechas fisicas.
+
+B38: /metrics/overview y /reports/overview.pdf exclusivos ADMIN. Filtros
+date_from/date_to/center_id/product_id. Resumen por centro de origen, cantidades
+producidas/recogidas/recibidas separadas, sin inferir stock ni rentabilidad.

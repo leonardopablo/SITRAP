@@ -1186,6 +1186,55 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: ''
+  /api/v1/metrics/overview:
+    get:
+      operationId: metrics_overview_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: date_from
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: date_to
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: product_id
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - metrics
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Overview'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/metrics/transfers:
     get:
       operationId: metrics_transfers_retrieve
@@ -2024,6 +2073,56 @@ paths:
         '204':
           description: No response body
         '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/reports/overview.pdf:
+    get:
+      operationId: reports_overview.pdf_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: date_from
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: date_to
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: product_id
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - reports
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          description: PDF con datos sincronizados al corte del servidor.
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
           content:
             application/json:
               schema:
@@ -4034,6 +4133,32 @@ components:
       - center_id
       - id
       - product_id
+    CenterSummary:
+      type: object
+      properties:
+        center_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        produced_liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        picked_up_liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+        received_liters:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,17}(?:\.\d{0,3})?$
+      required:
+      - center_id
+      - name
+      - picked_up_liters
+      - produced_liters
+      - received_liters
     Correction:
       type: object
       properties:
@@ -5547,6 +5672,39 @@ components:
       - destinations
       - drivers
       - receivers
+    Overview:
+      type: object
+      properties:
+        date_from:
+          type: string
+          format: date
+        date_to:
+          type: string
+          format: date
+        cutoff:
+          type: string
+          format: date-time
+        timezone:
+          type: string
+        synchronized_only:
+          type: boolean
+        centers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CenterSummary'
+        production:
+          $ref: '#/components/schemas/MilkMetrics'
+        transfers:
+          $ref: '#/components/schemas/TransferMetrics'
+      required:
+      - centers
+      - cutoff
+      - date_from
+      - date_to
+      - production
+      - synchronized_only
+      - timezone
+      - transfers
     PaginatedAnimalList:
       type: object
       required:

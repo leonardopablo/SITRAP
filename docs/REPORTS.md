@@ -45,3 +45,7 @@ B37: /reports/transfers.pdf permite P del origen, T propio o A;
 /reports/receptions.pdf permite R propio o A. Ambos usan filtros de
 metrics/transfers y muestran cantidades vigentes/corregidas y fechas fisicas.
 Recepciones incluye solo recepciones fisicas dentro del periodo.
+
+B38: /metrics/overview y /reports/overview.pdf exclusivos ADMIN; filtros
+date_from/date_to/center_id/product_id. Misma fotografia y corte para produccion
+y entregas; resumen por centro de origen sin sumar las tres medidas.
