@@ -5,6 +5,7 @@ import type { Page, Role } from '../api/types'
 import { useAuth } from '../auth/AuthProvider'
 import { useConnection } from '../offline/SyncPanel'
 import { Button, Notice } from '../components/ui'
+import { accountCreationBlocker } from './accountValidation'
 
 interface User { id: string; username: string; name: string; active: boolean; change_password_required: boolean }
 interface Assignment { id: string; user_id: string; role: Role; scope: string; location_id: string | null; active: boolean }
@@ -20,6 +21,7 @@ export function UsersPage() {
   const [message, setMessage] = useState('')
   const [temporary, setTemporary] = useState('')
   const [busy, setBusy] = useState(false)
+  const createBlockedReason = accountCreationBlocker(online, username, name, temporary, apiMode)
   const users = useQuery({ queryKey: ['users', account?.id], queryFn: () => api.request<Page<User>>('/users'), enabled: !!account && online })
   const assignments = useQuery({ queryKey: ['role-assignments', account?.id], queryFn: () => api.request<Page<Assignment>>('/role-assignments'), enabled: !!account && online })
   const locations = useQuery({ queryKey: ['admin-locations', account?.id], queryFn: () => api.request<Page<{ id: string; name: string; type: string }>>('/locations'), enabled: !!account && online })
@@ -29,8 +31,9 @@ export function UsersPage() {
     <p>Las personas de reemplazo usan cuentas propias. ADMIN no confirma hechos ni firma por operadores.</p>
     <section className="card stack form"><h2>Crear cuenta</h2><div className="field"><label htmlFor="new-username">Usuario</label><input id="new-username" value={username} onChange={event => setUsername(event.target.value)} autoComplete="off" /></div>
       <div className="field"><label htmlFor="new-name">Nombre</label><input id="new-name" value={name} onChange={event => setName(event.target.value)} /></div>
-      <div className="field"><label htmlFor="temporary-password">Contraseña temporal (entregar fuera de SITRAP)</label><input id="temporary-password" type="password" autoComplete="new-password" value={temporary} onChange={event => setTemporary(event.target.value)} /></div>
-      <Button disabled={!online || !username.trim() || !name.trim() || (apiMode === 'http' && temporary.length < 12)} busy={busy} onClick={() => void run(async () => { await api.post('/users', apiMode === 'http' ? { id: crypto.randomUUID(), username: username.trim(), name: name.trim(), temporary_password: temporary } : { username: username.trim(), name: name.trim() }); setUsername(''); setName('') }, 'Cuenta creada; cambio de contraseña obligatorio')}>Crear usuario</Button>
+      <div className="field"><label htmlFor="temporary-password">Contraseña temporal (entregar fuera de SITRAP)</label><input id="temporary-password" type="password" autoComplete="new-password" aria-describedby="create-account-help" value={temporary} onChange={event => setTemporary(event.target.value)} /></div>
+      <p id="create-account-help" className="help" aria-live="polite">{createBlockedReason || 'Datos completos. Ya puedes crear la cuenta.'}</p>
+      <Button disabled={!!createBlockedReason} busy={busy} onClick={() => void run(async () => { await api.post('/users', apiMode === 'http' ? { id: crypto.randomUUID(), username: username.trim(), name: name.trim(), temporary_password: temporary } : { username: username.trim(), name: name.trim() }); setUsername(''); setName('') }, 'Cuenta creada; cambio de contraseña obligatorio')}>Crear usuario</Button>
     </section>
     <section className="card stack form"><h2>Asignar función</h2><div className="field"><label htmlFor="assign-user">Cuenta</label><select id="assign-user" value={userId} onChange={event => setUserId(event.target.value)}><option value="">Selecciona</option>{users.data?.results.filter(user => user.active).map(user => <option key={user.id} value={user.id}>{user.name}</option>)}</select></div>
       <div className="field"><label htmlFor="assign-role">Rol</label><select id="assign-role" value={role} onChange={event => setRole(event.target.value as Role)}>{(['PRODUCCION', 'TRANSPORTE', 'RECEPCION', 'ADMIN'] as const).map(item => <option key={item} value={item}>{item}</option>)}</select></div>
