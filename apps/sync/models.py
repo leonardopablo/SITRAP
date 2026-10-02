@@ -51,3 +51,13 @@ class SyncDependency(models.Model):
                 fields=["operation", "depends_on_event_id"], name="operation_dependency_unique"
             )
         ]
+
+
+class SyncSnapshot(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    device = models.ForeignKey(Device, on_delete=models.CASCADE)
+    scope_hash = models.CharField(max_length=64)
+    entries = models.JSONField()
+    changes = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(db_index=True)

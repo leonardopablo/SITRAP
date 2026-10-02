@@ -2067,6 +2067,144 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: ''
+  /api/v1/sync/bootstrap:
+    get:
+      operationId: sync_bootstrap_retrieve
+      parameters:
+      - in: header
+        name: X-Device-ID
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: cursor
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 100
+      - in: query
+        name: page
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      tags:
+      - sync
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnapshotResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '410':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/sync/changes:
+    get:
+      operationId: sync_changes_retrieve
+      parameters:
+      - in: header
+        name: X-Device-ID
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: cursor
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 100
+      - in: query
+        name: page
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      tags:
+      - sync
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnapshotResponse'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '410':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/transfers:
     get:
       operationId: transfers_list
@@ -5614,6 +5752,36 @@ components:
       description: |-
         * `HEMBRA` - Hembra
         * `MACHO` - Macho
+    SnapshotResponse:
+      type: object
+      properties:
+        snapshot_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        preparation_expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SyncEntry'
+        next_page:
+          type: string
+          nullable: true
+        cursor:
+          type: string
+          nullable: true
+      required:
+      - cursor
+      - expires_at
+      - next_page
+      - preparation_expires_at
+      - results
+      - snapshot_at
     SpeciesInput:
       type: object
       properties:
@@ -5695,6 +5863,22 @@ components:
       - center_id
       - id
       - starts_on
+    SyncEntry:
+      type: object
+      properties:
+        entity_type:
+          type: string
+        id:
+          type: string
+        deleted:
+          type: boolean
+        data:
+          nullable: true
+      required:
+      - data
+      - deleted
+      - entity_type
+      - id
     Timeline:
       type: object
       properties:
