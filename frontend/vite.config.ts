@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => ({
     ] },
     injectManifest: { globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'] },
   })],
-  server: { proxy: { '/api/v1': loadEnv(mode, process.cwd(), 'VITE_').VITE_API_PROXY_TARGET || 'http://127.0.0.1:8000' } },
+  // Preserve the browser Host: Django compares it with Origin for CSRF on login.
+  server: { proxy: { '/api/v1': { target: loadEnv(mode, process.cwd(), 'VITE_').VITE_API_PROXY_TARGET || 'http://127.0.0.1:8000', changeOrigin: false } } },
   test: { env: { VITE_API_MODE: 'mock' }, globals: true, environment: 'jsdom', setupFiles: ['./src/test/setup.ts'], include: ['src/**/*.test.{ts,tsx}'] },
 }))

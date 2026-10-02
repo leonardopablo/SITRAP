@@ -7,6 +7,9 @@ mock explícito; ahora HTTP es predeterminado y el cliente usa rutas relativas
 `frontend/src/api/backend.generated.d.ts` mediante `npm run api:generate`.
 `frontend/src/api/generated.d.ts` sigue describiendo el modelo provisional del
 mock: no usarlo como evidencia de coincidencia de contratos en módulos restantes.
+El proxy de desarrollo preserva `Host` para que la comprobación CSRF de Django
+compare el mismo origen que usa el navegador en `localhost:5173`; no se desactiva
+CSRF ni se necesita volver a migrar para solucionar un rechazo de login.
 
 Verificación local: una prueba pytest con usuarios autenticados de producción,
 transporte y recepción crea y envía una entrega sobre un lote confirmado, comprueba
