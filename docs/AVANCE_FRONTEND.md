@@ -15,8 +15,9 @@
 |---|---|---|---|---|
 | F01 | Implementado | `aab838b` | 2 pruebas navegación; build OK | B01/API base |
 | F02 | Implementado | `a32425d` | 4 pruebas; build OK; contraste texto 4,71:1–10,71:1 | Validación Android y auditoría completa F38 |
-| F03 | Implementado | `design: crear logo sitrap` | Build y 4 pruebas; SVG vectorial local, variantes 32/48 px, favicon | Aprobación institucional de identidad |
-| F04–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F03 | Implementado | `6a6e6c9` | Build y 4 pruebas; SVG vectorial local, variantes 32/48 px, favicon | Aprobación institucional de identidad |
+| F04 | Implementado | `design: crear ilustraciones` | Build; 4 pruebas; SVG locales estáticos, conjunto <4 KB | Medición Android; integración de éxitos en F37 |
+| F05–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -25,4 +26,4 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 
 ## Continuación
 
-Siguiente: F04 y F05. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F05. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
