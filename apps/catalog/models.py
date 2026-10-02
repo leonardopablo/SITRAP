@@ -54,3 +54,33 @@ class CenterProduct(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["center", "product"], name="center_product_unique")
         ]
+
+
+class Presentation(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    name = models.CharField(max_length=100)
+    content_base = models.DecimalField(max_digits=14, decimal_places=3)
+    allows_fraction = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(content_base__gt=0), name="presentation_content_positive"
+            )
+        ]
+
+
+class Species(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=32, unique=True)
+    name = models.CharField(max_length=100)
+    active = models.BooleanField(default=True)
+
+
+class Turn(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=32, unique=True)
+    name = models.CharField(max_length=100)
+    active = models.BooleanField(default=True)

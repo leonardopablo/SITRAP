@@ -3,13 +3,24 @@ from rest_framework import generics
 from rest_framework.response import Response
 
 from apps.accounts.access import require_admin
-from apps.catalog.models import CenterProduct, Location, Product
-from apps.catalog.serializers import CenterProductInput, LocationInput, ProductInput
+from apps.catalog.models import CenterProduct, Location, Presentation, Product, Species, Turn, Unit
+from apps.catalog.serializers import (
+    CenterProductInput,
+    LocationInput,
+    PresentationInput,
+    ProductInput,
+    SpeciesInput,
+    TurnInput,
+    UnitInput,
+)
 from apps.catalog.services import (
     save_catalog,
+    scoped_auxiliary,
     scoped_center_products,
     scoped_locations,
+    scoped_presentations,
     scoped_products,
+    scoped_units,
 )
 from apps.common.errors import ErrorSerializer
 
@@ -97,6 +108,82 @@ for view in (LocationsView, ProductsView, CenterProductsView):
         )
     )(view)
 for view in (LocationDetailView, ProductDetailView, CenterProductDetailView):
+    extend_schema_view(
+        patch=extend_schema(
+            request=view.serializer_class,
+            responses={
+                200: view.serializer_class,
+                401: ErrorSerializer,
+                403: ErrorSerializer,
+                404: ErrorSerializer,
+                422: ErrorSerializer,
+            },
+        )
+    )(view)
+
+
+class UnitsView(CatalogListView):
+    model = Unit
+    serializer_class = UnitInput
+    scope = staticmethod(scoped_units)
+
+
+class UnitDetailView(CatalogDetailView):
+    model = Unit
+    serializer_class = UnitInput
+    immutable = ("code",)
+
+
+class PresentationsView(CatalogListView):
+    model = Presentation
+    serializer_class = PresentationInput
+    scope = staticmethod(scoped_presentations)
+
+
+class PresentationDetailView(CatalogDetailView):
+    model = Presentation
+    serializer_class = PresentationInput
+    immutable = ("product_id", "content_base", "allows_fraction")
+
+
+class SpeciesView(CatalogListView):
+    model = Species
+    serializer_class = SpeciesInput
+    scope = staticmethod(lambda user: scoped_auxiliary(user, Species))
+
+
+class SpeciesDetailView(CatalogDetailView):
+    model = Species
+    serializer_class = SpeciesInput
+    immutable = ("code",)
+
+
+class TurnsView(CatalogListView):
+    model = Turn
+    serializer_class = TurnInput
+    scope = staticmethod(lambda user: scoped_auxiliary(user, Turn))
+
+
+class TurnDetailView(CatalogDetailView):
+    model = Turn
+    serializer_class = TurnInput
+    immutable = ("code",)
+
+
+for view in (UnitsView, PresentationsView, SpeciesView, TurnsView):
+    extend_schema_view(
+        post=extend_schema(
+            request=view.serializer_class,
+            responses={
+                200: view.serializer_class,
+                401: ErrorSerializer,
+                403: ErrorSerializer,
+                409: ErrorSerializer,
+                422: ErrorSerializer,
+            },
+        )
+    )(view)
+for view in (UnitDetailView, PresentationDetailView, SpeciesDetailView, TurnDetailView):
     extend_schema_view(
         patch=extend_schema(
             request=view.serializer_class,

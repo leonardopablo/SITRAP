@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 from threading import Barrier
 
 import pytest
-from django.db import close_old_connections
+from django.db import close_old_connections, connections
 from django.utils import timezone
 
 from apps.accounts.models import User
@@ -35,7 +35,10 @@ def allow(actor, envelope):
 
 def create_location(actor, envelope, operation):
     Location.objects.create(
-        id=envelope["entity_id"], code=envelope["entity_id"].replace("-", ""), name="test", kind="CENTRO"
+        id=envelope["entity_id"],
+        code=envelope["entity_id"].replace("-", ""),
+        name="test",
+        kind="CENTRO",
     )
     return {"lock_version": 1}
 
@@ -122,7 +125,7 @@ def test_concurrent_duplicate_only_applies_once():
             barrier.wait(timeout=10)
             return execute(actor, command, create_location, allow)
         finally:
-            close_old_connections()
+            connections.close_all()
 
     with ThreadPoolExecutor(max_workers=2) as pool:
         futures = [pool.submit(run) for _ in range(2)]

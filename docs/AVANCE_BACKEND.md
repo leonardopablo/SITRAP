@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B09**. Siguiente elegible: **B10**.
+Última tarea terminada: **B10**. Siguiente elegible: **B11**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -21,7 +21,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B08 | `da76a5e` | 37 pruebas acumuladas; API ADMIN, contraseña temporal, reset, revocación de sesiones, bajas, ámbitos sin superposición y bootstrap inicial. |
 
-| B09 | `feat: habilitar productos por centro (B09)` (este commit) | 40 pruebas acumuladas; catálogos autorizados, altas idempotentes, bajas auditadas, centro válido y ausencia de stock. |
+| B09 | `f84b2f0` | 40 pruebas acumuladas; catálogos autorizados, altas idempotentes, bajas auditadas, centro válido y ausencia de stock. |
+
+| B10 | `feat: completar catalogos (B10)` (este commit) | 42 pruebas acumuladas; unidades/presentaciones/especies/turnos, contenido positivo, bolsa indivisible, sin conversión KG/L; OpenAPI sin warnings y conexiones de test cerradas. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit; no se publica hasta disponer del remoto.
@@ -67,7 +69,7 @@ ni ejecución de CI remoto verificados**. Continuar tareas independientes.
 
 ## Pendientes y reanudación
 
-**B10–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B11–B39 pendientes**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -79,7 +81,7 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B10, sin rehacer B01–B09.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B11, sin rehacer B01–B10.
 
 B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
 X-Device-ID. El sobre de comandos está implementado en servicios internos,
@@ -101,3 +103,7 @@ B09: identificadores UUID requeridos en altas online. PATCH cambia nombre/activo
 o habilitado; código/tipo/unidad y pares centro-producto no se reasignan.
 Unidad mínima L/KG/UN sembrada para la FK de producto; su API se completa en B10.
 B16 ampliará catálogos/procedencia de T/R mediante entregas autorizadas.
+
+B10: /units usa códigos L/KG/UN; presentaciones usan content_base string decimal
+y allows_fraction. La compatibilidad del piloto se comprueba al operar: unidad L,
+contenido 1 y bolsas enteras. Un catálogo genérico no habilita procesos operativos.

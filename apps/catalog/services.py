@@ -1,9 +1,11 @@
+import uuid
+
 from django.db import IntegrityError, transaction
 
 from apps.accounts.access import is_admin, location_ids, require_admin
 from apps.accounts.models import User
 from apps.audit.services import record
-from apps.catalog.models import CenterProduct, Location, Product
+from apps.catalog.models import CenterProduct, Location, Presentation, Product, Unit
 from apps.common.errors import DomainError
 from apps.sync.services import ensure_actor
 
@@ -48,7 +50,7 @@ def save_catalog(actor, model, data, *, pk=None, immutable=()):
     ensure_actor(actor)
     require_admin(actor)
     creating = pk is None
-    key = data.get("id") if creating else pk
+    key = data.get(model._meta.pk.attname) if creating else pk
     obj = model.objects.select_for_update().filter(pk=key).first()
     if not creating and obj is None:
         raise DomainError("NOT_FOUND", "Registro no disponible.", 404)
@@ -78,5 +80,36 @@ def save_catalog(actor, model, data, *, pk=None, immutable=()):
                 obj.save()
         except IntegrityError:
             raise DomainError("VALIDATION_ERROR", "Código o relación de catálogo duplicados.", 422)
-        record(actor, model._meta.model_name, obj.pk, "SAVE_CATALOG", before=before, after=after)
+        record(
+            actor,
+            model._meta.model_name,
+            obj.pk
+            if isinstance(obj.pk, uuid.UUID)
+            else uuid.uuid5(uuid.NAMESPACE_URL, f"{model._meta.label}/{obj.pk}"),
+            "SAVE_CATALOG",
+            before=before,
+            after=after,
+        )
     return obj
+
+
+def scoped_presentations(user):
+    if is_admin(user):
+        return Presentation.objects.all()
+    return Presentation.objects.filter(active=True, product__in=scoped_products(user))
+
+
+def scoped_units(user):
+    if is_admin(user):
+        return Unit.objects.all()
+    return Unit.objects.filter(pk__in=scoped_products(user).values("unit_id"))
+
+
+def scoped_auxiliary(user, model):
+    if is_admin(user):
+        return model.objects.all()
+    return (
+        model.objects.filter(active=True)
+        if location_ids(user, "PRODUCCION").exists()
+        else model.objects.none()
+    )
