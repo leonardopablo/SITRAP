@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B21**. Siguiente elegible: **B22**.
+Última tarea terminada: **B22**. Siguiente elegible: **B23**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -32,7 +32,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B20 | `6b6c28a` | 7 pruebas pertinentes: revisión, historia, reserva vigente, exceso, cancelación, idempotencia y contrato exacto. |
 
-| B21 | `feat: confirmar recogida (B21)` (este commit) | 10 pruebas pertinentes: versión exacta, una etapa física, firma asignada, aviso a R, carrera revisión/recogida y contrato. |
+| B21 | `e751464` | 10 pruebas pertinentes: versión exacta, una etapa física, firma asignada, aviso a R, carrera revisión/recogida y contrato. |
+
+| B22 | `feat: confirmar recepcion (B22)` (este commit) | Suite completa: 75 pruebas; recepción única/asignada, estado EN_CAMINO, documento exacto y avisos a emisor/conductor. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
@@ -56,7 +58,7 @@ Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
 ## Bloqueos
 
 No hay bloqueo funcional actual. Remoto autorizado: https://github.com/leonardopablo/SITRAP.git.
-B01-B20 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
+B01-B21 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
 
 ## Decisiones que afectan al frontend
 
@@ -77,7 +79,7 @@ B01-B20 publicados y rama local sigue origin/agente-backend. No se ha verificado
 
 ## Pendientes y reanudación
 
-**B22–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B23–B39 pendientes**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -89,7 +91,7 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B22, sin rehacer B01–B21.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B23, sin rehacer B01–B22.
 
 B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
 X-Device-ID. El sobre de comandos está implementado en servicios internos,
@@ -186,3 +188,7 @@ B21: /pickup usa TRANSFER_PICKUP con payload {version_id}; servidor copia las
 líneas y rechaza cantidades libres. Una sola RECOGIDA en toda la historia del
 traslado. Conformidades protegidas por trigger contra cambios/borrado.
 Capacidades del detalle acumulan todos los roles operativos vigentes de la cuenta.
+
+B22: /receive usa TRANSFER_RECEIVE con {version_id}; copia documento y crea
+RECEPCION una sola vez. No acepta cantidad distinta ni incidencias. B23 incorpora
+CORRECTION_PENDING antes de habilitar propuestas; flujo aún no listo para piloto.

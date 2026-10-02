@@ -129,4 +129,10 @@ def transfer_capabilities(transfer, actor):
         and version.origin_id in location_ids(actor, "TRANSPORTE")
     ):
         result.append("pickup")
+    if (
+        transfer.state == "EN_CAMINO"
+        and version.receiver_id == actor.id
+        and version.destination_id in location_ids(actor, "RECEPCION")
+    ):
+        result.append("receive")
     return result

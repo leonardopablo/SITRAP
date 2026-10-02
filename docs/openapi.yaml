@@ -1988,6 +1988,75 @@ paths:
               schema:
                 $ref: '#/components/schemas/TransferCommandError'
           description: ''
+  /api/v1/transfers/{id}/receive:
+    post:
+      operationId: transfers_receive_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferReceiveCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransferReceiveCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransferReceiveCommandRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferReceipt'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferCommandError'
+          description: ''
   /api/v1/transfers/{id}/revise:
     post:
       operationId: transfers_revise_create
@@ -4718,6 +4787,48 @@ components:
       - result
       - server_received_at
       - status
+    TransferReceiveCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TransferReceiveCommandTypeEnum'
+          default: TRANSFER_RECEIVE
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/VersionPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - expected_version
+      - occurred_at
+      - payload
+    TransferReceiveCommandTypeEnum:
+      enum:
+      - TRANSFER_RECEIVE
+      type: string
+      description: '* `TRANSFER_RECEIVE` - TRANSFER_RECEIVE'
     TransferReviseCommandRequest:
       type: object
       properties:

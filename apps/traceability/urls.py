@@ -5,6 +5,7 @@ from apps.traceability.views import (
     LotDetailView,
     LotsView,
     PickupTransferView,
+    ReceiveTransferView,
     ReviseTransferView,
     SendTransferView,
     TimelineView,
@@ -13,6 +14,7 @@ from apps.traceability.views import (
 )
 
 urlpatterns = [
+    path("transfers/<uuid:pk>/receive", ReceiveTransferView.as_view()),
     path("transfers/<uuid:pk>/pickup", PickupTransferView.as_view()),
     path("transfers/<uuid:pk>/revise", ReviseTransferView.as_view()),
     path("transfers/<uuid:pk>/cancel", CancelTransferView.as_view()),
