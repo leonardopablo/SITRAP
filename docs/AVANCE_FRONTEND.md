@@ -31,8 +31,9 @@
 | F16 | Implementado localmente con fixture demo | `dbd601d` | Opciones válidas, bolsa entera, disponibilidad y borrador local; build y 25 pruebas | B11/B17: lote confirmado real, disponibilidad y presentación, participantes actuales. Fixture de lote solo en mock |
 | F17 | Implementado localmente | `29e1ba4` | Envío dependiente, detalle local/remoto y estados sin aviso prematuro; build y 26 pruebas | B19: contrato de detalle/acuses/reserva/notificación real; mock no confirma envíos |
 | F18 | Implementado con fixture demo | `19a1228` | Revisión/cancelación online con motivo, lock_version y conflicto; build y 27 pruebas | B20 y reserva documental; mock revisa solo fixture no una recogida real |
-| F19 | Implementado localmente | `feat: confirmar recogida` | Inicio transporte, refresco 10 s/manual/foco, versión descargada y sin recaptura; build/pruebas | B21: permisos, acuse, aviso a R; mock no envía conformidad central |
-| F20–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F19 | Implementado localmente | `d8f902f` | Inicio transporte, refresco 10 s/manual/foco, versión descargada y sin recaptura; build y 28 pruebas | B21: permisos, acuse, aviso a R; mock no envía conformidad central |
+| F20 | Implementado localmente | `feat: confirmar recepcion` | Recibidas/pendientes, versión descargada, bloqueo corrección pendiente, sin recaptura; build/pruebas | B22/B23: servidor debe bloquear recepción si hay corrección pendiente; mock no envía aviso |
+| F21–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -51,7 +52,8 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 - F17: `TRANSFER_SEND` supuesto `{version_id}` y `expected_version:1` provisional del borrador. Detalle remoto supuesto `{id,code,state,lock_version,version_id,units_presentation,origin_name,destination_name,driver_name,receiver_name}`. Corregir con OpenAPI B19. Se requiere acuse `APLICADA` antes de mostrar envío central; mock no genera PICKUP_REQUESTED.
 - F18: payload provisional `TRANSFER_REVISE {version_id,new_version_id,units_presentation,reason}` / `TRANSFER_CANCEL {version_id,reason}`, sobre §3 con `expected_version`. Mock solo en fixture `DEMO-ENTREGA-01`, no actualiza avisos ni produce recogida. El backend debe comprobar reserva/versión, no el límite local provisional; adaptar a OpenAPI B20.
 - F19: GET `/transfers` supuesto paginado con `state,lock_version,version_id,units_presentation,origin_name,destination_name,driver_name,receiver_name`. `TRANSFER_PICKUP` solo `{version_id}`; se almacena antes de intentar sync. Mock no crea recogida ni aviso remoto. Confirmar autorización y capacidades con B21.
+- F20: `TRANSFER_RECEIVE` solo `{version_id}`; mismo detalle de traslado con `correction_pending?:boolean`. El bloqueo en UI es indicativo, backend B23 debe revalidar atómicamente. Fixture `DEMO-EN-CAMINO` se mantiene solo en memoria, no representa recepción real.
 
 ## Continuación
 
-Siguiente: F20. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F21. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
