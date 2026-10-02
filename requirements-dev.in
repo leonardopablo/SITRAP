@@ -1,0 +1,5 @@
+-r requirements.in
+pytest>=8,<10
+pytest-django>=4.11,<5
+ruff>=0.12,<1
+pip-tools>=7.4,<8
