@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B06**. Siguiente elegible: **B07**.
+Última tarea terminada: **B07**. Siguiente elegible: **B08**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -15,7 +15,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B05 | `416efcb` | 22 pruebas acumuladas; aislamiento por centro/ID, vigencias, revocaciones, ADMIN sin permisos operativos y capacidades en me. |
 
-| B06 | `feat: registrar operaciones (B06)` (este commit) | 27 pruebas acumuladas; dispositivos propios, hash canónico, replay, conflictos, rollback y duplicado concurrente en PostgreSQL. |
+| B06 | `62e1310` | 27 pruebas acumuladas; dispositivos propios, hash canónico, replay, conflictos, rollback y duplicado concurrente en PostgreSQL. |
+
+| B07 | `feat: auditar cambios (B07)` (este commit) | 32 pruebas acumuladas; auditoría atómica, rollback ante fallo, redacción de secretos y trigger PostgreSQL contra UPDATE/DELETE. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit; no se publica hasta disponer del remoto.
@@ -61,7 +63,7 @@ ni ejecución de CI remoto verificados**. Continuar tareas independientes.
 
 ## Pendientes y reanudación
 
-**B07–B39 pendientes**. Seguir dependencias exactas de 04 §8:
+**B08–B39 pendientes**. Seguir dependencias exactas de 04 §8:
 B05 autorización → B06 dispositivos/idempotencia → B07 auditoría;
 después B08–B17 y B18 antes de B19. B23 debe completar la guarda de recepción B22.
 B27 requiere B25, B28 requiere B18/B27, B29–B30 sincronización.
@@ -73,9 +75,13 @@ de web/worker, secretos, HTTPS, backup/restauración; el despliegue real queda r
 hasta integrar frontend. No declarar B40 terminado ni ejecutar Azure.
 
 Para retomar: comprobar rama y status, leer este informe, revisar el último commit,
-aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B07, sin rehacer B01–B06.
+aplicar migraciones y ejecutar las pruebas pertinentes; continuar en B08, sin rehacer B01–B07.
 
 B06: registrar dispositivo con POST /devices {id,name}; GET /devices/current usa
 X-Device-ID. El sobre de comandos está implementado en servicios internos,
 no hay aún endpoint /sync/events (B29). Replays revalidan permisos actuales;
 authorize solo verifica permisos, y el handler verifica estados dentro de la transacción.
+
+B07: toda auditoría se escribe dentro de la transacción del cambio. El trigger
+impide UPDATE/DELETE; el rol de BD de producción deberá carecer de TRUNCATE/DDL
+y no ser propietario (preparar en B40). No se afirma inviolabilidad frente al dueño de BD.

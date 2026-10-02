@@ -156,6 +156,17 @@ def execute(actor, envelope, handler, authorize):
     try:
         with transaction.atomic():
             result = handler(actor, normalized, operation)
+            from apps.audit.services import record
+
+            record(
+                actor,
+                "sync_operation",
+                operation.event_id,
+                normalized["type"],
+                before={"expected_version": normalized["expected_version"]},
+                after=result,
+                operation=operation,
+            )
     except DomainError as error:
         return finish(operation, "RECHAZADA", error.status_code, error=error.detail)
     return finish(operation, "APLICADA", 200, result=result)
