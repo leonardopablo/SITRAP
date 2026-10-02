@@ -8,27 +8,41 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('notifications', '0001_initial'),
-        ('sync', '0002_syncsnapshot'),
+        ("notifications", "0001_initial"),
+        ("sync", "0002_syncsnapshot"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PushSubscription',
+            name="PushSubscription",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('endpoint', models.CharField(max_length=2048, unique=True)),
-                ('p256dh', models.CharField(max_length=128)),
-                ('auth', models.CharField(max_length=64)),
-                ('active', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('revoked_at', models.DateTimeField(null=True)),
-                ('device', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='sync.device')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4, editable=False, primary_key=True, serialize=False
+                    ),
+                ),
+                ("endpoint", models.CharField(max_length=2048, unique=True)),
+                ("p256dh", models.CharField(max_length=128)),
+                ("auth", models.CharField(max_length=64)),
+                ("active", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("revoked_at", models.DateTimeField(null=True)),
+                (
+                    "device",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to="sync.device"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL
+                    ),
+                ),
             ],
         ),
     ]

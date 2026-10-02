@@ -76,3 +76,8 @@ class PushDelivery(models.Model):
             )
         ]
         indexes = [models.Index(fields=["state", "next_attempt_at"])]
+
+
+class WorkerHeartbeat(models.Model):
+    name = models.CharField(max_length=100, primary_key=True)
+    seen_at = models.DateTimeField(default=timezone.now)

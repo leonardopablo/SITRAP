@@ -1,7 +1,7 @@
 # Avance backend SITRAP
 
 Rama exclusiva: `agente-backend`. Cuatro documentos revisión 3 leídos íntegramente.
-Última tarea terminada: **B32**. Siguiente elegible: **B33**.
+Última tarea terminada: **B33**. Siguiente elegible: **B34**.
 No se modificó frontend, no hubo fusiones ni despliegues.
 
 ## Commits y pruebas
@@ -54,7 +54,9 @@ No se modificó frontend, no hubo fusiones ni despliegues.
 
 | B31 | `56b50e5` | Suite completa: 117 pruebas. Suscripción/propiedad/replay, HTTPS, claves, logout/baja, secretos, cifrado real local; pip check y descarga con hashes correctos. |
 
-| B32 | `feat: encolar notificaciones push (B32)` (este commit) | 23 pruebas pertinentes: 11 tipos de aviso, destinatarios/suscripciones activos, deduplicación, rollback conjunto y regresión de flujos/contrato. |
+| B32 | `4e653f7` | 23 pruebas pertinentes: 11 tipos de aviso, destinatarios/suscripciones activos, deduplicación, rollback conjunto y regresión de flujos/contrato. |
+
+| B33 | `feat: entregar avisos push (B33)` (este commit) | 35 pruebas pertinentes: leases, concurrencia, reinicio, errores HTTP/red, timeout, no redirecciones, baja de suscripciones y latido. |
 
 Obtener hash exacto de cada tarea: `git log --oneline --grep='B04'`.
 Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
@@ -78,7 +80,7 @@ Cada funcionalidad tiene su propio commit y se publica en origin/agente-backend.
 ## Bloqueos
 
 No hay bloqueo funcional actual. Remoto autorizado: https://github.com/leonardopablo/SITRAP.git.
-B01-B31 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
+B01-B32 publicados y rama local sigue origin/agente-backend. No se ha verificado todavía el resultado del workflow remoto.
 
 ## Decisiones que afectan al frontend
 
@@ -271,3 +273,6 @@ B32: cada aviso nuevo crea un PushDelivery por suscripción activa dentro de la
 transacción de negocio. Replay no reencola ni crea envíos retroactivos para nuevas
 suscripciones. Payload genérico con notification_id/tag y url=/; abrir requiere
 consultar la bandeja autenticada y estado actual. B33 habilita el procesamiento.
+
+B33: worker/diagnostico en docs/PUSH.md. Entrega externa al menos una vez;
+ACEPTADO_PROVEEDOR no prueba entrega/lectura. Sin envio real a telefonos.

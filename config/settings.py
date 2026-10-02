@@ -152,3 +152,10 @@ PUSH_ALLOWED_HOSTS = env.list(
         ".notify.windows.com",
     ],
 )
+
+PUSH_HTTP_TIMEOUT_SECONDS = env.int("PUSH_HTTP_TIMEOUT_SECONDS", default=10)
+PUSH_LEASE_SECONDS = env.int("PUSH_LEASE_SECONDS", default=60)
+PUSH_MAX_ATTEMPTS = env.int("PUSH_MAX_ATTEMPTS", default=5)
+PUSH_RETRY_BASE_SECONDS = env.int("PUSH_RETRY_BASE_SECONDS", default=30)
+PUSH_TTL_SECONDS = env.int("PUSH_TTL_SECONDS", default=3600)
+PUSH_POLL_SECONDS = env.int("PUSH_POLL_SECONDS", default=2)

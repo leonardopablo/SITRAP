@@ -44,3 +44,27 @@ fijada. No se han realizado envíos reales a teléfonos; la aceptación por un p
 B32: outbox durable PushDelivery, UNIQUE(notification,subscription), creada con
 el hecho y aviso. Payload genérico: notification_id/tag estable, title, body, url=/.
 El Service Worker muestra el aviso; no confirma recogida, recepción ni corrección.
+
+
+## Worker B33
+
+Ejecutar `python manage.py push_worker` como proceso separado supervisado, con
+PUSH_ENABLED=True y VAPID configurado. `--once` procesa hasta 20 envios y termina;
+`--batch-size` acepta 1-100. `python manage.py push_status --max-age 120` muestra
+conteos/antiguedad/latido sin secretos y falla si el worker no tiene latido reciente.
+
+Cada intento adquiere un lease de 60 segundos mediante SKIP LOCKED y token unico.
+Al caer un proceso, otro recupera el trabajo vencido; el proceso anterior no puede
+sobrescribir el resultado. Timeout HTTP: conexion 3 s, lectura 10 s. No se siguen
+redirecciones. Se revalida cuenta, dispositivo y suscripcion antes del envio.
+404/410 desactivan la suscripcion vencida; 429/5xx y fallas de red reintentan con
+espera exponencial desde 30 s, maximo 5 intentos, respetando Retry-After hasta 24 h.
+Otros errores terminan FALLIDO. Los codigos persistidos no contienen respuestas,
+claves ni endpoints. El worker no altera hechos de negocio ni lectura de bandeja.
+
+ACEPTADO_PROVEEDOR no significa entregado o leido. Un corte despues del envio y
+antes del acuse local puede repetir push: entrega al menos una vez, tag estable
+por notification_id para agrupar en el Service Worker. No existe garantia de
+exactamente una entrega externa. Falta comprobar dispositivos Android reales
+tras integrar frontend. WNS usa wns/raw y application/octet-stream segun los
+[encabezados oficiales](https://learn.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/push-request-response-headers).
