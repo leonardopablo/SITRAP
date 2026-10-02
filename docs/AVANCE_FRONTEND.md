@@ -21,8 +21,9 @@
 | F06 | Implementado con adaptador simulado | `fe140e7` | Build; 8 pruebas; ruta ajena bloqueada, logout limpia identidad | B05; servidor debe comprobar ámbitos; vistas de navegación identificadas como pendientes |
 | F07 | Implementado contra OpenAPI provisional | `26282f5` | Generación de tipos, build; 10 pruebas incluyendo errores red/HTML y replay con UUID/payload estable | B06 y OpenAPI exportado real; no integrado |
 | F08 | Implementado | `c754e68` | Build, 10 unitarias; Playwright 1: worker único, recarga offline, SVG, sin caché API | Instalación y actualización en Android real; captura autorizada F11 |
-| F09 | Implementado | `feat: guardar operaciones locales` | IndexedDB persistente: UUID/reinicio/cuenta/versión/preparación; build y pruebas | B06 registro real de dispositivo; preparar offline por B28/F11; no se transmite hasta F10 |
-| F10–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
+| F09 | Implementado | `d126c51` | IndexedDB persistente: UUID/reinicio/cuenta/versión/preparación; build y 13 pruebas | B06 registro real de dispositivo; preparar offline por B28/F11 |
+| F10 | Implementado contra contrato provisional | `feat: sincronizar registros` | Padre/hijo, acuse ausente, replay, sesión vencida, rechazo y ciclo; build y pruebas | B29 batch y estados reales; envío no ocurre automáticamente aún (F11) |
+| F11–F38 | Pendientes; continuar en orden elegible | — | — | Dependencias de documento 03 |
 | F39 | Reservado postfusión | — | — | Integración y piloto |
 
 ## Supuestos de contrato
@@ -35,4 +36,4 @@ Fuente: documento 04 §§2–5. `/api/v1`, sesiones Django/CSRF, cantidades stri
 
 ## Continuación
 
-Siguiente: F10 y F11. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
+Siguiente: F11. Ejecutar verificaciones por incremento y commit individual. No habilitar operaciones simuladas como confirmaciones reales.
