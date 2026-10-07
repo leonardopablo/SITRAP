@@ -6,6 +6,7 @@ import pytest
 from django.db import IntegrityError, connections, transaction
 
 from apps.accounts.models import User
+from apps.audit.models import AuditEntry
 from apps.common.errors import DomainError
 from apps.milk.models import Milking
 from apps.milk.voiding import void_internal
@@ -68,6 +69,25 @@ def test_partial_unique_and_required_reason(user):
         void_internal(user, original.id, 1, "")
     assert Milking.objects.get().voided_at is None
     assert Milking.objects.get().production.state == "BORRADOR"
+
+
+def test_discard_draft_keeps_audit_and_creates_no_lot(api, user):
+    command = complete_command(user)
+    assert dispatch(user, command, fixed_type="MILKING_CREATE")[1] == 200
+    void = {
+        **command,
+        "event_id": str(uuid.uuid4()),
+        "type": "MILKING_VOID",
+        "expected_version": 1,
+        "payload": {"reason": "Fecha equivocada"},
+    }
+    response = api.post(f"/api/v1/milkings/{command['entity_id']}/void", void, format="json")
+    assert response.status_code == 200
+    milking = Milking.objects.get(pk=command["entity_id"])
+    assert milking.production.state == "ANULADA" and milking.voided_at is not None
+    assert not Lot.objects.filter(production=milking.production).exists()
+    assert AuditEntry.objects.filter(entity_type="production", entity_id=milking.production_id, action="VOID_MILKING").exists()
+    assert User.objects.filter(pk=user.pk).exists()
 
 
 @pytest.mark.django_db(transaction=True)

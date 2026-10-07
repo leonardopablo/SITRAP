@@ -79,7 +79,8 @@ export function MilkingDraftPage() {
     if (invalid) { setError(invalid); return }
     if (!animals.length) { setError('Necesitas vacas descargadas para guardar el ordeño.'); return }
     if (draft?.confirm_event_id) { setError('La confirmación ya está guardada. Comprueba su estado en Pendientes.'); return }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !shift) { setError('Revisa fecha y turno.'); return }
+    if (date !== todayLima()) { setError('Solo puedes registrar un ordeño con la fecha de hoy en Perú. Descarta desde Historial los borradores de otra fecha.'); return }
+    if (!shift) { setError('Selecciona un turno.'); return }
     setSaving(true)
     try {
       const device = await getDevice(account.id)
@@ -113,6 +114,7 @@ export function MilkingDraftPage() {
   async function confirm() {
     if (!account || !assignment?.location_id || !draft || draft.confirm_event_id || saving) return
     setError('')
+    if (draft.date !== todayLima()) { setError('Solo se confirma el ordeño de hoy en Perú. Descarta este borrador desde Historial.'); return }
     if (!unchanged) { setError('Guarda los cambios antes de confirmar.'); return }
     if (!confirmable(animals, draft.values)) { setError('Registra los litros de todas las vacas y un total mayor que 0 L. Cero explícito sí está permitido.'); return }
     setSaving(true)
@@ -135,7 +137,7 @@ export function MilkingDraftPage() {
     {!ready && <Notice>Cargando borrador local…</Notice>}
     {confirmed && <Notice tone="success">Este ordeño del {draft?.date} ya fue confirmado. Para otra fecha o turno, inicia un registro nuevo; no se modificará este lote. Solo puede existir un ordeño por centro, fecha y turno.</Notice>}
     {confirmed && <Button type="button" onClick={() => void startAnother()}>Iniciar otro ordeño</Button>}
-    {!confirmed && <><div className="field"><label htmlFor="milking-date">Fecha de ordeño</label><input id="milking-date" type="date" value={date} onChange={event => setDate(event.target.value)} /></div>
+    {!confirmed && <><div className="field"><label htmlFor="milking-date">Fecha de ordeño</label><input id="milking-date" type="date" value={date} readOnly /><span className="help">Solo se registra la fecha de hoy en Perú.</span></div>
     <div className="field"><label htmlFor="milking-shift">Turno</label><select id="milking-shift" value={shift} onChange={event => setShift(event.target.value)}><option value="">Selecciona turno</option>{(online ? turns.data?.results : offlineTurns)?.filter(item => item.active).map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>
     <p className="help">Centro: {assignment?.location_name}. Vacío significa sin dato; 0 L significa cero explícito.</p>
     {animals.length === 0 && <Notice tone="warning">No hay vacas activas descargadas. Consulta Vacas con conexión y prepara el dispositivo.</Notice>}
@@ -148,7 +150,8 @@ export function MilkingDraftPage() {
       <ul>{animals.map(animal => <li key={animal.id}>{animal.code}: {draft.values[animal.id] === '' || draft.values[animal.id] === undefined ? 'Sin dato' : formatLitres(parseLitres(draft.values[animal.id]) ?? 0)}</li>)}</ul>
       <p className="quantity">Total: {formatLitres(total)}</p>
       {!confirmable(animals, draft.values) && <Notice tone="warning">Completa cada vaca; el total debe ser mayor que 0 L.</Notice>}
-      <div className="row"><Button busy={saving} disabled={!confirmable(animals, draft.values)} onClick={() => void confirm()}>Confirmar producción</Button><Button variant="secondary" onClick={() => setReview(false)}>Volver a editar</Button></div>
+      {draft.date !== todayLima() && <Notice tone="warning">Este borrador no corresponde a hoy. Puedes descartarlo desde <Link to="/historial">Historial</Link>.</Notice>}
+      <div className="row"><Button busy={saving} disabled={!confirmable(animals, draft.values) || draft.date !== todayLima()} onClick={() => void confirm()}>Confirmar producción</Button><Button variant="secondary" onClick={() => setReview(false)}>Volver a editar</Button></div>
     </section>}
     {draft && !draft.confirm_event_id && <Notice tone="warning">Borrador guardado en este teléfono. Pendiente de enviar. Evento {draft.last_event_id}. No confirmado en el sistema.</Notice>}
     {draft?.confirm_event_id && confirmation?.status !== 'APLICADA' && <Notice tone="warning">Confirmación guardada solo en este teléfono. Evento {draft.confirm_event_id}. El lote {draft.lot_id} todavía no existe en el servidor; no puedes enviar una entrega a otra persona hasta recibir acuse.</Notice>}

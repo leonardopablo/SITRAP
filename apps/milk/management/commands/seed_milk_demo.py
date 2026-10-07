@@ -1,10 +1,10 @@
 import uuid
-from datetime import date
+from datetime import date, datetime, time
+from zoneinfo import ZoneInfo
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
-from django.utils import timezone
 
 from apps.accounts.models import Role, RoleAssignment, User
 from apps.catalog.models import (
@@ -72,7 +72,7 @@ class Command(BaseCommand):
             "device_id": str(device.id),
             "type": "MILKING_CREATE",
             "entity_id": milking_id,
-            "occurred_at": timezone.now().isoformat(),
+            "occurred_at": datetime.combine(options["date"], time(12), tzinfo=ZoneInfo("America/Lima")).isoformat(),
             "depends_on": [],
             "payload": {
                 "production_id": production_id,

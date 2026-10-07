@@ -1,7 +1,8 @@
 import uuid
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date
+from datetime import date, datetime, timedelta
 from threading import Barrier
+from zoneinfo import ZoneInfo
 
 import pytest
 from django.db import connections
@@ -44,7 +45,7 @@ def setup_milking(user):
         "event_id": str(uuid.uuid4()),
         "device_id": str(device.id),
         "entity_id": str(uuid.uuid4()),
-        "occurred_at": timezone.now().isoformat(),
+        "occurred_at": datetime(2026, 10, 1, 12, tzinfo=ZoneInfo("America/Lima")).isoformat(),
         "depends_on": [],
         "payload": {
             "production_id": str(uuid.uuid4()),
@@ -86,6 +87,46 @@ def test_draft_null_is_not_zero_and_idempotence(api, user):
     assert api.post("/api/v1/milkings", command, format="json").json() == response.json()
     assert Milking.objects.count() == 1
     assert api.get(f"/api/v1/milkings/{command['entity_id']}").status_code == 200
+
+
+def test_date_must_match_registration_day_in_peru_even_when_synced_later(user):
+    command, _ = setup_milking(user)
+    wrong = {**command, "payload": {**command["payload"], "date": "2026-10-02"}}
+    response, status = dispatch(user, wrong, fixed_type="MILKING_CREATE")
+    assert status == 422 and response["error"]["code"] == "VALIDATION_ERROR"
+    assert not Milking.objects.exists()
+
+    command["event_id"] = str(uuid.uuid4())
+    response, status = dispatch(user, command, fixed_type="MILKING_CREATE")
+    assert status == 200  # The event occurred on Oct 1; syncing on a later day is valid.
+    update = update_command(command)
+    update["payload"]["date"] = "2026-10-02"
+    response, status = dispatch(user, update)
+    assert status == 422 and Milking.objects.get().date.isoformat() == "2026-10-01"
+
+    from tests.test_milking_confirm import confirm_command
+
+    confirm = confirm_command(command)
+    confirm["occurred_at"] = datetime(2026, 10, 2, 12, tzinfo=ZoneInfo("America/Lima")).isoformat()
+    response, status = dispatch(user, confirm)
+    assert status == 422 and Milking.objects.get().production.state == "BORRADOR"
+
+
+def test_future_device_clock_cannot_register_tomorrows_milking(user):
+    command, _ = setup_milking(user)
+    future = timezone.now() + timedelta(days=1)
+    command["occurred_at"] = future.isoformat()
+    command["payload"]["date"] = future.astimezone(ZoneInfo("America/Lima")).date().isoformat()
+    response, status = dispatch(user, command, fixed_type="MILKING_CREATE")
+    assert status == 422 and response["error"]["code"] == "VALIDATION_ERROR"
+    assert not Milking.objects.exists()
+
+
+def test_utc_midnight_still_uses_peru_calendar_date(user):
+    command, _ = setup_milking(user)
+    command["occurred_at"] = "2026-10-02T00:30:00+00:00"  # Oct 1 at 19:30 in Peru.
+    response, status = dispatch(user, command, fixed_type="MILKING_CREATE")
+    assert status == 200 and response["result"]["date"] == "2026-10-01"
 
 
 def test_update_checks_version_and_animal_scope(api, user):

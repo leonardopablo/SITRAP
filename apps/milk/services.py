@@ -1,4 +1,6 @@
+from datetime import datetime, timedelta
 from decimal import Decimal
+from zoneinfo import ZoneInfo
 
 from django.db import IntegrityError, transaction
 from django.db.models import Q
@@ -135,8 +137,20 @@ def parse_payload(serializer_class, payload):
     return serializer.validated_data
 
 
+def require_registration_date(command, date):
+    # Compare with the moment the offline intention was recorded, not its later sync.
+    occurred_at = datetime.fromisoformat(command["occurred_at"])
+    if occurred_at > timezone.now() + timedelta(minutes=5):
+        raise DomainError("VALIDATION_ERROR", "La hora del dispositivo está adelantada.", 422)
+    if date != occurred_at.astimezone(ZoneInfo("America/Lima")).date():
+        raise DomainError(
+            "VALIDATION_ERROR", "El ordeño debe tener la fecha en que se registró en Perú.", 422
+        )
+
+
 def create_milking(actor, command, operation):
     data = parse_payload(MilkingCreatePayload, command["payload"])
+    require_registration_date(command, data["date"])
     link = CenterProduct.objects.filter(
         center_id=data["center_id"],
         product_id=data["product_id"],
@@ -216,6 +230,7 @@ def locked_milking(command):
 
 def update_milking(actor, command, operation):
     data = parse_payload(MilkingUpdatePayload, command["payload"])
+    require_registration_date(command, data["date"])
     milking = locked_milking(command)
     production = milking.production
     if production.state != "BORRADOR":
@@ -264,6 +279,7 @@ def update_milking(actor, command, operation):
 def confirm_milking(actor, command, operation):
     data = parse_payload(MilkingConfirmPayload, command["payload"])
     milking = locked_milking(command)
+    require_registration_date(command, milking.date)
     production = milking.production
     if production.state != "BORRADOR":
         raise DomainError("INVALID_STATE", "La producción ya no es borrador.")
