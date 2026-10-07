@@ -68,6 +68,13 @@ export function backendPath(path: string) {
   return `${route}?${params}`
 }
 
+function limaDate(instant: string | null | undefined) {
+  if (!instant) return null
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Lima', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date(instant))
+  const value = (type: string) => parts.find(part => part.type === type)?.value
+  return `${value('year')}-${value('month')}-${value('day')}`
+}
+
 // Keep the display model separate from the server's versioned document model.
 export function adaptResponse(path: string, value: unknown): unknown {
   if (!value || typeof value !== 'object') return value
@@ -101,7 +108,7 @@ export function adaptResponse(path: string, value: unknown): unknown {
   }
   if (path.startsWith('/metrics/transfers')) return { ...data, cutoff_at: data.cutoff, time_zone: data.timezone,
     days: data.days?.map((day: Record<string, any>) => ({ ...day, picked_litres: day.picked_up_liters, received_litres: day.received_liters,
-      transfers: data.records?.filter((record: Record<string, any>) => record.pickup_at?.slice(0, 10) === day.date || record.reception_at?.slice(0, 10) === day.date).map((record: Record<string, any>) => ({ ...record, id: record.transfer_id, picked_litres: record.pickup_in_period ? record.liters : '0', received_litres: record.reception_in_period ? record.liters : '0' })) })) }
+      transfers: data.records?.filter((record: Record<string, any>) => limaDate(record.pickup_at) === day.date || limaDate(record.reception_at) === day.date).map((record: Record<string, any>) => ({ ...record, id: record.transfer_id, picked_litres: limaDate(record.pickup_at) === day.date ? record.liters : '0', received_litres: limaDate(record.reception_at) === day.date ? record.liters : '0' })) })) }
   return data
 }
 

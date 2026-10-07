@@ -38,6 +38,20 @@ def test_calendar_physical_lima_dates_and_corrected_current_quantity(user):
     assert data["records"][0]["version_id"] == str(transfer.current_version_id)
 
 
+def test_driver_calendar_counts_milk_with_configured_product_code(user):
+    transfer = corrected_transfer(user)
+    product = transfer.current_version.lines.first().presentation.product
+    product.code = "0001"
+    product.save(update_fields=["code"])
+
+    driver = transfer.current_version.driver
+    data = client_for(driver).get("/api/v1/metrics/transfers", PERIOD).json()
+    assert data["picked_up_liters"] == "4.000"
+    assert data["received_liters"] == "4.000"
+    assert sum(float(day["picked_up_liters"]) for day in data["days"]) == 4.0
+    assert data["records"][0]["liters"] == "4.000"
+
+
 def test_metrics_only_assigned_people_and_filters(user):
     transfer = corrected_transfer(user)
     driver = transfer.current_version.driver

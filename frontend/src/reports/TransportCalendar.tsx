@@ -14,13 +14,15 @@ export function TransportCalendar() {
   const [current, setCurrent] = useState({ year: now.getFullYear(), month: now.getMonth() })
   const [selected, setSelected] = useState<string | null>(null)
   const range = monthRange(current.year, current.month)
-  const query = useQuery({ queryKey: ['transport-calendar', account?.id, range.from, range.to], queryFn: () => api.request<TransferMetrics>(`/metrics/transfers?from=${range.from}&to=${range.to}`), enabled: !!account && online })
+  const query = useQuery({ queryKey: ['transport-calendar', account?.id, range.from, range.to], queryFn: () => api.request<TransferMetrics>(`/metrics/transfers?from=${range.from}&to=${range.to}`), enabled: !!account && online,
+    refetchInterval: () => navigator.onLine && document.visibilityState === 'visible' ? 10000 : false, refetchOnWindowFocus: true })
   const days = query.data?.days ?? []
   function move(offset: number) { const date = new Date(Date.UTC(current.year, current.month + offset, 1)); setCurrent({ year: date.getUTCFullYear(), month: date.getUTCMonth() }); setSelected(null) }
   return <section className="stack"><h1>Diario de transporte</h1>
     {apiMode === 'mock' && <Notice tone="warning">Calendario de datos de demostración. No representa viajes confirmados en el servidor.</Notice>}
     <p>Litros recogidos y litros recibidos en destino son medidas distintas; no deben sumarse como producción.</p>
     <div className="row"><Button variant="secondary" onClick={() => move(-1)} aria-label="Mes anterior">‹</Button><h2>{monthLabel(current.year, current.month)}</h2><Button variant="secondary" onClick={() => move(1)} aria-label="Mes siguiente">›</Button></div>
+    <Button variant="secondary" disabled={!online} onClick={() => void query.refetch()}>Actualizar calendario</Button>
     {query.isPending && <Notice>Cargando período…</Notice>}
     {query.isError && <Notice tone="error">No se pudieron consultar los viajes. <Button variant="secondary" onClick={() => void query.refetch()}>Reintentar</Button></Notice>}
     {query.data && <><p>Corte: {new Intl.DateTimeFormat('es-PE', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Lima' }).format(new Date(query.data.cutoff_at))} · {query.data.time_zone}</p>

@@ -124,8 +124,7 @@ def transfer_metrics(actor, filters, purpose=None):
             (
                 line.quantity
                 for line in version.lines.all()
-                if line.presentation.product.code == "LECHE"
-                and (
+                if (
                     "product_id" not in filters
                     or line.presentation.product_id == filters["product_id"]
                 )
