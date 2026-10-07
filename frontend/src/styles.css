@@ -63,6 +63,7 @@
 }
 
 * { box-sizing: border-box; }
+html:has(.workspace) { scrollbar-gutter: stable; }
 body { margin: 0; font-family: var(--font-sans); font-size: var(--text-base); line-height: var(--leading-body); color: var(--color-text); background: var(--color-background); }
 header, main { max-width: var(--content-max); margin-inline: auto; padding: var(--space-4); }
 header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }

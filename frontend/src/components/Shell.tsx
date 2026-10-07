@@ -59,7 +59,7 @@ export function Shell() {
         <Dialog open={confirm} title="Operaciones pendientes" onClose={() => setConfirm(false)}><p>Hay registros guardados solo en este teléfono. Puedes sincronizarlos primero o cerrar conservándolos bloqueados para esta misma cuenta.</p><div className="row"><Button variant="secondary" onClick={() => { setConfirm(false); navigate('/sincronizacion') }}>Sincronizar primero</Button><Button onClick={() => void closeSession()}>Cerrar y conservar</Button></div></Dialog>
         {error && <Notice tone="error">{error}</Notice>}
       </section>
-      {assignment && <nav className="workspace-nav" aria-label="Navegación principal">{navigation[assignment.role].map(item => <NavLink key={item.to} to={item.to}>{item.label}</NavLink>)}</nav>}
+      {assignment && <nav className="workspace-nav" aria-label="Navegación principal">{navigation[assignment.role].map(item => <NavLink key={item.to} to={item.to} end>{item.label}</NavLink>)}</nav>}
     </aside>
     <div className="workspace-content" key={`${account?.id}:${assignment?.id}`}><Outlet /></div>
   </div>
