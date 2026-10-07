@@ -35,6 +35,7 @@ export async function unsubscribePhone(id: string, accountId: string) {
 }
 export async function unsubscribeBrowserOnLogout() {
   if (!pushSupported()) return
-  const registration = await navigator.serviceWorker.ready
-  await (await registration.pushManager.getSubscription())?.unsubscribe()
+  // `ready` may never resolve if this page has no active Service Worker.
+  const registration = await navigator.serviceWorker.getRegistration()
+  await (await registration?.pushManager.getSubscription())?.unsubscribe()
 }

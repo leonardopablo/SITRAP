@@ -26,6 +26,13 @@ it('bloquea rutas de otro rol y limpia cuenta y ámbito al salir', async () => {
   await userEvent.click(screen.getByRole('button', { name: 'Cerrar sesión' }))
   expect(await screen.findByRole('heading', { name: 'Acceso a SITRAP' })).toBeVisible()
   expect(screen.queryByText('@transporte')).not.toBeInTheDocument()
+  const username = screen.getByLabelText('Usuario')
+  const password = screen.getByLabelText('Contraseña')
+  expect(username).not.toHaveAttribute('readonly')
+  await userEvent.type(username, 'admin')
+  await userEvent.type(password, 'una-clave')
+  expect(username).toHaveValue('admin')
+  expect(password).toHaveValue('una-clave')
 })
 
 it('ofrece recuperación para una ruta desconocida', async () => {

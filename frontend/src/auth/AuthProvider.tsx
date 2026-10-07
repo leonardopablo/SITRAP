@@ -49,8 +49,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
   async function logout() {
     await api.post('/auth/logout')
-    await unsubscribeBrowserOnLogout().catch(() => { /* server session is already revoked; browser may be offline */ })
     cache.clear(); setAccount(null); setExpiredAccount(null)
+    // The server session is already revoked. Browser push cleanup must not hold
+    // the login screen hostage if the Service Worker is unavailable or slow.
+    void unsubscribeBrowserOnLogout().catch(() => { /* browser may be offline */ })
   }
   async function lock() { if (account) { await getDevice(account.id); await db.devices.update(account.id, { needs_revoke: true }) } cache.clear(); setAccount(null); setExpiredAccount(null) }
   async function changePassword(current: string, next: string) {
