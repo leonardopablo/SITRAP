@@ -10,7 +10,8 @@ export default defineConfig(({ mode }) => ({
     includeAssets: ['brand/*', 'illustrations/*'],
     manifest: { name: 'SITRAP — Trazabilidad', short_name: 'SITRAP', description: 'Cada producto tiene una historia', lang: 'es-PE', start_url: '/', scope: '/', display: 'standalone', theme_color: '#237a57', background_color: '#f5f5f7', icons: [
       { src: '/brand/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-      { src: '/brand/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+      { src: '/brand/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/brand/icon-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
     ] },
     injectManifest: { globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'] },
   })],

@@ -1,6 +1,4 @@
 export function Logo({ compact = false }: { compact?: boolean }) {
-  return <span className="row" aria-label="SITRAP">
-    <img src="/brand/sitrap-symbol.svg" width={compact ? 32 : 48} height={compact ? 32 : 48} alt="" />
-    {!compact && <strong className="text-xl tracking-wider">SITRAP</strong>}
-  </span>
+  return <img src={compact ? '/brand/sitrap-icon.svg' : '/brand/sitrap-logo.svg'}
+    width={compact ? 40 : 170} height={compact ? 40 : 70} alt="SITRAP" />
 }
