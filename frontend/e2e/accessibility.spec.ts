@@ -1,6 +1,31 @@
 import { test, expect } from '@playwright/test'
 
 for (const width of [320, 1280]) {
+  test(`el acceso queda centrado y utilizable a ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 760 })
+    await page.goto('/acceso')
+    const card = page.locator('.auth-card')
+    await expect(card).toBeVisible()
+    const bounds = await card.boundingBox()
+    const header = await page.locator('header.auth-header').boundingBox()
+    const main = await page.locator('main').boundingBox()
+    const logo = await page.locator('header.auth-header img').boundingBox()
+    expect(bounds).not.toBeNull()
+    expect(header).not.toBeNull()
+    expect(main).not.toBeNull()
+    expect(logo).not.toBeNull()
+    expect(Math.abs(bounds!.x - (width - bounds!.x - bounds!.width))).toBeLessThanOrEqual(2)
+    expect(Math.abs(logo!.x - (width - logo!.x - logo!.width))).toBeLessThanOrEqual(2)
+    expect(logo!.width).toBeGreaterThanOrEqual(200)
+    if (header!.height + main!.height <= 760) {
+      expect(Math.abs((header!.y + main!.y + main!.height) / 2 - 380)).toBeLessThanOrEqual(2)
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    expect(await page.getByRole('heading', { name: 'Acceso a SITRAP' }).evaluate(element => getComputedStyle(element).textAlign)).toBe('center')
+    await expect(page.getByLabel('Usuario')).toBeVisible()
+    await expect(page.getByLabel('Contraseña')).toBeVisible()
+  })
+
   test(`acceso y navegación por teclado sin desborde horizontal a ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 760 })
     await page.goto('/')

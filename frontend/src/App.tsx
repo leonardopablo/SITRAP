@@ -1,4 +1,4 @@
-import { Link, Route, Routes } from 'react-router-dom'
+import { Link, Route, Routes, useLocation } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import { Logo } from './components/Logo'
 import { Illustration } from './components/Illustration'
@@ -34,9 +34,11 @@ import { FieldNotes } from './offline/FieldNotes'
 const MilkAnalytics = lazy(() => import('./reports/MilkAnalytics').then(module => ({ default: module.MilkAnalytics })))
 
 export function App() {
-  return <>
+  const { pathname } = useLocation()
+  const authScreen = pathname === '/acceso' || pathname === '/cuenta/clave'
+  return <div className={authScreen ? 'auth-layout' : undefined}>
     <a className="skip-link" href="#contenido">Saltar al contenido</a>
-    <header><Link to="/" aria-label="SITRAP, inicio"><Logo /></Link><PwaControls /></header>
+    <header className={authScreen ? 'auth-header' : undefined}><Link to="/" aria-label="SITRAP, inicio"><Logo /></Link><PwaControls /></header>
     <main id="contenido" tabIndex={-1}>
       {apiMode === 'mock' && <Notice tone="warning">Modo simulado · Los datos no están guardados en el servidor SITRAP.</Notice>}
       <Routes>
@@ -80,5 +82,5 @@ export function App() {
         <Route path="*" element={<><h1>Página no encontrada</h1><Link to="/">Volver al inicio</Link></>} />
       </Routes>
     </main>
-  </>
+  </div>
 }

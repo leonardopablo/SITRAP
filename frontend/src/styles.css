@@ -66,6 +66,9 @@
 body { margin: 0; font-family: var(--font-sans); font-size: var(--text-base); line-height: var(--leading-body); color: var(--color-text); background: var(--color-background); }
 header, main { max-width: var(--content-max); margin-inline: auto; padding: var(--space-4); }
 header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+.auth-layout { min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; }
+.auth-layout > header, .auth-layout > main { width: 100%; }
+header.auth-header { flex-direction: column; justify-content: center; }
 h1 { font-size: var(--text-page); font-weight: 750; color: var(--color-brand-ink); line-height: 1.2; margin-block: var(--space-4); }
 h2 { font-size: var(--text-section); font-weight: 700; margin-block: var(--space-3); }
 h3 { font-size: var(--text-card); font-weight: 700; }
@@ -83,6 +86,8 @@ a, button, input, select, textarea { touch-action: manipulation; }
 .stack { display: grid; gap: var(--space-4); }
 .row { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-3); }
 .form { max-width: var(--form-max); }
+.auth-card { width: 100%; margin-inline: auto; }
+.auth-card h1 { font-size: var(--text-section); text-align: center; }
 .field { display: grid; gap: var(--space-2); min-width: 0; }
 .field label { font-weight: 650; }
 .field input, .field select, .field textarea { width: 100%; min-height: var(--control-height); border: 1px solid var(--color-border-control); background: var(--color-surface); border-radius: var(--radius-control); padding: var(--space-3); font: inherit; }

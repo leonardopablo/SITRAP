@@ -16,7 +16,7 @@ export function AccessPage() {
   const { register, handleSubmit, resetField, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(loginSchema), defaultValues: { username: auth.expiredAccount?.username ?? '', password: '' } })
   const from = typeof location.state?.from === 'string' && /^\/(?!\/)/.test(location.state.from) && !location.state.from.startsWith('/acceso') ? location.state.from : '/hoy'
   if (auth.account) return <Navigate to={auth.account.change_password_required ? '/cuenta/clave' : from} replace />
-  return <section className="card form stack">
+  return <section className="card form stack auth-card">
     <h1>Acceso a SITRAP</h1>
     {auth.expiredAccount && <Notice tone="warning">Tu sesión venció. Ingresa con {auth.expiredAccount.username}; tus operaciones pendientes se conservan.</Notice>}
     {auth.error && <Notice tone="error">{auth.error}<Button variant="secondary" onClick={() => void auth.refresh()}>Reintentar</Button></Notice>}
@@ -39,7 +39,7 @@ export function PasswordPage() {
   const [done, setDone] = useState(false)
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(passwordSchema) })
   if (done) return <Navigate to="/hoy" replace />
-  return <section className="card form stack"><h1>Cambiar contraseña</h1>
+  return <section className="card form stack auth-card"><h1>Cambiar contraseña</h1>
     {auth.account?.change_password_required && <Notice tone="warning">Tu contraseña es temporal. Cámbiala antes de continuar.</Notice>}
     <form className="stack" onSubmit={handleSubmit(async values => { setError(''); try { await auth.changePassword(values.current, values.next); reset(); setDone(true) } catch (e) { setError((e as Error).message) } })}>
       <Field label="Contraseña actual" type="password" autoComplete="current-password" {...register('current')} error={errors.current?.message} />
