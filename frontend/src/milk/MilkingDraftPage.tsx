@@ -34,6 +34,7 @@ export function MilkingDraftPage() {
   const [offlineTurns, setOfflineTurns] = useState<{ id: string; name: string; active: boolean }[]>([])
   const [offlineProducts, setOfflineProducts] = useState<{ id: string }[]>([])
   const confirmation = useLiveQuery(() => draft?.confirm_event_id ? db.events.get(draft.confirm_event_id) : undefined, [draft?.confirm_event_id])
+  const confirmed = !!draft?.confirm_event_id && confirmation?.status === 'APLICADA'
   const source = useQuery({ queryKey: ['milking-animals', account?.id, assignment?.id], queryFn: () => api.request<Page<Animal>>('/animals'), enabled: !!account && !!assignment && online })
   const turns = useQuery({ queryKey: ['turns', account?.id], queryFn: () => api.request<Page<{ id: string; name: string; active: boolean }>>('/turns'), enabled: !!account && online })
   const products = useQuery({ queryKey: ['milk-products', account?.id, assignment?.id], queryFn: async () => {
@@ -102,6 +103,13 @@ export function MilkingDraftPage() {
     finally { setSaving(false) }
   }
   const unchanged = !!draft && draft.date === date && draft.shift_id === shift && JSON.stringify(draft.values) === JSON.stringify(values)
+  async function startAnother() {
+    if (!account || !assignment?.location_id || !confirmed) return
+    // Remove only the form's pointer to the finished production. Its commands,
+    // lot, transfer and audit trail remain intact in the device and server.
+    await db.copies.delete(JSON.stringify([account.id, 'milking-draft', assignment.location_id]))
+    setDraft(null); setValues({}); setDate(todayLima()); setShift(''); setReview(false); setError('')
+  }
   async function confirm() {
     if (!account || !assignment?.location_id || !draft || draft.confirm_event_id || saving) return
     setError('')
@@ -125,7 +133,9 @@ export function MilkingDraftPage() {
   return <section className="stack form"><h1>Registrar producción por vaca</h1>
     {apiMode === 'mock' && <Notice tone="warning">Modo simulado: este registro puede guardarse solo en este teléfono; nadie más lo verá. No existe lote ni aviso remoto.</Notice>}
     {!ready && <Notice>Cargando borrador local…</Notice>}
-    <div className="field"><label htmlFor="milking-date">Fecha de ordeño</label><input id="milking-date" type="date" value={date} onChange={event => setDate(event.target.value)} /></div>
+    {confirmed && <Notice tone="success">Este ordeño del {draft?.date} ya fue confirmado. Para otra fecha o turno, inicia un registro nuevo; no se modificará este lote. Solo puede existir un ordeño por centro, fecha y turno.</Notice>}
+    {confirmed && <Button type="button" onClick={() => void startAnother()}>Iniciar otro ordeño</Button>}
+    {!confirmed && <><div className="field"><label htmlFor="milking-date">Fecha de ordeño</label><input id="milking-date" type="date" value={date} onChange={event => setDate(event.target.value)} /></div>
     <div className="field"><label htmlFor="milking-shift">Turno</label><select id="milking-shift" value={shift} onChange={event => setShift(event.target.value)}><option value="">Selecciona turno</option>{(online ? turns.data?.results : offlineTurns)?.filter(item => item.active).map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>
     <p className="help">Centro: {assignment?.location_name}. Vacío significa sin dato; 0 L significa cero explícito.</p>
     {animals.length === 0 && <Notice tone="warning">No hay vacas activas descargadas. Consulta Vacas con conexión y prepara el dispositivo.</Notice>}
@@ -142,6 +152,7 @@ export function MilkingDraftPage() {
     </section>}
     {draft && !draft.confirm_event_id && <Notice tone="warning">Borrador guardado en este teléfono. Pendiente de enviar. Evento {draft.last_event_id}. No confirmado en el sistema.</Notice>}
     {draft?.confirm_event_id && confirmation?.status !== 'APLICADA' && <Notice tone="warning">Confirmación guardada solo en este teléfono. Evento {draft.confirm_event_id}. El lote {draft.lot_id} todavía no existe en el servidor; no puedes enviar una entrega a otra persona hasta recibir acuse.</Notice>}
-    {confirmation?.status === 'APLICADA' && <Notice tone="success"><AcceptedMark label="Producción confirmada por el servidor" />. Lote {draft?.lot_id}. <Link to="/entregas/preparar">Preparar entrega</Link></Notice>}
+    </>}
+    {confirmed && <Notice tone="success"><AcceptedMark label="Producción confirmada por el servidor" />. Lote {draft?.lot_id}. <Link to="/entregas/preparar">Preparar entrega</Link></Notice>}
   </section>
 }
