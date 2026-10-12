@@ -41,7 +41,7 @@ export function createApiClient(transport: Transport, onExpired = () => window.d
   async function pdf(path: string): Promise<Blob> {
     if (!path.startsWith('/reports/') || !path.includes('.pdf') || path.startsWith('//')) throw new Error('Informe no autorizado por este cliente.')
     let response: Response
-    try { response = await transport(`/api/v1${apiMode === 'http' ? backendPath(path) : path}`, { credentials: 'same-origin', headers: { Accept: 'application/pdf' } }) }
+    try { response = await transport(`/api/v1${apiMode === 'http' ? backendPath(path) : path}`, { credentials: 'same-origin', headers: { Accept: 'application/json, application/pdf' } }) }
     catch { throw new ApiError(0, { code: 'NETWORK_ERROR', message: 'Conéctate para descargar el PDF.', retryable: true }) }
     if (!response.ok) {
       const raw = await response.json().catch(() => null)

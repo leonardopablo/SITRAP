@@ -4,7 +4,7 @@ it('descarga solo MIME PDF y envía cookies al mismo origen', async () => {
   const transport = vi.fn(async (_input: string, _init?: RequestInit) => new Response(new Blob(['%PDF-1.7'], { type: 'application/pdf' }), { headers: { 'Content-Type': 'application/pdf' } }))
   const client = createApiClient(transport)
   expect((await client.pdf('/reports/production.pdf?from=2026-10-01')).type).toBe('application/pdf')
-  expect(transport.mock.calls[0][1]).toMatchObject({ credentials: 'same-origin' })
+  expect(transport.mock.calls[0][1]).toMatchObject({ credentials: 'same-origin', headers: { Accept: 'application/json, application/pdf' } })
   await expect(client.pdf('/users/secret.pdf')).rejects.toThrow('no autorizado')
 })
 

@@ -67,3 +67,19 @@ it('no descarta mientras haya operaciones locales de ese ordeño pendientes', as
   expect(await screen.findByText(/Hay operaciones de este borrador pendientes/)).toBeVisible()
   expect(post).not.toHaveBeenCalled()
 })
+
+it('permite revisar y confirmar un borrador existente sin copia local', async () => {
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date())
+  const complete = { ...draft, date: today, details: [{ animal_id: 'cow', code: 'V1', litres: '82.000' }] }
+  vi.spyOn(api, 'request').mockResolvedValue(complete)
+  const post = vi.spyOn(api, 'post').mockResolvedValue({ status: 'APLICADA' })
+  await db.devices.put({ account_id: 'discard-test', device_id: 'device', registered: true, prepared_until: null })
+  show()
+  const user = userEvent.setup()
+  await user.click(await screen.findByRole('button', { name: 'Revisar y confirmar producción' }))
+  expect(screen.getAllByText('V1: 82.000 L')).toHaveLength(2)
+  await user.click(screen.getByRole('button', { name: 'Confirmar producción' }))
+  expect(await screen.findByText('Confirmación simulada; no se creó un lote real.')).toBeVisible()
+  expect(post).toHaveBeenCalledWith(`/milkings/${id}/confirm`, expect.objectContaining({ type: 'MILKING_CONFIRM', entity_id: id, expected_version: 1, payload: expect.objectContaining({ version_id: 'version' }) }))
+  expect(await readCopy('discard-test', 'milking-draft', 'center')).toBeUndefined()
+})
