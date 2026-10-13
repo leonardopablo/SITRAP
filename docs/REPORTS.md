@@ -31,6 +31,12 @@ La CI ya prepara esas bibliotecas.
 Windows: `python scripts/setup_pdf_windows.py` descarga el runtime onedir oficial
 v70.0 en .local/weasyprint70 y verifica SHA-256. Configurar en .env (ruta absoluta):
 `WEASYPRINT_DLL_DIRECTORIES=<repo>/.local/weasyprint70/onedir/weasyprint/_internal`.
+El arranque de Django precarga `libwinpthread-1.dll` de este runtime antes que
+`psycopg`/PostgreSQL: la DLL homónima incluida con PostgreSQL 18 impide cargar
+Pango si se importa primero. Reiniciar Django después de cambiar `.env`; no
+apuntar a un runtime alojado en otra copia del repositorio. Si el directorio
+configurado no existe, Django sigue funcionando pero deja un aviso en el log
+y la generación de PDF no estará disponible.
 No instala servicios ni altera PATH global. Alternativa: MSYS2/Pango según la
 [documentación oficial](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#windows).
 La [publicación 70.0](https://github.com/Kozea/WeasyPrint/releases/tag/v70.0) incluye
