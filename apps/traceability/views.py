@@ -63,6 +63,16 @@ class LotDetailView(generics.RetrieveAPIView):
         return Response(LotSerializer(lot_data(self.get_object())).data)
 
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter(
+            "state",
+            str,
+            description="Filtrar por estado exacto de la entrega.",
+            enum=["BORRADOR", "PENDIENTE_RECOGIDA", "EN_CAMINO", "RECIBIDO", "CANCELADO"],
+        )
+    ]
+)
 class TransfersView(generics.ListAPIView):
     @extend_schema(request=TransferCreateCommand, responses=command_responses())
     def post(self, request):
@@ -72,7 +82,11 @@ class TransfersView(generics.ListAPIView):
     serializer_class = TransferSerializer
 
     def get_queryset(self):
-        return scoped_transfers(self.request.user).order_by("code", "id")
+        queryset = scoped_transfers(self.request.user)
+        state = self.request.query_params.get("state", "").strip()
+        if state:
+            queryset = queryset.filter(state=state)
+        return queryset.order_by("code", "id")
 
     def list(self, request, *args, **kwargs):
         page = self.paginate_queryset(self.get_queryset())

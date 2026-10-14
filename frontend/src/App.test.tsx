@@ -67,3 +67,16 @@ it('permite al administrador encontrar y abrir la creación de cuentas desde su 
   expect(screen.getByRole('heading', { name: 'Trazabilidad' })).toBeVisible()
   await api.post('/auth/logout')
 })
+
+it('permite a producción recuperar un borrador de entrega desde Hoy', async () => {
+  await api.post('/auth/login', { username: 'produccion', password: 'Demostracion123!' })
+  await act(async () => { renderApp('/hoy') })
+  expect(await screen.findByRole('heading', { name: 'Entregas pendientes de enviar' })).toBeVisible()
+  expect(await screen.findByText(/todavía no se notificó al conductor/)).toBeVisible()
+  const review = screen.getByRole('link', { name: 'Revisar y enviar' })
+  expect(review).toHaveAttribute('href', '/entregas/77777777-7777-4777-8777-777777777777')
+  await userEvent.click(review)
+  expect(await screen.findByRole('heading', { name: 'DEMO-BORRADOR-01' })).toBeVisible()
+  expect(screen.getByRole('button', { name: 'Enviar solicitud a transporte' })).toBeVisible()
+  await api.post('/auth/logout')
+})

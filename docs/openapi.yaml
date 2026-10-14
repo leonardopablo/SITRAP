@@ -2796,6 +2796,17 @@ paths:
         description: El índice inicial a partir del cual devolver los resultados.
         schema:
           type: integer
+      - in: query
+        name: state
+        schema:
+          type: string
+          enum:
+          - BORRADOR
+          - CANCELADO
+          - EN_CAMINO
+          - PENDIENTE_RECOGIDA
+          - RECIBIDO
+        description: Filtrar por estado exacto de la entrega.
       tags:
       - transfers
       security:
@@ -2809,6 +2820,18 @@ paths:
           description: ''
     post:
       operationId: transfers_create
+      parameters:
+      - in: query
+        name: state
+        schema:
+          type: string
+          enum:
+          - BORRADOR
+          - CANCELADO
+          - EN_CAMINO
+          - PENDIENTE_RECOGIDA
+          - RECIBIDO
+        description: Filtrar por estado exacto de la entrega.
       tags:
       - transfers
       requestBody:

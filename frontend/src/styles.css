@@ -124,6 +124,9 @@ dialog::backdrop { background: #0008; }
 .workspace-account__toggle { display: none; }
 .workspace-content { min-width: 0; }
 .workspace-content :is(p, li, .notice) { overflow-wrap: anywhere; }
+.pending-transfer-drafts { margin-block: var(--space-4); }
+.pending-transfer-card { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
+.pending-transfer-card p { margin-block: var(--space-1) 0; }
 .workspace-nav__scroller { display: grid; gap: var(--space-1); }
 .workspace-nav a { display: flex; align-items: center; gap: var(--space-3); min-height: 3.5rem; padding: var(--space-2) var(--space-3); text-decoration: none; border-radius: var(--radius-control); font-weight: 600; }
 .workspace-nav__icon { flex: none; }
@@ -214,6 +217,8 @@ dialog::backdrop { background: #0008; }
   .workspace-account:has(.is-open) .workspace-account__username, .workspace-account:has(.is-open) .workspace-account__location { display: inline; }
   .workspace-account__toggle { display: inline-flex; width: 100%; }
   .workspace-account__tools:not(.is-open) { display: none; }
+  .pending-transfer-card { align-items: stretch; flex-direction: column; }
+  .pending-transfer-card .button { width: 100%; }
   .workspace-nav { position: fixed; z-index: 2; bottom: 0; left: 0; right: 0; display: flex; align-items: stretch; background: var(--color-surface); border-top: 1px solid var(--color-border-control); padding: var(--space-1) var(--space-1) calc(var(--space-1) + env(safe-area-inset-bottom)); }
   .workspace-nav__scroller { display: flex; flex: 1; min-width: 0; gap: var(--space-1); overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: none; }
   .workspace-nav__scroller::-webkit-scrollbar { display: none; }

@@ -5764,6 +5764,8 @@ export interface operations {
                 limit?: number;
                 /** @description El índice inicial a partir del cual devolver los resultados. */
                 offset?: number;
+                /** @description Filtrar por estado exacto de la entrega. */
+                state?: "BORRADOR" | "CANCELADO" | "EN_CAMINO" | "PENDIENTE_RECOGIDA" | "RECIBIDO";
             };
             header?: never;
             path?: never;
@@ -5783,7 +5785,10 @@ export interface operations {
     };
     transfers_create: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Filtrar por estado exacto de la entrega. */
+                state?: "BORRADOR" | "CANCELADO" | "EN_CAMINO" | "PENDIENTE_RECOGIDA" | "RECIBIDO";
+            };
             header?: never;
             path?: never;
             cookie?: never;

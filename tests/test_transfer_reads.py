@@ -92,3 +92,17 @@ def test_admin_and_timeline(user):
     version.save()
     data = client_for(admin).get(f"/api/v1/transfers/{transfer.id}/timeline").json()
     assert len(data) == 1 and data[0]["type"] == "VERSION_PUBLISHED"
+
+
+def test_producer_can_filter_drafts_pending_send(user):
+    transfer, *_ = transfer_fixture(user)
+    client = client_for(user)
+    response = client.get("/api/v1/transfers?state=BORRADOR")
+    assert response.status_code == 200
+    assert response.json()["count"] == 1
+    assert response.json()["results"][0]["id"] == str(transfer.id)
+    assert "send" in response.json()["results"][0]["capabilities"]
+
+    transfer.state = "PENDIENTE_RECOGIDA"
+    transfer.save(update_fields=["state"])
+    assert client.get("/api/v1/transfers?state=BORRADOR").json()["count"] == 0
