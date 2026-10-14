@@ -127,6 +127,9 @@ dialog::backdrop { background: #0008; }
 .pending-transfer-drafts { margin-block: var(--space-4); }
 .pending-transfer-card { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
 .pending-transfer-card p { margin-block: var(--space-1) 0; }
+.pending-transfer-previous summary { cursor: pointer; font-weight: 750; color: var(--color-brand-ink); padding-block: var(--space-1); }
+.pending-transfer-previous[open] summary { margin-bottom: var(--space-4); }
+.pending-transfer-previous .pending-transfer-card { background: var(--color-background); }
 .workspace-nav__scroller { display: grid; gap: var(--space-1); }
 .workspace-nav a { display: flex; align-items: center; gap: var(--space-3); min-height: 3.5rem; padding: var(--space-2) var(--space-3); text-decoration: none; border-radius: var(--radius-control); font-weight: 600; }
 .workspace-nav__icon { flex: none; }
