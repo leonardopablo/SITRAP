@@ -1,4 +1,4 @@
-from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
+from drf_spectacular.utils import OpenApiParameter, PolymorphicProxySerializer, extend_schema
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -35,11 +35,16 @@ def command_responses():
     }
 
 
+@extend_schema(parameters=[OpenApiParameter("code", str, description="Filtrar por parte del código de lote.")])
 class LotsView(generics.ListAPIView):
     serializer_class = LotSerializer
 
     def get_queryset(self):
-        return scoped_lots(self.request.user).order_by("-created_at", "id")
+        queryset = scoped_lots(self.request.user)
+        code = self.request.query_params.get("code", "").strip()
+        if code:
+            queryset = queryset.filter(code__icontains=code[:48])
+        return queryset.order_by("-created_at", "id")
 
     def list(self, request, *args, **kwargs):
         page = self.paginate_queryset(self.get_queryset())

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
-import { navigation, roleLabels, useWorkspace } from '../auth/workspace'
+import { roleLabels, useWorkspace } from '../auth/workspace'
 import { Button, Dialog, Notice } from './ui'
 import { SyncStatus } from '../offline/SyncPanel'
 import { useConnection } from '../offline/SyncPanel'
@@ -10,6 +10,7 @@ import { applyChanges } from '../offline/prepare'
 import { syncAccount } from '../offline/sync'
 import { apiMode } from '../api/client'
 import { InboxBell } from '../notifications/Inbox'
+import { WorkspaceNav } from './WorkspaceNav'
 
 export function Shell() {
   const { account, logout, lock } = useAuth()
@@ -19,6 +20,7 @@ export function Shell() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [confirm, setConfirm] = useState(false)
+  const [accountOpen, setAccountOpen] = useState(false)
   useEffect(() => {
     if (!account || apiMode !== 'http') return
     let working = false
@@ -44,22 +46,27 @@ export function Shell() {
   }
   return <div className="workspace">
     <aside className="workspace-sidebar">
-      <section className="card stack" aria-label="Cuenta y ámbito activos">
-        <strong>{account?.name}</strong><span>@{account?.username}</span>
-        {assignment && <><span className="badge">{roleLabels[assignment.role]}</span><span>{assignment.location_name}</span></>}
-        {(account?.assignments.length ?? 0) > 1 && <div className="field"><label htmlFor="workspace">Espacio de trabajo</label><select id="workspace" value={assignment?.id} onChange={event => { select(event.target.value); navigate('/hoy') }}>
-          {account?.assignments.map(item => <option key={item.id} value={item.id}>{roleLabels[item.role]} · {item.location_name}</option>)}
-        </select></div>}
-        <Link to="/cuenta/clave">Cambiar contraseña</Link>
-        <SyncStatus />
-        <InboxBell />
-        <Link to="/preferencias/avisos">Notificaciones del teléfono</Link>
-        <Button variant="secondary" busy={busy} onClick={async () => { if (account && await pendingCount(account.id)) setConfirm(true); else await closeSession() }}>Cerrar sesión</Button>
+      {assignment && <WorkspaceNav role={assignment.role} />}
+      <section className="card stack workspace-account" aria-label="Cuenta y ámbito activos">
+        <div className="workspace-account__identity">
+          <strong>{account?.name}</strong><span className="workspace-account__username">@{account?.username}</span>
+          {assignment && <><span className="badge">{roleLabels[assignment.role]}</span><span className="workspace-account__location">{assignment.location_name}</span></>}
+        </div>
+        <button type="button" className="button secondary workspace-account__toggle" aria-controls="workspace-account-tools" aria-expanded={accountOpen} onClick={() => setAccountOpen(value => !value)}>{accountOpen ? 'Ocultar opciones de cuenta' : 'Cuenta y ajustes'}{!online && ' · Sin conexión'}</button>
+        <div id="workspace-account-tools" className={`stack workspace-account__tools${accountOpen ? ' is-open' : ''}`}>
+          {(account?.assignments.length ?? 0) > 1 && <div className="field"><label htmlFor="workspace">Espacio de trabajo</label><select id="workspace" value={assignment?.id} onChange={event => { select(event.target.value); navigate('/hoy') }}>
+            {account?.assignments.map(item => <option key={item.id} value={item.id}>{roleLabels[item.role]} · {item.location_name}</option>)}
+          </select></div>}
+          <Link to="/cuenta/clave">Cambiar contraseña</Link>
+          <SyncStatus />
+          <InboxBell />
+          <Link to="/preferencias/avisos">Notificaciones del teléfono</Link>
+          <Button variant="secondary" busy={busy} onClick={async () => { if (account && await pendingCount(account.id)) setConfirm(true); else await closeSession() }}>Cerrar sesión</Button>
+        </div>
         {!online && <Notice tone="warning">Sin conexión: al cerrar solo se bloquea este teléfono. La sesión central seguirá activa hasta recuperar conexión y revocarla.</Notice>}
         <Dialog open={confirm} title="Operaciones pendientes" onClose={() => setConfirm(false)}><p>Hay registros guardados solo en este teléfono. Puedes sincronizarlos primero o cerrar conservándolos bloqueados para esta misma cuenta.</p><div className="row"><Button variant="secondary" onClick={() => { setConfirm(false); navigate('/sincronizacion') }}>Sincronizar primero</Button><Button onClick={() => void closeSession()}>Cerrar y conservar</Button></div></Dialog>
         {error && <Notice tone="error">{error}</Notice>}
       </section>
-      {assignment && <nav className="workspace-nav" aria-label="Navegación principal">{navigation[assignment.role].map(item => <NavLink key={item.to} to={item.to} end>{item.label}</NavLink>)}</nav>}
     </aside>
     <div className="workspace-content" key={`${account?.id}:${assignment?.id}`}><Outlet /></div>
   </div>

@@ -30,13 +30,15 @@ import { AdminOverview } from './reports/AdminOverview'
 import { UsersPage } from './admin/UsersPage'
 import { CatalogPage } from './admin/CatalogPage'
 import { ReassignReceiver } from './admin/ReassignReceiver'
+import { LotTracePage } from './admin/LotTracePage'
 import { FieldNotes } from './offline/FieldNotes'
+import { HelpPage } from './help/HelpPage'
 const MilkAnalytics = lazy(() => import('./reports/MilkAnalytics').then(module => ({ default: module.MilkAnalytics })))
 
 export function App() {
   const { pathname } = useLocation()
   const authScreen = pathname === '/acceso' || pathname === '/cuenta/clave'
-  return <div className={authScreen ? 'auth-layout' : undefined}>
+  return <div className={authScreen ? 'auth-layout' : 'app-layout'}>
     <a className="skip-link" href="#contenido">Saltar al contenido</a>
     <header className={authScreen ? 'auth-header' : undefined}><Link to="/" aria-label="SITRAP, inicio"><Logo /></Link><PwaControls /></header>
     <main id="contenido" tabIndex={-1}>
@@ -57,6 +59,7 @@ export function App() {
             <Route path="/correcciones/:id" element={<CorrectionPage />} />
             <Route path="/correcciones" element={<CorrectionHistory />} />
             <Route path="/preferencias/avisos" element={<PushPreferences />} />
+            <Route path="/ayuda" element={<HelpPage />} />
             <Route element={<RequireRole roles={['TRANSPORTE', 'RECEPCION']} />}><Route path="/informes/entregas" element={<PdfDeliveries />} /></Route>
             <Route element={<RequireRole roles={['PRODUCCION']} />}>
               <Route path="/produccion" element={<MilkingDraftPage />} />
@@ -75,6 +78,8 @@ export function App() {
               <Route path="/administracion/usuarios" element={<UsersPage />} />
               <Route path="/administracion/catalogos" element={<CatalogPage />} />
               <Route path="/administracion/reasignar" element={<ReassignReceiver />} />
+              <Route path="/administracion/lotes" element={<LotTracePage />} />
+              <Route path="/administracion/lotes/:id" element={<LotTracePage />} />
               <Route path="/reportes" element={<PendingFeature title="Reportes" />} />
             </Route>
           </Route>

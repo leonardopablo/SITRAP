@@ -59,3 +59,47 @@ class TimelineSerializer(serializers.Serializer):
     registered_at = serializers.DateTimeField(required=False)
     version_id = serializers.UUIDField()
     actor_id = serializers.UUIDField()
+
+
+class LotTraceMilestoneSerializer(serializers.Serializer):
+    at = serializers.DateTimeField()
+    registered_at = serializers.DateTimeField()
+    actor_name = serializers.CharField()
+
+
+class LotTraceOriginSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    code = serializers.CharField()
+    production_id = serializers.UUIDField()
+    state = serializers.CharField()
+    date = serializers.DateField()
+    confirmed_at = serializers.DateTimeField(allow_null=True)
+    center_name = serializers.CharField()
+    turn_name = serializers.CharField()
+    responsible_name = serializers.CharField()
+    quantity = serializers.DecimalField(max_digits=14, decimal_places=3)
+
+
+class LotTraceTransferSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    code = serializers.CharField()
+    state = serializers.CharField()
+    quantity = serializers.DecimalField(max_digits=14, decimal_places=3, allow_null=True)
+    origin_name = serializers.CharField()
+    destination_name = serializers.CharField()
+    driver_name = serializers.CharField()
+    receiver_name = serializers.CharField()
+    request_at = serializers.DateTimeField(allow_null=True)
+    pickup = LotTraceMilestoneSerializer(allow_null=True)
+    reception = LotTraceMilestoneSerializer(allow_null=True)
+    travel_minutes = serializers.IntegerField(allow_null=True)
+    inconsistent_time = serializers.BooleanField()
+    has_history = serializers.BooleanField()
+
+
+class LotTraceSerializer(serializers.Serializer):
+    lot = LotTraceOriginSerializer()
+    transfers = LotTraceTransferSerializer(many=True)
+    count = serializers.IntegerField()
+    draft_count = serializers.IntegerField()
+    next_offset = serializers.IntegerField(allow_null=True)

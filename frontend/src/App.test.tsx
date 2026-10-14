@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { App } from './App'
@@ -58,5 +58,12 @@ it('permite al administrador encontrar y abrir la creación de cuentas desde su 
   await userEvent.click(screen.getByRole('link', { name: 'Crear cuentas y asignar funciones' }))
   expect(await screen.findByRole('heading', { name: 'Crear cuenta' })).toBeVisible()
   expect(screen.getByRole('link', { name: 'Cuentas' })).toBeVisible()
+  const nav = screen.getByRole('navigation', { name: 'Navegación principal' })
+  expect(within(nav).getAllByRole('link')).toHaveLength(6)
+  expect(within(nav).getByRole('link', { name: 'Cuentas' })).toHaveAttribute('aria-current', 'page')
+  expect(within(nav).getAllByRole('link').every(link => link.querySelector('svg[aria-hidden="true"]'))).toBe(true)
+  await userEvent.click(within(nav).getByRole('link', { name: 'Ayuda' }))
+  expect(await screen.findByRole('heading', { name: 'Cómo usar SITRAP' })).toBeVisible()
+  expect(screen.getByRole('heading', { name: 'Trazabilidad' })).toBeVisible()
   await api.post('/auth/logout')
 })

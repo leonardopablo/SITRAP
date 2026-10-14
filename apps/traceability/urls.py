@@ -21,6 +21,7 @@ from .correction_views import (
     RejectCorrectionView,
     WithdrawCorrectionView,
 )
+from .lot_trace import LotTraceView
 from .reassignment import ReassignReceiverView
 
 urlpatterns = [
@@ -37,6 +38,7 @@ urlpatterns = [
     path("transfers/<uuid:pk>/cancel", CancelTransferView.as_view()),
     path("transfers/<uuid:pk>/send", SendTransferView.as_view()),
     path("lots", LotsView.as_view()),
+    path("lots/<uuid:pk>/trace", LotTraceView.as_view()),
     path("lots/<uuid:pk>", LotDetailView.as_view()),
     path("transfers", TransfersView.as_view()),
     path("transfers/<uuid:pk>", TransferDetailView.as_view()),

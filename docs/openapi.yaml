@@ -1083,6 +1083,11 @@ paths:
     get:
       operationId: lots_list
       parameters:
+      - in: query
+        name: code
+        schema:
+          type: string
+        description: Filtrar por parte del código de lote.
       - name: limit
         required: false
         in: query
@@ -1126,6 +1131,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Lot'
+          description: ''
+  /api/v1/lots/{id}/trace:
+    get:
+      operationId: lots_trace_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: Entregas por página (máximo 200).
+      - in: query
+        name: offset
+        schema:
+          type: integer
+        description: Desplazamiento de entregas.
+      tags:
+      - lots
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LotTrace'
           description: ''
   /api/v1/metrics/milk:
     get:
@@ -4927,6 +4963,141 @@ components:
       - quantity
       - responsible_id
       - turn_id
+    LotTrace:
+      type: object
+      properties:
+        lot:
+          $ref: '#/components/schemas/LotTraceOrigin'
+        transfers:
+          type: array
+          items:
+            $ref: '#/components/schemas/LotTraceTransfer'
+        count:
+          type: integer
+        draft_count:
+          type: integer
+        next_offset:
+          type: integer
+          nullable: true
+      required:
+      - count
+      - draft_count
+      - lot
+      - next_offset
+      - transfers
+    LotTraceMilestone:
+      type: object
+      properties:
+        at:
+          type: string
+          format: date-time
+        registered_at:
+          type: string
+          format: date-time
+        actor_name:
+          type: string
+      required:
+      - actor_name
+      - at
+      - registered_at
+    LotTraceOrigin:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        production_id:
+          type: string
+          format: uuid
+        state:
+          type: string
+        date:
+          type: string
+          format: date
+        confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
+        center_name:
+          type: string
+        turn_name:
+          type: string
+        responsible_name:
+          type: string
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+      required:
+      - center_name
+      - code
+      - confirmed_at
+      - date
+      - id
+      - production_id
+      - quantity
+      - responsible_name
+      - state
+      - turn_name
+    LotTraceTransfer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        state:
+          type: string
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,11}(?:\.\d{0,3})?$
+          nullable: true
+        origin_name:
+          type: string
+        destination_name:
+          type: string
+        driver_name:
+          type: string
+        receiver_name:
+          type: string
+        request_at:
+          type: string
+          format: date-time
+          nullable: true
+        pickup:
+          allOf:
+          - $ref: '#/components/schemas/LotTraceMilestone'
+          nullable: true
+        reception:
+          allOf:
+          - $ref: '#/components/schemas/LotTraceMilestone'
+          nullable: true
+        travel_minutes:
+          type: integer
+          nullable: true
+        inconsistent_time:
+          type: boolean
+        has_history:
+          type: boolean
+      required:
+      - code
+      - destination_name
+      - driver_name
+      - has_history
+      - id
+      - inconsistent_time
+      - origin_name
+      - pickup
+      - quantity
+      - receiver_name
+      - reception
+      - request_at
+      - state
+      - travel_minutes
     Me:
       type: object
       properties:

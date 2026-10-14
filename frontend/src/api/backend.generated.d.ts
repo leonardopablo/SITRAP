@@ -372,6 +372,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/lots/{id}/trace": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["lots_trace_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/metrics/milk": {
         parameters: {
             query?: never;
@@ -1574,6 +1590,56 @@ export interface components {
             production_state: components["schemas"]["ProductionStateEnum"];
             /** Format: date-time */
             created_at: string;
+        };
+        LotTrace: {
+            lot: components["schemas"]["LotTraceOrigin"];
+            transfers: components["schemas"]["LotTraceTransfer"][];
+            count: number;
+            draft_count: number;
+            next_offset: number | null;
+        };
+        LotTraceMilestone: {
+            /** Format: date-time */
+            at: string;
+            /** Format: date-time */
+            registered_at: string;
+            actor_name: string;
+        };
+        LotTraceOrigin: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            /** Format: uuid */
+            production_id: string;
+            state: string;
+            /** Format: date */
+            date: string;
+            /** Format: date-time */
+            confirmed_at: string | null;
+            center_name: string;
+            turn_name: string;
+            responsible_name: string;
+            /** Format: decimal */
+            quantity: string;
+        };
+        LotTraceTransfer: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            state: string;
+            /** Format: decimal */
+            quantity: string | null;
+            origin_name: string;
+            destination_name: string;
+            driver_name: string;
+            receiver_name: string;
+            /** Format: date-time */
+            request_at: string | null;
+            pickup: components["schemas"]["LotTraceMilestone"] | null;
+            reception: components["schemas"]["LotTraceMilestone"] | null;
+            travel_minutes: number | null;
+            inconsistent_time: boolean;
+            has_history: boolean;
         };
         Me: {
             /** Format: uuid */
@@ -4014,6 +4080,8 @@ export interface operations {
     lots_list: {
         parameters: {
             query?: {
+                /** @description Filtrar por parte del código de lote. */
+                code?: string;
                 /** @description Número de resultados a devolver por página. */
                 limit?: number;
                 /** @description El índice inicial a partir del cual devolver los resultados. */
@@ -4052,6 +4120,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Lot"];
+                };
+            };
+        };
+    };
+    lots_trace_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Entregas por página (máximo 200). */
+                limit?: number;
+                /** @description Desplazamiento de entregas. */
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LotTrace"];
                 };
             };
         };
