@@ -3,9 +3,14 @@ from pathlib import Path
 import environ
 from django.core.exceptions import ImproperlyConfigured
 
+from .pdf_runtime import preload_windows_pdf_runtime
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env(BASE_DIR / ".env")
+# PostgreSQL's libpq loads a different libwinpthread-1.dll on Windows. Load the
+# configured WeasyPrint copy first, before Django initializes database models.
+preload_windows_pdf_runtime(env("WEASYPRINT_DLL_DIRECTORIES", default=""))
 DEBUG = env("DEBUG")
 SECRET_KEY = env("SECRET_KEY")
 if not DEBUG and (len(SECRET_KEY) < 50 or SECRET_KEY.startswith("dev-")):
