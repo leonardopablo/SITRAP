@@ -217,3 +217,25 @@ class Alert(Identified):
     resolved_at = models.DateTimeField(null=True)
     resolved_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT)
     reason = models.CharField(max_length=500, blank=True)
+
+
+# Register the commercial extension in the same app; it uses the existing Kardex.
+from .sales_models import (  # noqa: E402, F401
+    BreedingModule,
+    DispatchSelection,
+    ModuleComponent,
+    PaymentEvidence,
+    ReservationDetail,
+    SaleConformity,
+    SaleDelivery,
+    SaleDispatch,
+    SaleDispatchDetail,
+    SaleFinancialReview,
+    SaleLine,
+    SaleOrder,
+    SalePayment,
+    SalePreparation,
+    SaleProposal,
+    SaleReservation,
+    SaleRevision,
+)

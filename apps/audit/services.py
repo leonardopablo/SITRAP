@@ -7,6 +7,8 @@ from apps.audit.models import AuditEntry
 from apps.sync.services import json_default
 
 SECRET_KEYS = {
+    "pin", "pin_hash", "client_name", "client_contact", "client_reference",
+    "storage_name",
     "password",
     "old_password",
     "new_password",

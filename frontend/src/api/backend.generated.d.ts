@@ -452,6 +452,182 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/cuyes/sales/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_sales_availability_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/sales/commands": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["cuyes_sales_commands_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/sales/modules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_sales_modules_retrieve"];
+        put?: never;
+        post: operations["cuyes_sales_modules_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/sales/options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_sales_options_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/sales/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_sales_orders_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/sales/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_sale_order_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/sales/orders/{id}/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_sales_orders_candidates_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/sales/orders/{id}/deliver-direct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["cuyes_sales_orders_deliver_direct_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/sales/orders/{id}/pin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["cuyes_sales_orders_pin_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/sales/vouchers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["cuyes_sales_vouchers_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/sales/vouchers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_sales_vouchers_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/cuyes/sheds": {
         parameters: {
             query?: never;
@@ -1383,6 +1559,12 @@ export interface components {
          * @enum {string}
          */
         AnimalStatusEnum: "ACTIVO" | "INACTIVO";
+        ArrivalSaleRequest: {
+            reason: string;
+            delivered_to_client: boolean;
+            physical_responsible: string;
+            reference: string;
+        };
         Assignment: {
             /** Format: uuid */
             readonly id: string;
@@ -1396,7 +1578,7 @@ export interface components {
             ends_at?: string | null;
         };
         BalanceOutput: {
-            category: components["schemas"]["CategoryEnum"];
+            category: components["schemas"]["CuyCategoryEnum"];
             quality: components["schemas"]["CuyQualityEnum"];
             quantity: number;
         };
@@ -1445,7 +1627,7 @@ export interface components {
             occupation_id?: string;
             /** Format: uuid */
             pen_id?: string;
-            category: components["schemas"]["CategoryEnum"];
+            category: components["schemas"]["CuyCategoryEnum"];
             /** @default SIN_CLASIFICAR */
             quality: components["schemas"]["CuyQualityEnum"];
             quantity: number;
@@ -1453,18 +1635,15 @@ export interface components {
         CSRF: {
             csrf_token: string;
         };
+        CancelSaleRequest: {
+            reason: string;
+            payment_treatment?: string;
+        };
         Capability: {
             code: string;
             /** Format: uuid */
             location_id: string | null;
         };
-        /**
-         * @description * `MACHO` - MACHO
-         *     * `HEMBRA` - HEMBRA
-         *     * `LACTANTE` - LACTANTE
-         * @enum {string}
-         */
-        CategoryEnum: "MACHO" | "HEMBRA" | "LACTANTE";
         CenterProductInput: {
             /** Format: uuid */
             id: string;
@@ -1496,12 +1675,25 @@ export interface components {
             /** Format: decimal */
             received_liters: string;
         };
+        CollectSaleRequest: {
+            reason: string;
+            physical_responsible: string;
+            reference: string;
+        };
+        CommercialBaseRequest: {
+            reason: string;
+        };
         CompensatePayloadRequest: {
             /** Format: date */
             date: string;
             reason: string;
             /** Format: uuid */
             movement_id: string;
+        };
+        ComponentInputRequest: {
+            category: components["schemas"]["SaleCategoryEnum"];
+            quality: components["schemas"]["CuyQualityEnum"];
+            quantity: number;
         };
         ConfigInputRequest: {
             resource: components["schemas"]["ResourceEnum"];
@@ -1535,6 +1727,13 @@ export interface components {
             grants: {
                 [key: string]: unknown;
             }[];
+        };
+        ConformSaleRequest: {
+            reason: string;
+            /** Format: uuid */
+            preparation_id: string;
+            round: number;
+            shed_ids?: string[];
         };
         Correction: {
             /** Format: uuid */
@@ -1734,6 +1933,22 @@ export interface components {
             /** Format: date-time */
             ends_at?: string | null;
         };
+        CreateSaleRequest: {
+            reason: string;
+            /** Format: uuid */
+            center_id: string;
+            client_name: string;
+            /** @default  */
+            client_reference: string;
+            /** @default  */
+            client_contact: string;
+            mode: components["schemas"]["ModeEnum"];
+            /** Format: uuid */
+            point_id?: string | null;
+            /** @default PEN */
+            currency: components["schemas"]["CurrencyEnum"];
+            items: components["schemas"]["SaleItemInputRequest"][];
+        };
         CreateUserRequest: {
             /** Format: uuid */
             id: string;
@@ -1741,6 +1956,12 @@ export interface components {
             name: string;
             temporary_password: string;
         };
+        /**
+         * @description * `PEN` - PEN
+         *     * `USD` - USD
+         * @enum {string}
+         */
+        CurrencyEnum: "PEN" | "USD";
         CuyAlertsCommandRequest: {
             /** Format: uuid */
             event_id: string;
@@ -1787,6 +2008,13 @@ export interface components {
          * @enum {string}
          */
         CuyBirthCommandTypeEnum: "CUY_BIRTH";
+        /**
+         * @description * `MACHO` - MACHO
+         *     * `HEMBRA` - HEMBRA
+         *     * `LACTANTE` - LACTANTE
+         * @enum {string}
+         */
+        CuyCategoryEnum: "MACHO" | "HEMBRA" | "LACTANTE";
         CuyCloseCommandRequest: {
             /** Format: uuid */
             event_id: string;
@@ -2202,6 +2430,11 @@ export interface components {
             /** Format: uuid */
             receiver_id: string;
         };
+        DriverSaleRequest: {
+            reason: string;
+            /** Format: uuid */
+            driver_id: string;
+        };
         Error: {
             code: string;
             message: string;
@@ -2209,6 +2442,13 @@ export interface components {
                 [key: string]: unknown;
             };
             retryable: boolean;
+        };
+        FinanceSaleRequest: {
+            reason: string;
+            treatment: components["schemas"]["TreatmentEnum"];
+            reference: string;
+            /** Format: uuid */
+            evidence_id?: string;
         };
         /**
          * @description * `TRANSPORTE` - TRANSPORTE
@@ -2632,6 +2872,21 @@ export interface components {
             id: string;
             name: string;
         };
+        /**
+         * @description * `DIRECTO` - DIRECTO
+         *     * `PUNTO` - PUNTO
+         * @enum {string}
+         */
+        ModeEnum: "DIRECTO" | "PUNTO";
+        ModuleInputRequest: {
+            reason: string;
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** @default true */
+            active: boolean;
+            components: components["schemas"]["ComponentInputRequest"][];
+        };
         MovePayloadRequest: {
             /** Format: date */
             date: string;
@@ -2668,6 +2923,13 @@ export interface components {
             previous: string | null;
             unread_count: number;
             results: components["schemas"]["Notification"][];
+        };
+        ObjectPage: {
+            count: number;
+            next: string | null;
+            results: {
+                [key: string]: unknown;
+            }[];
         };
         OccupationOutput: {
             /** Format: uuid */
@@ -3096,6 +3358,16 @@ export interface components {
             name?: string;
             is_active?: boolean;
         };
+        PaySaleRequest: {
+            reason: string;
+            /** Format: decimal */
+            amount: string;
+            currency: components["schemas"]["CurrencyEnum"];
+            method: string;
+            reference: string;
+            /** Format: uuid */
+            evidence_id: string;
+        };
         PenOutput: {
             /** Format: uuid */
             id: string;
@@ -3129,6 +3401,31 @@ export interface components {
             count: number;
             next: string | null;
             results: components["schemas"]["PenOutput"][];
+        };
+        PinDeliveryInputRequest: {
+            reason: string;
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            expected_version: number;
+            pin: string;
+            physical_responsible: string;
+            reference: string;
+        };
+        PinGenerationInputRequest: {
+            reason: string;
+            expected_version: number;
+        };
+        PinGenerationOutput: {
+            pin: string;
+            version: number;
+            message: string;
+        };
+        PrepareSaleRequest: {
+            reason: string;
+            shed_ids: string[];
+            items: components["schemas"]["SelectionInputRequest"][];
         };
         PresentationInput: {
             /** Format: uuid */
@@ -3195,6 +3492,17 @@ export interface components {
          * @enum {string}
          */
         ProductionStateEnum: "BORRADOR" | "CONFIRMADA" | "ANULADA";
+        ProposalItemRequest: {
+            /** Format: uuid */
+            line_id: string;
+            units: number;
+            /** Format: decimal */
+            weight_kg?: string;
+        };
+        ProposeSaleRequest: {
+            reason: string;
+            items: components["schemas"]["ProposalItemRequest"][];
+        };
         /**
          * @description * `MATERNIDAD` - Empadre / Maternidad
          *     * `RECRIA_MACHOS` - Recría Machos
@@ -3289,6 +3597,12 @@ export interface components {
             count_id: string;
             approve: boolean;
         };
+        ReviewProposalRequest: {
+            reason: string;
+            /** Format: uuid */
+            proposal_id: string;
+            approve: boolean;
+        };
         RevisePayloadRequest: {
             /** Format: uuid */
             version_id: string;
@@ -3327,12 +3641,489 @@ export interface components {
          * @enum {string}
          */
         RoleEnum: "PRODUCCION" | "TRANSPORTE" | "RECEPCION" | "ADMIN" | "GALPONERO";
+        SaleArriveCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_ARRIVE";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["ArrivalSaleRequest"];
+        };
+        /**
+         * @description * `SALE_ARRIVE` - SALE_ARRIVE
+         * @enum {string}
+         */
+        SaleArriveCommandTypeEnum: "SALE_ARRIVE";
+        SaleCancelCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_CANCEL";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["CancelSaleRequest"];
+        };
+        /**
+         * @description * `SALE_CANCEL` - SALE_CANCEL
+         * @enum {string}
+         */
+        SaleCancelCommandTypeEnum: "SALE_CANCEL";
+        /**
+         * @description * `MACHO` - MACHO
+         *     * `HEMBRA` - HEMBRA
+         * @enum {string}
+         */
+        SaleCategoryEnum: "MACHO" | "HEMBRA";
+        SaleCollectCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_COLLECT";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["CollectSaleRequest"];
+        };
+        /**
+         * @description * `SALE_COLLECT` - SALE_COLLECT
+         * @enum {string}
+         */
+        SaleCollectCommandTypeEnum: "SALE_COLLECT";
+        SaleCommandRequest: components["schemas"]["SaleCreateCommandRequest"] | components["schemas"]["SaleConfirmCommandRequest"] | components["schemas"]["SaleRejectCommandRequest"] | components["schemas"]["SaleProposeCommandRequest"] | components["schemas"]["SaleProposalReviewCommandRequest"] | components["schemas"]["SalePayCommandRequest"] | components["schemas"]["SaleDriverCommandRequest"] | components["schemas"]["SaleSelectCommandRequest"] | components["schemas"]["SaleOriginCommandRequest"] | components["schemas"]["SalePickupCommandRequest"] | components["schemas"]["SaleDepartCommandRequest"] | components["schemas"]["SaleArriveCommandRequest"] | components["schemas"]["SaleCollectCommandRequest"] | components["schemas"]["SaleCancelCommandRequest"] | components["schemas"]["SaleWeighCommandRequest"] | components["schemas"]["SaleFinanceCommandRequest"] | components["schemas"]["SaleResolveStockCommandRequest"];
+        SaleConfirmCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_CONFIRM";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["CommercialBaseRequest"];
+        };
+        /**
+         * @description * `SALE_CONFIRM` - SALE_CONFIRM
+         * @enum {string}
+         */
+        SaleConfirmCommandTypeEnum: "SALE_CONFIRM";
+        SaleCreateCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_CREATE";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["CreateSaleRequest"];
+        };
+        /**
+         * @description * `SALE_CREATE` - SALE_CREATE
+         * @enum {string}
+         */
+        SaleCreateCommandTypeEnum: "SALE_CREATE";
+        SaleDepartCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_DEPART";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["CommercialBaseRequest"];
+        };
+        /**
+         * @description * `SALE_DEPART` - SALE_DEPART
+         * @enum {string}
+         */
+        SaleDepartCommandTypeEnum: "SALE_DEPART";
+        SaleDriverCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_DRIVER";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["DriverSaleRequest"];
+        };
+        /**
+         * @description * `SALE_DRIVER` - SALE_DRIVER
+         * @enum {string}
+         */
+        SaleDriverCommandTypeEnum: "SALE_DRIVER";
+        SaleFinanceCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_FINANCE";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["FinanceSaleRequest"];
+        };
+        /**
+         * @description * `SALE_FINANCE` - SALE_FINANCE
+         * @enum {string}
+         */
+        SaleFinanceCommandTypeEnum: "SALE_FINANCE";
+        /**
+         * @description * `UNIDAD` - UNIDAD
+         *     * `PESO` - PESO
+         *     * `MODULO` - MODULO
+         * @enum {string}
+         */
+        SaleItemInputKindEnum: "UNIDAD" | "PESO" | "MODULO";
+        SaleItemInputRequest: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["SaleItemInputKindEnum"];
+            units: number;
+            category?: components["schemas"]["SaleCategoryEnum"];
+            quality?: components["schemas"]["CuyQualityEnum"];
+            /** Format: uuid */
+            module_id?: string;
+            /** Format: decimal */
+            weight_kg?: string;
+            weight_basis?: components["schemas"]["WeightBasisEnum"];
+            /** Format: decimal */
+            unit_price: string;
+        };
+        SaleOriginCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_ORIGIN";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["ConformSaleRequest"];
+        };
+        /**
+         * @description * `SALE_ORIGIN` - SALE_ORIGIN
+         * @enum {string}
+         */
+        SaleOriginCommandTypeEnum: "SALE_ORIGIN";
+        SaleOutput: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            /** Format: uuid */
+            center_id: string;
+            mode: string;
+            state: string;
+            display_state: string;
+            stage: number;
+            version: number;
+            shortage: boolean;
+            financial_hold: boolean;
+            ready_to_dispatch: boolean;
+            client: {
+                [key: string]: unknown;
+            };
+            lines: {
+                [key: string]: unknown;
+            }[];
+            reservation: unknown;
+            preparation: unknown;
+            dispatch: unknown;
+            deliveries: {
+                [key: string]: unknown;
+            }[];
+            actions: string[];
+            /** Format: decimal */
+            total?: string;
+            currency?: string;
+            reason?: string;
+        };
+        SalePage: {
+            count: number;
+            next: string | null;
+            results: components["schemas"]["SaleOutput"][];
+        };
+        SalePayCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_PAY";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["PaySaleRequest"];
+        };
+        /**
+         * @description * `SALE_PAY` - SALE_PAY
+         * @enum {string}
+         */
+        SalePayCommandTypeEnum: "SALE_PAY";
+        SalePickupCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_PICKUP";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["ConformSaleRequest"];
+        };
+        /**
+         * @description * `SALE_PICKUP` - SALE_PICKUP
+         * @enum {string}
+         */
+        SalePickupCommandTypeEnum: "SALE_PICKUP";
+        SaleProposalReviewCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_PROPOSAL_REVIEW";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["ReviewProposalRequest"];
+        };
+        /**
+         * @description * `SALE_PROPOSAL_REVIEW` - SALE_PROPOSAL_REVIEW
+         * @enum {string}
+         */
+        SaleProposalReviewCommandTypeEnum: "SALE_PROPOSAL_REVIEW";
+        SaleProposeCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_PROPOSE";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["ProposeSaleRequest"];
+        };
+        /**
+         * @description * `SALE_PROPOSE` - SALE_PROPOSE
+         * @enum {string}
+         */
+        SaleProposeCommandTypeEnum: "SALE_PROPOSE";
+        SaleRejectCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_REJECT";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["CommercialBaseRequest"];
+        };
+        /**
+         * @description * `SALE_REJECT` - SALE_REJECT
+         * @enum {string}
+         */
+        SaleRejectCommandTypeEnum: "SALE_REJECT";
+        SaleResolveStockCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_RESOLVE_STOCK";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["CommercialBaseRequest"];
+        };
+        /**
+         * @description * `SALE_RESOLVE_STOCK` - SALE_RESOLVE_STOCK
+         * @enum {string}
+         */
+        SaleResolveStockCommandTypeEnum: "SALE_RESOLVE_STOCK";
+        SaleSelectCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_SELECT";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["PrepareSaleRequest"];
+        };
+        /**
+         * @description * `SALE_SELECT` - SALE_SELECT
+         * @enum {string}
+         */
+        SaleSelectCommandTypeEnum: "SALE_SELECT";
+        SaleWeighCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "SALE_WEIGH";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["WeighSaleRequest"];
+        };
+        /**
+         * @description * `SALE_WEIGH` - SALE_WEIGH
+         * @enum {string}
+         */
+        SaleWeighCommandTypeEnum: "SALE_WEIGH";
+        SalesOptionsOutput: {
+            centers: {
+                [key: string]: unknown;
+            }[];
+            points: {
+                [key: string]: unknown;
+            }[];
+            drivers: {
+                [key: string]: unknown;
+            }[];
+        };
         /**
          * @description * `GLOBAL` - Global
          *     * `UBICACION` - Ubicacion
          * @enum {string}
          */
         ScopeEnum: "GLOBAL" | "UBICACION";
+        SelectionInputRequest: {
+            category: components["schemas"]["SaleCategoryEnum"];
+            quality: components["schemas"]["CuyQualityEnum"];
+            quantity: number;
+            /** Format: uuid */
+            line_id: string;
+            /** Format: uuid */
+            occupation_id: string;
+        };
         /**
          * @description * `HEMBRA` - Hembra
          *     * `MACHO` - Macho
@@ -3718,6 +4509,13 @@ export interface components {
             published_at: string | null;
             lines: components["schemas"]["Line"][];
         };
+        /**
+         * @description * `COBRO_ADICIONAL` - COBRO_ADICIONAL
+         *     * `DEVOLUCION` - DEVOLUCION
+         *     * `ABSORBIDO` - ABSORBIDO
+         * @enum {string}
+         */
+        TreatmentEnum: "COBRO_ADICIONAL" | "DEVOLUCION" | "ABSORBIDO";
         TurnInput: {
             /** Format: uuid */
             id: string;
@@ -3772,6 +4570,18 @@ export interface components {
         VoidPayloadRequest: {
             reason: string;
         };
+        VoucherInputRequest: {
+            /** Format: uuid */
+            id: string;
+            /** Format: binary */
+            file: string;
+        };
+        VoucherOutput: {
+            /** Format: uuid */
+            id: string;
+            size: number;
+            content_type: string;
+        };
         WeanPayloadRequest: {
             /** Format: date */
             date: string;
@@ -3783,6 +4593,19 @@ export interface components {
             quantity: number;
             destinations: components["schemas"]["BucketInputRequest"][];
         };
+        WeighSaleRequest: {
+            reason: string;
+            /** Format: uuid */
+            line_id: string;
+            /** Format: decimal */
+            weight_kg: string;
+        };
+        /**
+         * @description * `VIVO` - VIVO
+         *     * `BENEFICIADO` - BENEFICIADO
+         * @enum {string}
+         */
+        WeightBasisEnum: "VIVO" | "BENEFICIADO";
     };
     responses: never;
     parameters: never;
@@ -5448,6 +6271,908 @@ export interface operations {
                 };
             };
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_sales_availability_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                limit?: number;
+                offset?: number;
+                state?: string;
+                /**
+                 * @description * `ADMIN` - ADMIN
+                 *     * `GALPONERO` - GALPONERO
+                 *     * `TRANSPORTE` - TRANSPORTE
+                 */
+                workspace?: "ADMIN" | "GALPONERO" | "TRANSPORTE";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_sales_commands_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["SaleCommandRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SaleCommandRequest"];
+                "multipart/form-data": components["schemas"]["SaleCommandRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OperationResult"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_sales_modules_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                limit?: number;
+                offset?: number;
+                state?: string;
+                /**
+                 * @description * `ADMIN` - ADMIN
+                 *     * `GALPONERO` - GALPONERO
+                 *     * `TRANSPORTE` - TRANSPORTE
+                 */
+                workspace?: "ADMIN" | "GALPONERO" | "TRANSPORTE";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ObjectPage"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_sales_modules_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ModuleInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ModuleInputRequest"];
+                "multipart/form-data": components["schemas"]["ModuleInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_sales_options_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SalesOptionsOutput"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_sales_orders_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                limit?: number;
+                offset?: number;
+                state?: string;
+                /**
+                 * @description * `ADMIN` - ADMIN
+                 *     * `GALPONERO` - GALPONERO
+                 *     * `TRANSPORTE` - TRANSPORTE
+                 */
+                workspace?: "ADMIN" | "GALPONERO" | "TRANSPORTE";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SalePage"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_sale_order_detail: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                limit?: number;
+                offset?: number;
+                state?: string;
+                /**
+                 * @description * `ADMIN` - ADMIN
+                 *     * `GALPONERO` - GALPONERO
+                 *     * `TRANSPORTE` - TRANSPORTE
+                 */
+                workspace?: "ADMIN" | "GALPONERO" | "TRANSPORTE";
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SaleOutput"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_sales_orders_candidates_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                limit?: number;
+                offset?: number;
+                state?: string;
+                /**
+                 * @description * `ADMIN` - ADMIN
+                 *     * `GALPONERO` - GALPONERO
+                 *     * `TRANSPORTE` - TRANSPORTE
+                 */
+                workspace?: "ADMIN" | "GALPONERO" | "TRANSPORTE";
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ObjectPage"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_sales_orders_deliver_direct_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PinDeliveryInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PinDeliveryInputRequest"];
+                "multipart/form-data": components["schemas"]["PinDeliveryInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OperationResult"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_sales_orders_pin_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PinGenerationInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PinGenerationInputRequest"];
+                "multipart/form-data": components["schemas"]["PinGenerationInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PinGenerationOutput"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_sales_vouchers_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["VoucherInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["VoucherInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoucherOutput"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_sales_vouchers_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };

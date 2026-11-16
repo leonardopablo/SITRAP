@@ -61,7 +61,7 @@ def ledger_data(move, allowed_pens):
     # through a remaining authorized line after one of those sheds is revoked.
     public_metadata = {
         key: value for key, value in move.metadata.items()
-        if key in {"live", "stillborn", "cause", "occupation_id", "transfer_id",
+        if key in {"live", "stillborn", "cause", "occupation_id", "transfer_id", "order_id",
                    "source_id", "destination_id", "source_id_snapshot",
                    "destination_id_snapshot", "pen_id_snapshot"}
     }

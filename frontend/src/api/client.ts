@@ -17,7 +17,7 @@ export function createApiClient(transport: Transport, onExpired = () => window.d
     let response: Response
     try { response = await transport(`/api/v1${apiMode === 'http' ? backendPath(path) : path}`, {
       ...init, credentials: 'same-origin',
-      headers: { Accept: 'application/json', ...(init.body ? { 'Content-Type': 'application/json' } : {}), ...(mutation ? { 'X-CSRFToken': csrf! } : {}), ...init.headers },
+      headers: { Accept: 'application/json', ...(init.body && !(init.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}), ...(mutation ? { 'X-CSRFToken': csrf! } : {}), ...init.headers },
     }) } catch { throw new ApiError(0, { code: 'NETWORK_ERROR', message: 'Sin respuesta del servidor. Conserva la intención y reintenta con conexión.', retryable: true }) }
     if (!response.ok) {
       const raw = await response.json().catch(() => null)

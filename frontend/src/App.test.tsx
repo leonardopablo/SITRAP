@@ -59,7 +59,7 @@ it('permite al administrador encontrar y abrir la creación de cuentas desde su 
   expect(await screen.findByRole('heading', { name: 'Crear cuenta' })).toBeVisible()
   expect(screen.getByRole('link', { name: 'Cuentas' })).toBeVisible()
   const nav = screen.getByRole('navigation', { name: 'Navegación principal' })
-  expect(within(nav).getAllByRole('link')).toHaveLength(7)
+  expect(within(nav).getAllByRole('link')).toHaveLength(8)
   expect(within(nav).getByRole('link', { name: 'Cuyes' })).toHaveAttribute('href', '/cuyes')
   expect(within(nav).getByRole('link', { name: 'Cuentas' })).toHaveAttribute('aria-current', 'page')
   expect(within(nav).getAllByRole('link').every(link => link.querySelector('svg[aria-hidden="true"]'))).toBe(true)

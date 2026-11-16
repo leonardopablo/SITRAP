@@ -1721,6 +1721,887 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: ''
+  /api/v1/cuyes/sales/availability:
+    get:
+      operationId: cuyes_sales_availability_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: state
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 20
+      - in: query
+        name: workspace
+        schema:
+          enum:
+          - ADMIN
+          - GALPONERO
+          - TRANSPORTE
+          type: string
+          minLength: 1
+        description: |-
+          * `ADMIN` - ADMIN
+          * `GALPONERO` - GALPONERO
+          * `TRANSPORTE` - TRANSPORTE
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/sales/commands:
+    post:
+      operationId: cuyes_sales_commands_create
+      tags:
+      - cuyes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaleCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SaleCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SaleCommandRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/sales/modules:
+    get:
+      operationId: cuyes_sales_modules_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: state
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 20
+      - in: query
+        name: workspace
+        schema:
+          enum:
+          - ADMIN
+          - GALPONERO
+          - TRANSPORTE
+          type: string
+          minLength: 1
+        description: |-
+          * `ADMIN` - ADMIN
+          * `GALPONERO` - GALPONERO
+          * `TRANSPORTE` - TRANSPORTE
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectPage'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+    post:
+      operationId: cuyes_sales_modules_create
+      tags:
+      - cuyes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModuleInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ModuleInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ModuleInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/sales/options:
+    get:
+      operationId: cuyes_sales_options_retrieve
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOptionsOutput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/sales/orders:
+    get:
+      operationId: cuyes_sales_orders_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: state
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 20
+      - in: query
+        name: workspace
+        schema:
+          enum:
+          - ADMIN
+          - GALPONERO
+          - TRANSPORTE
+          type: string
+          minLength: 1
+        description: |-
+          * `ADMIN` - ADMIN
+          * `GALPONERO` - GALPONERO
+          * `TRANSPORTE` - TRANSPORTE
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalePage'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/sales/orders/{id}:
+    get:
+      operationId: cuyes_sale_order_detail
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: state
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 20
+      - in: query
+        name: workspace
+        schema:
+          enum:
+          - ADMIN
+          - GALPONERO
+          - TRANSPORTE
+          type: string
+          minLength: 1
+        description: |-
+          * `ADMIN` - ADMIN
+          * `GALPONERO` - GALPONERO
+          * `TRANSPORTE` - TRANSPORTE
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleOutput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/sales/orders/{id}/candidates:
+    get:
+      operationId: cuyes_sales_orders_candidates_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: state
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 20
+      - in: query
+        name: workspace
+        schema:
+          enum:
+          - ADMIN
+          - GALPONERO
+          - TRANSPORTE
+          type: string
+          minLength: 1
+        description: |-
+          * `ADMIN` - ADMIN
+          * `GALPONERO` - GALPONERO
+          * `TRANSPORTE` - TRANSPORTE
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectPage'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/sales/orders/{id}/deliver-direct:
+    post:
+      operationId: cuyes_sales_orders_deliver_direct_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - cuyes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PinDeliveryInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PinDeliveryInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PinDeliveryInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/sales/orders/{id}/pin:
+    post:
+      operationId: cuyes_sales_orders_pin_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - cuyes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PinGenerationInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PinGenerationInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PinGenerationInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PinGenerationOutput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/sales/vouchers:
+    post:
+      operationId: cuyes_sales_vouchers_create
+      tags:
+      - cuyes
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VoucherInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VoucherInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoucherOutput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/sales/vouchers/{id}:
+    get:
+      operationId: cuyes_sales_vouchers_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/cuyes/sheds:
     get:
       operationId: cuyes_sheds_retrieve
@@ -5073,6 +5954,28 @@ components:
       description: |-
         * `ACTIVO` - Activo
         * `INACTIVO` - Inactivo
+    ArrivalSaleRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        delivered_to_client:
+          type: boolean
+        physical_responsible:
+          type: string
+          minLength: 1
+          maxLength: 150
+        reference:
+          type: string
+          minLength: 1
+          maxLength: 150
+      required:
+      - delivered_to_client
+      - physical_responsible
+      - reason
+      - reference
     Assignment:
       type: object
       properties:
@@ -5104,7 +6007,7 @@ components:
       type: object
       properties:
         category:
-          $ref: '#/components/schemas/CategoryEnum'
+          $ref: '#/components/schemas/CuyCategoryEnum'
         quality:
           $ref: '#/components/schemas/CuyQualityEnum'
         quantity:
@@ -5214,7 +6117,7 @@ components:
           type: string
           format: uuid
         category:
-          $ref: '#/components/schemas/CategoryEnum'
+          $ref: '#/components/schemas/CuyCategoryEnum'
         quality:
           allOf:
           - $ref: '#/components/schemas/CuyQualityEnum'
@@ -5233,6 +6136,19 @@ components:
           type: string
       required:
       - csrf_token
+    CancelSaleRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        payment_treatment:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+      - reason
     Capability:
       type: object
       properties:
@@ -5245,16 +6161,6 @@ components:
       required:
       - code
       - location_id
-    CategoryEnum:
-      enum:
-      - MACHO
-      - HEMBRA
-      - LACTANTE
-      type: string
-      description: |-
-        * `MACHO` - MACHO
-        * `HEMBRA` - HEMBRA
-        * `LACTANTE` - LACTANTE
     CenterProductInput:
       type: object
       properties:
@@ -5319,6 +6225,34 @@ components:
       - picked_up_liters
       - produced_liters
       - received_liters
+    CollectSaleRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        physical_responsible:
+          type: string
+          minLength: 1
+          maxLength: 150
+        reference:
+          type: string
+          minLength: 1
+          maxLength: 150
+      required:
+      - physical_responsible
+      - reason
+      - reference
+    CommercialBaseRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+      - reason
     CompensatePayloadRequest:
       type: object
       properties:
@@ -5336,6 +6270,21 @@ components:
       - date
       - movement_id
       - reason
+    ComponentInputRequest:
+      type: object
+      properties:
+        category:
+          $ref: '#/components/schemas/SaleCategoryEnum'
+        quality:
+          $ref: '#/components/schemas/CuyQualityEnum'
+        quantity:
+          type: integer
+          maximum: 100000
+          minimum: 1
+      required:
+      - category
+      - quality
+      - quantity
     ConfigInputRequest:
       type: object
       properties:
@@ -5414,6 +6363,29 @@ components:
       - enabled_centers
       - grants
       - policies
+    ConformSaleRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        preparation_id:
+          type: string
+          format: uuid
+        round:
+          type: integer
+          minimum: 1
+        shed_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+      required:
+      - preparation_id
+      - reason
+      - round
     Correction:
       type: object
       properties:
@@ -5843,6 +6815,48 @@ components:
       - scope
       - starts_at
       - user_id
+    CreateSaleRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        center_id:
+          type: string
+          format: uuid
+        client_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        client_reference:
+          type: string
+          default: ''
+          maxLength: 100
+        client_contact:
+          type: string
+          default: ''
+          maxLength: 100
+        mode:
+          $ref: '#/components/schemas/ModeEnum'
+        point_id:
+          type: string
+          format: uuid
+          nullable: true
+        currency:
+          allOf:
+          - $ref: '#/components/schemas/CurrencyEnum'
+          default: PEN
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleItemInputRequest'
+      required:
+      - center_id
+      - client_name
+      - items
+      - mode
+      - reason
     CreateUserRequest:
       type: object
       properties:
@@ -5867,6 +6881,14 @@ components:
       - name
       - temporary_password
       - username
+    CurrencyEnum:
+      enum:
+      - PEN
+      - USD
+      type: string
+      description: |-
+        * `PEN` - PEN
+        * `USD` - USD
     CuyAlertsCommandRequest:
       type: object
       properties:
@@ -5949,6 +6971,16 @@ components:
       - CUY_BIRTH
       type: string
       description: '* `CUY_BIRTH` - CUY_BIRTH'
+    CuyCategoryEnum:
+      enum:
+      - MACHO
+      - HEMBRA
+      - LACTANTE
+      type: string
+      description: |-
+        * `MACHO` - MACHO
+        * `HEMBRA` - HEMBRA
+        * `LACTANTE` - LACTANTE
     CuyCloseCommandRequest:
       type: object
       properties:
@@ -6773,6 +7805,19 @@ components:
       - receiver_id
       - units
       - version_id
+    DriverSaleRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        driver_id:
+          type: string
+          format: uuid
+      required:
+      - driver_id
+      - reason
     Error:
       type: object
       properties:
@@ -6790,6 +7835,26 @@ components:
       - field_errors
       - message
       - retryable
+    FinanceSaleRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        treatment:
+          $ref: '#/components/schemas/TreatmentEnum'
+        reference:
+          type: string
+          minLength: 1
+          maxLength: 150
+        evidence_id:
+          type: string
+          format: uuid
+      required:
+      - reason
+      - reference
+      - treatment
     FunctionEnum:
       enum:
       - TRANSPORTE
@@ -7752,6 +8817,40 @@ components:
       required:
       - id
       - name
+    ModeEnum:
+      enum:
+      - DIRECTO
+      - PUNTO
+      type: string
+      description: |-
+        * `DIRECTO` - DIRECTO
+        * `PUNTO` - PUNTO
+    ModuleInputRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        active:
+          type: boolean
+          default: true
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComponentInputRequest'
+      required:
+      - components
+      - id
+      - name
+      - reason
     MovePayloadRequest:
       type: object
       properties:
@@ -7848,6 +8947,23 @@ components:
       - previous
       - results
       - unread_count
+    ObjectPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - count
+      - next
+      - results
     OccupationOutput:
       type: object
       properties:
@@ -8659,6 +9775,37 @@ components:
           maxLength: 150
         is_active:
           type: boolean
+    PaySaleRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        currency:
+          $ref: '#/components/schemas/CurrencyEnum'
+        method:
+          type: string
+          minLength: 1
+          maxLength: 60
+        reference:
+          type: string
+          minLength: 1
+          maxLength: 150
+        evidence_id:
+          type: string
+          format: uuid
+      required:
+      - amount
+      - currency
+      - evidence_id
+      - method
+      - reason
+      - reference
     PenOutput:
       type: object
       properties:
@@ -8746,6 +9893,90 @@ components:
       - count
       - next
       - results
+    PinDeliveryInputRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        expected_version:
+          type: integer
+          minimum: 1
+        pin:
+          type: string
+          writeOnly: true
+          minLength: 1
+          pattern: ^\d{8}$
+        physical_responsible:
+          type: string
+          minLength: 1
+          maxLength: 150
+        reference:
+          type: string
+          minLength: 1
+          maxLength: 150
+      required:
+      - device_id
+      - event_id
+      - expected_version
+      - physical_responsible
+      - pin
+      - reason
+      - reference
+    PinGenerationInputRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        expected_version:
+          type: integer
+          minimum: 1
+      required:
+      - expected_version
+      - reason
+    PinGenerationOutput:
+      type: object
+      properties:
+        pin:
+          type: string
+        version:
+          type: integer
+        message:
+          type: string
+      required:
+      - message
+      - pin
+      - version
+    PrepareSaleRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        shed_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelectionInputRequest'
+      required:
+      - items
+      - reason
+      - shed_ids
     PresentationInput:
       type: object
       properties:
@@ -8893,6 +10124,37 @@ components:
         * `BORRADOR` - BORRADOR
         * `CONFIRMADA` - CONFIRMADA
         * `ANULADA` - ANULADA
+    ProposalItemRequest:
+      type: object
+      properties:
+        line_id:
+          type: string
+          format: uuid
+        units:
+          type: integer
+          maximum: 100000
+          minimum: 1
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,9}(?:\.\d{0,3})?$
+      required:
+      - line_id
+      - units
+    ProposeSaleRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalItemRequest'
+      required:
+      - items
+      - reason
     PurposeEnum:
       enum:
       - MATERNIDAD
@@ -9118,6 +10380,22 @@ components:
       - count_id
       - date
       - reason
+    ReviewProposalRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        proposal_id:
+          type: string
+          format: uuid
+        approve:
+          type: boolean
+      required:
+      - approve
+      - proposal_id
+      - reason
     RevisePayloadRequest:
       type: object
       properties:
@@ -9203,6 +10481,909 @@ components:
         * `RECEPCION` - Recepcion
         * `ADMIN` - Admin
         * `GALPONERO` - Galponero
+    SaleArriveCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleArriveCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/ArrivalSaleRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleArriveCommandTypeEnum:
+      enum:
+      - SALE_ARRIVE
+      type: string
+      description: '* `SALE_ARRIVE` - SALE_ARRIVE'
+    SaleCancelCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleCancelCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/CancelSaleRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleCancelCommandTypeEnum:
+      enum:
+      - SALE_CANCEL
+      type: string
+      description: '* `SALE_CANCEL` - SALE_CANCEL'
+    SaleCategoryEnum:
+      enum:
+      - MACHO
+      - HEMBRA
+      type: string
+      description: |-
+        * `MACHO` - MACHO
+        * `HEMBRA` - HEMBRA
+    SaleCollectCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleCollectCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/CollectSaleRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleCollectCommandTypeEnum:
+      enum:
+      - SALE_COLLECT
+      type: string
+      description: '* `SALE_COLLECT` - SALE_COLLECT'
+    SaleCommandRequest:
+      oneOf:
+      - $ref: '#/components/schemas/SaleCreateCommandRequest'
+      - $ref: '#/components/schemas/SaleConfirmCommandRequest'
+      - $ref: '#/components/schemas/SaleRejectCommandRequest'
+      - $ref: '#/components/schemas/SaleProposeCommandRequest'
+      - $ref: '#/components/schemas/SaleProposalReviewCommandRequest'
+      - $ref: '#/components/schemas/SalePayCommandRequest'
+      - $ref: '#/components/schemas/SaleDriverCommandRequest'
+      - $ref: '#/components/schemas/SaleSelectCommandRequest'
+      - $ref: '#/components/schemas/SaleOriginCommandRequest'
+      - $ref: '#/components/schemas/SalePickupCommandRequest'
+      - $ref: '#/components/schemas/SaleDepartCommandRequest'
+      - $ref: '#/components/schemas/SaleArriveCommandRequest'
+      - $ref: '#/components/schemas/SaleCollectCommandRequest'
+      - $ref: '#/components/schemas/SaleCancelCommandRequest'
+      - $ref: '#/components/schemas/SaleWeighCommandRequest'
+      - $ref: '#/components/schemas/SaleFinanceCommandRequest'
+      - $ref: '#/components/schemas/SaleResolveStockCommandRequest'
+      discriminator:
+        propertyName: type
+        mapping:
+          SALE_CREATE: '#/components/schemas/SaleCreateCommandRequest'
+          SALE_CONFIRM: '#/components/schemas/SaleConfirmCommandRequest'
+          SALE_REJECT: '#/components/schemas/SaleRejectCommandRequest'
+          SALE_PROPOSE: '#/components/schemas/SaleProposeCommandRequest'
+          SALE_PROPOSAL_REVIEW: '#/components/schemas/SaleProposalReviewCommandRequest'
+          SALE_PAY: '#/components/schemas/SalePayCommandRequest'
+          SALE_DRIVER: '#/components/schemas/SaleDriverCommandRequest'
+          SALE_SELECT: '#/components/schemas/SaleSelectCommandRequest'
+          SALE_ORIGIN: '#/components/schemas/SaleOriginCommandRequest'
+          SALE_PICKUP: '#/components/schemas/SalePickupCommandRequest'
+          SALE_DEPART: '#/components/schemas/SaleDepartCommandRequest'
+          SALE_ARRIVE: '#/components/schemas/SaleArriveCommandRequest'
+          SALE_COLLECT: '#/components/schemas/SaleCollectCommandRequest'
+          SALE_CANCEL: '#/components/schemas/SaleCancelCommandRequest'
+          SALE_WEIGH: '#/components/schemas/SaleWeighCommandRequest'
+          SALE_FINANCE: '#/components/schemas/SaleFinanceCommandRequest'
+          SALE_RESOLVE_STOCK: '#/components/schemas/SaleResolveStockCommandRequest'
+    SaleConfirmCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleConfirmCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/CommercialBaseRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleConfirmCommandTypeEnum:
+      enum:
+      - SALE_CONFIRM
+      type: string
+      description: '* `SALE_CONFIRM` - SALE_CONFIRM'
+    SaleCreateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleCreateCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/CreateSaleRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleCreateCommandTypeEnum:
+      enum:
+      - SALE_CREATE
+      type: string
+      description: '* `SALE_CREATE` - SALE_CREATE'
+    SaleDepartCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleDepartCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/CommercialBaseRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleDepartCommandTypeEnum:
+      enum:
+      - SALE_DEPART
+      type: string
+      description: '* `SALE_DEPART` - SALE_DEPART'
+    SaleDriverCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleDriverCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/DriverSaleRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleDriverCommandTypeEnum:
+      enum:
+      - SALE_DRIVER
+      type: string
+      description: '* `SALE_DRIVER` - SALE_DRIVER'
+    SaleFinanceCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleFinanceCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/FinanceSaleRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleFinanceCommandTypeEnum:
+      enum:
+      - SALE_FINANCE
+      type: string
+      description: '* `SALE_FINANCE` - SALE_FINANCE'
+    SaleItemInputKindEnum:
+      enum:
+      - UNIDAD
+      - PESO
+      - MODULO
+      type: string
+      description: |-
+        * `UNIDAD` - UNIDAD
+        * `PESO` - PESO
+        * `MODULO` - MODULO
+    SaleItemInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/SaleItemInputKindEnum'
+        units:
+          type: integer
+          maximum: 100000
+          minimum: 1
+        category:
+          $ref: '#/components/schemas/SaleCategoryEnum'
+        quality:
+          $ref: '#/components/schemas/CuyQualityEnum'
+        module_id:
+          type: string
+          format: uuid
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,9}(?:\.\d{0,3})?$
+        weight_basis:
+          $ref: '#/components/schemas/WeightBasisEnum'
+        unit_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - id
+      - kind
+      - unit_price
+      - units
+    SaleOriginCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleOriginCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/ConformSaleRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleOriginCommandTypeEnum:
+      enum:
+      - SALE_ORIGIN
+      type: string
+      description: '* `SALE_ORIGIN` - SALE_ORIGIN'
+    SaleOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        center_id:
+          type: string
+          format: uuid
+        mode:
+          type: string
+        state:
+          type: string
+        display_state:
+          type: string
+        stage:
+          type: integer
+        version:
+          type: integer
+        shortage:
+          type: boolean
+        financial_hold:
+          type: boolean
+        ready_to_dispatch:
+          type: boolean
+        client:
+          type: object
+          additionalProperties: {}
+        lines:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        reservation:
+          nullable: true
+        preparation:
+          nullable: true
+        dispatch:
+          nullable: true
+        deliveries:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        actions:
+          type: array
+          items:
+            type: string
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        currency:
+          type: string
+        reason:
+          type: string
+      required:
+      - actions
+      - center_id
+      - client
+      - code
+      - deliveries
+      - dispatch
+      - display_state
+      - financial_hold
+      - id
+      - lines
+      - mode
+      - preparation
+      - ready_to_dispatch
+      - reservation
+      - shortage
+      - stage
+      - state
+      - version
+    SalePage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleOutput'
+      required:
+      - count
+      - next
+      - results
+    SalePayCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SalePayCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/PaySaleRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SalePayCommandTypeEnum:
+      enum:
+      - SALE_PAY
+      type: string
+      description: '* `SALE_PAY` - SALE_PAY'
+    SalePickupCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SalePickupCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/ConformSaleRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SalePickupCommandTypeEnum:
+      enum:
+      - SALE_PICKUP
+      type: string
+      description: '* `SALE_PICKUP` - SALE_PICKUP'
+    SaleProposalReviewCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleProposalReviewCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/ReviewProposalRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleProposalReviewCommandTypeEnum:
+      enum:
+      - SALE_PROPOSAL_REVIEW
+      type: string
+      description: '* `SALE_PROPOSAL_REVIEW` - SALE_PROPOSAL_REVIEW'
+    SaleProposeCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleProposeCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/ProposeSaleRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleProposeCommandTypeEnum:
+      enum:
+      - SALE_PROPOSE
+      type: string
+      description: '* `SALE_PROPOSE` - SALE_PROPOSE'
+    SaleRejectCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleRejectCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/CommercialBaseRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleRejectCommandTypeEnum:
+      enum:
+      - SALE_REJECT
+      type: string
+      description: '* `SALE_REJECT` - SALE_REJECT'
+    SaleResolveStockCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleResolveStockCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/CommercialBaseRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleResolveStockCommandTypeEnum:
+      enum:
+      - SALE_RESOLVE_STOCK
+      type: string
+      description: '* `SALE_RESOLVE_STOCK` - SALE_RESOLVE_STOCK'
+    SaleSelectCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleSelectCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/PrepareSaleRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleSelectCommandTypeEnum:
+      enum:
+      - SALE_SELECT
+      type: string
+      description: '* `SALE_SELECT` - SALE_SELECT'
+    SaleWeighCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SaleWeighCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/WeighSaleRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    SaleWeighCommandTypeEnum:
+      enum:
+      - SALE_WEIGH
+      type: string
+      description: '* `SALE_WEIGH` - SALE_WEIGH'
+    SalesOptionsOutput:
+      type: object
+      properties:
+        centers:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        points:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        drivers:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - centers
+      - drivers
+      - points
     ScopeEnum:
       enum:
       - GLOBAL
@@ -9211,6 +11392,29 @@ components:
       description: |-
         * `GLOBAL` - Global
         * `UBICACION` - Ubicacion
+    SelectionInputRequest:
+      type: object
+      properties:
+        category:
+          $ref: '#/components/schemas/SaleCategoryEnum'
+        quality:
+          $ref: '#/components/schemas/CuyQualityEnum'
+        quantity:
+          type: integer
+          maximum: 100000
+          minimum: 1
+        line_id:
+          type: string
+          format: uuid
+        occupation_id:
+          type: string
+          format: uuid
+      required:
+      - category
+      - line_id
+      - occupation_id
+      - quality
+      - quantity
     SexEnum:
       enum:
       - HEMBRA
@@ -10057,6 +12261,16 @@ components:
       - reason
       - receiver_id
       - state
+    TreatmentEnum:
+      enum:
+      - COBRO_ADICIONAL
+      - DEVOLUCION
+      - ABSORBIDO
+      type: string
+      description: |-
+        * `COBRO_ADICIONAL` - COBRO_ADICIONAL
+        * `DEVOLUCION` - DEVOLUCION
+        * `ABSORBIDO` - ABSORBIDO
     TurnInput:
       type: object
       properties:
@@ -10178,6 +12392,32 @@ components:
           maxLength: 2000
       required:
       - reason
+    VoucherInputRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        file:
+          type: string
+          format: binary
+      required:
+      - file
+      - id
+    VoucherOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        size:
+          type: integer
+        content_type:
+          type: string
+      required:
+      - content_type
+      - id
+      - size
     WeanPayloadRequest:
       type: object
       properties:
@@ -10209,6 +12449,32 @@ components:
       - occupation_id
       - quantity
       - reason
+    WeighSaleRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        line_id:
+          type: string
+          format: uuid
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,9}(?:\.\d{0,3})?$
+      required:
+      - line_id
+      - reason
+      - weight_kg
+    WeightBasisEnum:
+      enum:
+      - VIVO
+      - BENEFICIADO
+      type: string
+      description: |-
+        * `VIVO` - VIVO
+        * `BENEFICIADO` - BENEFICIADO
   securitySchemes:
     cookieAuth:
       type: apiKey

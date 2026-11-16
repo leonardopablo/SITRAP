@@ -1,5 +1,12 @@
 # SITRAP · integración local del MVP
 
+## Ventas de cuyes · Etapa 2
+
+Venta por unidad/peso y módulos reproductivos, reservas, pago manual,
+preparación, recojo con PIN o distribución con conductor, sin duplicar inventario.
+Guía de ambos recorridos, privacidad y vencimiento:
+[docs/CUYES_ETAPA2.md](docs/CUYES_ETAPA2.md).
+
 ## Inventario de cuyes · Etapa 1
 
 Módulo independiente por galpón/poza, sin alterar los flujos de leche.

@@ -1,13 +1,15 @@
 import type { Command, CommandType } from './types'
+import { saleTypes } from '../cuyes/salesTypes'
 
 /** Executable policy from 04 §5, not a separate business specification. */
-export const onlineOnly = new Set<CommandType>(['MILKING_RECTIFY', 'MILKING_VOID', 'TRANSFER_REVISE', 'TRANSFER_CANCEL', 'CORRECTION_CREATE', 'CORRECTION_WITHDRAW'])
+export const onlineOnly = new Set<CommandType>([...saleTypes, 'MILKING_RECTIFY', 'MILKING_VOID', 'TRANSFER_REVISE', 'TRANSFER_CANCEL', 'CORRECTION_CREATE', 'CORRECTION_WITHDRAW'])
 export const downloadedOnly = new Set<CommandType>(['TRANSFER_PICKUP', 'TRANSFER_RECEIVE', 'CORRECTION_ACCEPT', 'CORRECTION_REJECT'])
 export function createCommand(input: Omit<Command, 'event_id' | 'occurred_at' | 'depends_on'> & { depends_on?: string[] }): Command {
   const snapshot = structuredClone(input)
   return { ...snapshot, event_id: crypto.randomUUID(), occurred_at: new Date().toISOString(), depends_on: snapshot.depends_on ?? [] }
 }
 export function commandPath(command: Command): string {
+  if (command.type.startsWith('SALE_')) return '/cuyes/sales/commands'
   if (command.type.startsWith('CUY_')) return '/cuyes/commands'
   const id = encodeURIComponent(command.entity_id)
   const paths: Partial<Record<CommandType, string>> = {

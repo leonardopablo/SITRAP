@@ -5,6 +5,9 @@ from apps.common.errors import DomainError
 from .models import Notification
 
 EVENT_TYPES = {
+    "SALE_REQUESTED", "SALE_CONFIRMED", "SALE_REJECTED", "SALE_PROPOSED",
+    "SALE_EXPIRED", "SALE_SHORTAGE", "SALE_PAID", "SALE_DRIVER",
+    "SALE_DISPATCHED", "SALE_DELIVERED", "SALE_CANCELLED",
     "CUY_ALERT",
     "CUY_DIFFERENCE",
     "PICKUP_REQUESTED",

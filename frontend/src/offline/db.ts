@@ -39,6 +39,7 @@ export async function listEvents(accountId: string, storage: SitrapDB = db) {
 
 /** The only offline entry point: durable before reporting local success. */
 export async function enqueue(accountId: string, command: Command, storage: SitrapDB = db): Promise<LocalEvent> {
+  if (command.type.startsWith('SALE_')) throw new Error('Las ventas y conformidades requieren conexión; no se guardan en la cola offline.')
   if (onlineOnly.has(command.type)) throw new Error('Esta acción requiere conexión y estado actual del servidor.')
   if (!accountId || !command.device_id || !command.event_id || !command.entity_id) throw new Error('Falta identidad para guardar la operación.')
   const device = await storage.devices.get(accountId)

@@ -248,3 +248,8 @@ dialog::backdrop { background: #0008; }
 .cuyes-module fieldset { min-width: 0; }
 .cuyes-module p, .cuyes-module small, .cuyes-module summary { overflow-wrap: anywhere; }
 .cuyes-module summary { cursor: pointer; min-height: 44px; padding-block: .5rem; }
+.sale-stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .5rem; padding: 0; list-style: none; }
+.sale-stages li { padding: .75rem; border: 1px solid var(--color-border-control); border-radius: .5rem; }
+.sale-stages [aria-current="step"] { font-weight: 700; border-width: 3px; border-color: #237a57; }
+.cuyes-module textarea { width: 100%; min-height: 6rem; font: inherit; }
+.cuyes-module strong { overflow-wrap: anywhere; }

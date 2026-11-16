@@ -2,6 +2,7 @@ import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
   testDir: './e2e-real',
+  testMatch: 'cuyes.spec.ts',
   workers: 1,
   timeout: 90000,
   outputDir: '../.local/playwright-cuyes',

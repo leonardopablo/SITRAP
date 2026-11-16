@@ -128,6 +128,9 @@ def lock_scope(pen_ids, day, *, check_closed=True, extra_sheds=()):
     # Every writer (including config/count/close) takes sheds then pens, in UUID order.
     # This serializes capacity across different occupations and closes across all pens.
     shed_ids = set(Pen.objects.filter(id__in=pen_ids).values_list("shed_id", flat=True)) | set(extra_sheds)
+    from .locking import lock_centers
+
+    lock_centers(Shed.objects.filter(id__in=shed_ids).values_list("center_id", flat=True))
     list(Shed.objects.select_for_update().filter(id__in=shed_ids).order_by("id"))
     pens = {str(p.id): p for p in Pen.objects.select_for_update().filter(id__in=pen_ids).order_by("id").select_related("shed__center")}
     if check_closed and DailyReport.objects.filter(shed_id__in=shed_ids, date=day, state="CERRADO").exists():
@@ -214,6 +217,9 @@ def apply_lines(movement, changes, *, controlled=True):
         remaining = Balance.objects.filter(occupation=occ).aggregate(n=Sum("quantity"))["n"] or 0
         occ.closed_on = None if remaining else movement.date
         occ.save(update_fields=["closed_on"])
+    from .sales_stock import detect_shortages
+
+    detect_shortages({occ.pen.shed.center_id for occ in objects.values()}, movement.id, movement.actor)
 
 
 def movement_for(actor, c, operation, *, compensates=None):
@@ -578,6 +584,9 @@ def configure(actor, p):
         center = get(Location, p["center_id"])
         if center.kind != "CENTRO" or not center.active:
             fail("Seleccione un centro activo.", "VALIDATION_ERROR", 422)
+        from .locking import lock_centers
+
+        lock_centers([center.id])
         list(Location.objects.select_for_update().filter(pk=center.id))
         # Enabling/disabling the module must serialize with operational writes too.
         if resource == "enable":
@@ -636,7 +645,12 @@ def configure(actor, p):
         fail("Código o asignación duplicados.", "VALIDATION_ERROR", 422)
     after = snapshot({f.attname: getattr(obj, f.attname) for f in obj._meta.fields})
     if before != after:
-        record(actor, f"cuy_{resource}", obj.id, "CONFIGURE", before=before, after=after, reason=p["reason"])
+        entry = record(actor, f"cuy_{resource}", obj.id, "CONFIGURE", before=before, after=after, reason=p["reason"])
+        if resource in ["enable", "shed", "pen"]:
+            from .sales_stock import detect_shortages
+
+            center_id = obj.center_id if resource in ["enable", "shed"] else obj.shed.center_id
+            detect_shortages([center_id], entry.id, actor)
     if resource == "pen" and total(obj) > obj.capacity:
         alert(obj, f"capacity:{obj.id}", "CAPACITY", f"{obj.code}: el saldo confirmado excede la nueva capacidad.")
     return after
