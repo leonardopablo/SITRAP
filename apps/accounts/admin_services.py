@@ -150,6 +150,11 @@ def save_assignment(actor, data, assignment_id=None):
     assignment.full_clean()
     if assignment.location_id and not assignment.location.active:
         raise DomainError("VALIDATION_ERROR", "Ubicación inactiva.", 422)
+    if assignment.role_id == "GALPONERO":
+        from apps.cuyes.access import enabled_centers
+
+        if assignment.scope != "UBICACION" or assignment.location_id not in enabled_centers():
+            raise DomainError("VALIDATION_ERROR", "GALPONERO requiere un centro con Cuyes habilitado.", 422)
     overlapping = (
         RoleAssignment.objects.filter(
             user_id=assignment.user_id,

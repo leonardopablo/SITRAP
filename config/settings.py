@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "apps.milk",
     "apps.traceability",
     "apps.catalog",
+    "apps.cuyes",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -105,6 +106,7 @@ LOGIN_IP_LIMIT = env.int("LOGIN_IP_LIMIT", default=100)
 SPECTACULAR_SETTINGS["SERVE_PERMISSIONS"] = ["apps.accounts.authentication.ReadyAccount"]
 
 SPECTACULAR_SETTINGS["ENUM_NAME_OVERRIDES"] = {"UnitCodeEnum": ["L", "KG", "UN"]}
+SPECTACULAR_SETTINGS["ENUM_NAME_OVERRIDES"]["CuyQualityEnum"] = ["A", "B", "C", "SIN_CLASIFICAR"]
 
 SPECTACULAR_SETTINGS["ENUM_NAME_OVERRIDES"].update(
     {

@@ -33,6 +33,7 @@ import { ReassignReceiver } from './admin/ReassignReceiver'
 import { LotTracePage } from './admin/LotTracePage'
 import { FieldNotes } from './offline/FieldNotes'
 import { HelpPage } from './help/HelpPage'
+const CuyesPage = lazy(() => import('./cuyes/CuyesPage').then(module => ({ default: module.CuyesPage })))
 const MilkAnalytics = lazy(() => import('./reports/MilkAnalytics').then(module => ({ default: module.MilkAnalytics })))
 
 export function App() {
@@ -50,6 +51,7 @@ export function App() {
           <Route path="/cuenta/clave" element={<PasswordPage />} />
           <Route element={<Shell />}>
             <Route path="/hoy" element={<TodayPage />} />
+            <Route element={<RequireRole roles={['GALPONERO', 'ADMIN']} />}><Route path="/cuyes" element={<Suspense fallback={<Notice>Cargando Cuyes…</Notice>}><CuyesPage /></Suspense>} /></Route>
             <Route element={<RequireRole roles={['TRANSPORTE']} />}><Route path="/recogidas" element={<TransportToday />} /></Route>
             <Route element={<RequireRole roles={['RECEPCION']} />}><Route path="/recibir" element={<ReceptionToday />} /></Route>
             <Route path="/sincronizacion" element={<SyncPanel />} />

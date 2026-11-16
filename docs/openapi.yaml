@@ -846,6 +846,1035 @@ paths:
               schema:
                 $ref: '#/components/schemas/TransferCommandError'
           description: ''
+  /api/v1/cuyes/alerts:
+    get:
+      operationId: cuyes_alerts_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: pen_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: shed_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CuyPage'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/balances:
+    get:
+      operationId: cuyes_balances_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: pen_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: shed_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PensPage'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/commands:
+    post:
+      operationId: cuyes_commands_create
+      tags:
+      - cuyes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CuyCommandRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CuyCommandRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CuyCommandRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/config:
+    get:
+      operationId: cuyes_config_retrieve
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigOutput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+    post:
+      operationId: cuyes_config_create
+      tags:
+      - cuyes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConfigInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConfigInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/counts:
+    get:
+      operationId: cuyes_counts_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: pen_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: shed_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CuyPage'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/daily-reports:
+    get:
+      operationId: cuyes_daily_reports_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: pen_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: shed_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CuyPage'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/dashboard:
+    get:
+      operationId: cuyes_dashboard_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: pen_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: shed_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/destinations:
+    get:
+      operationId: cuyes_destinations_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: pen_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: shed_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CuyPage'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/history:
+    get:
+      operationId: cuyes_history_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: pen_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: shed_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CuyPage'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/kardex:
+    get:
+      operationId: cuyes_kardex_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: pen_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: shed_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CuyPage'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/pens:
+    get:
+      operationId: cuyes_pens_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: pen_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: shed_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PensPage'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/pens/{id}:
+    get:
+      operationId: cuyes_pen_detail
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PenOutput'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/sheds:
+    get:
+      operationId: cuyes_sheds_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: pen_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: shed_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShedsPage'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+  /api/v1/cuyes/transfers:
+    get:
+      operationId: cuyes_transfers_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - in: query
+        name: pen_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: shed_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date
+      tags:
+      - cuyes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CuyPage'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/devices:
     post:
       operationId: devices_create
@@ -4071,6 +5100,19 @@ components:
       - location_id
       - role
       - scope
+    BalanceOutput:
+      type: object
+      properties:
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        quality:
+          $ref: '#/components/schemas/CuyQualityEnum'
+        quantity:
+          type: integer
+      required:
+      - category
+      - quality
+      - quantity
     BatchOperationResult:
       type: object
       properties:
@@ -4135,6 +5177,55 @@ components:
       required:
       - reprocessed
       - results
+    BirthPayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        occupation_id:
+          type: string
+          format: uuid
+        live:
+          type: integer
+          maximum: 10000
+          minimum: 0
+        stillborn:
+          type: integer
+          maximum: 10000
+          minimum: 0
+          default: 0
+      required:
+      - date
+      - live
+      - occupation_id
+      - reason
+    BucketInputRequest:
+      type: object
+      properties:
+        occupation_id:
+          type: string
+          format: uuid
+        pen_id:
+          type: string
+          format: uuid
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        quality:
+          allOf:
+          - $ref: '#/components/schemas/CuyQualityEnum'
+          default: SIN_CLASIFICAR
+        quantity:
+          type: integer
+          maximum: 1000000
+          minimum: 0
+      required:
+      - category
+      - quantity
     CSRF:
       type: object
       properties:
@@ -4154,6 +5245,16 @@ components:
       required:
       - code
       - location_id
+    CategoryEnum:
+      enum:
+      - MACHO
+      - HEMBRA
+      - LACTANTE
+      type: string
+      description: |-
+        * `MACHO` - MACHO
+        * `HEMBRA` - HEMBRA
+        * `LACTANTE` - LACTANTE
     CenterProductInput:
       type: object
       properties:
@@ -4218,6 +5319,101 @@ components:
       - picked_up_liters
       - produced_liters
       - received_liters
+    CompensatePayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        movement_id:
+          type: string
+          format: uuid
+      required:
+      - date
+      - movement_id
+      - reason
+    ConfigInputRequest:
+      type: object
+      properties:
+        resource:
+          $ref: '#/components/schemas/ResourceEnum'
+        id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        center_id:
+          type: string
+          format: uuid
+        shed_id:
+          type: string
+          format: uuid
+        assignment_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          pattern: ^[A-Z0-9][A-Z0-9_-]{0,39}$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        active:
+          type: boolean
+          default: true
+        capacity:
+          type: integer
+          maximum: 1000000
+          minimum: 1
+        purpose:
+          $ref: '#/components/schemas/PurposeEnum'
+        reproductive_months:
+          type: integer
+          maximum: 60
+          minimum: 1
+        minimum_weaned_per_female:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+      required:
+      - id
+      - reason
+      - resource
+    ConfigOutput:
+      type: object
+      properties:
+        centers:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        enabled_centers:
+          type: array
+          items:
+            type: string
+            format: uuid
+        policies:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        grants:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - centers
+      - enabled_centers
+      - grants
+      - policies
     Correction:
       type: object
       properties:
@@ -4566,6 +5762,28 @@ components:
       - CORRECTION_WITHDRAW
       type: string
       description: '* `CORRECTION_WITHDRAW` - CORRECTION_WITHDRAW'
+    CountPayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        pen_id:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BucketInputRequest'
+      required:
+      - date
+      - items
+      - pen_id
+      - reason
     CowDetail:
       type: object
       properties:
@@ -4649,6 +5867,787 @@ components:
       - name
       - temporary_password
       - username
+    CuyAlertsCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyAlertsCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/RefreshPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyAlertsCommandTypeEnum:
+      enum:
+      - CUY_ALERTS
+      type: string
+      description: '* `CUY_ALERTS` - CUY_ALERTS'
+    CuyBirthCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyBirthCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/BirthPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyBirthCommandTypeEnum:
+      enum:
+      - CUY_BIRTH
+      type: string
+      description: '* `CUY_BIRTH` - CUY_BIRTH'
+    CuyCloseCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyCloseCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/DailyPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyCloseCommandTypeEnum:
+      enum:
+      - CUY_CLOSE
+      type: string
+      description: '* `CUY_CLOSE` - CUY_CLOSE'
+    CuyCommandRequest:
+      oneOf:
+      - $ref: '#/components/schemas/CuyOpenCommandRequest'
+      - $ref: '#/components/schemas/CuyBirthCommandRequest'
+      - $ref: '#/components/schemas/CuyDeathCommandRequest'
+      - $ref: '#/components/schemas/CuyWeanCommandRequest'
+      - $ref: '#/components/schemas/CuyMoveCommandRequest'
+      - $ref: '#/components/schemas/CuyDispatchCommandRequest'
+      - $ref: '#/components/schemas/CuyReceiveCommandRequest'
+      - $ref: '#/components/schemas/CuyRedirectCommandRequest'
+      - $ref: '#/components/schemas/CuyReclassCommandRequest'
+      - $ref: '#/components/schemas/CuyCountCommandRequest'
+      - $ref: '#/components/schemas/CuyReviewCommandRequest'
+      - $ref: '#/components/schemas/CuyCloseCommandRequest'
+      - $ref: '#/components/schemas/CuyReopenCommandRequest'
+      - $ref: '#/components/schemas/CuyResolveCommandRequest'
+      - $ref: '#/components/schemas/CuyAlertsCommandRequest'
+      - $ref: '#/components/schemas/CuyCompensateCommandRequest'
+      discriminator:
+        propertyName: type
+        mapping:
+          CUY_OPEN: '#/components/schemas/CuyOpenCommandRequest'
+          CUY_BIRTH: '#/components/schemas/CuyBirthCommandRequest'
+          CUY_DEATH: '#/components/schemas/CuyDeathCommandRequest'
+          CUY_WEAN: '#/components/schemas/CuyWeanCommandRequest'
+          CUY_MOVE: '#/components/schemas/CuyMoveCommandRequest'
+          CUY_DISPATCH: '#/components/schemas/CuyDispatchCommandRequest'
+          CUY_RECEIVE: '#/components/schemas/CuyReceiveCommandRequest'
+          CUY_REDIRECT: '#/components/schemas/CuyRedirectCommandRequest'
+          CUY_RECLASS: '#/components/schemas/CuyReclassCommandRequest'
+          CUY_COUNT: '#/components/schemas/CuyCountCommandRequest'
+          CUY_REVIEW: '#/components/schemas/CuyReviewCommandRequest'
+          CUY_CLOSE: '#/components/schemas/CuyCloseCommandRequest'
+          CUY_REOPEN: '#/components/schemas/CuyReopenCommandRequest'
+          CUY_RESOLVE: '#/components/schemas/CuyResolveCommandRequest'
+          CUY_ALERTS: '#/components/schemas/CuyAlertsCommandRequest'
+          CUY_COMPENSATE: '#/components/schemas/CuyCompensateCommandRequest'
+    CuyCompensateCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyCompensateCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/CompensatePayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyCompensateCommandTypeEnum:
+      enum:
+      - CUY_COMPENSATE
+      type: string
+      description: '* `CUY_COMPENSATE` - CUY_COMPENSATE'
+    CuyCountCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyCountCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/CountPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyCountCommandTypeEnum:
+      enum:
+      - CUY_COUNT
+      type: string
+      description: '* `CUY_COUNT` - CUY_COUNT'
+    CuyDeathCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyDeathCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/DeathPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyDeathCommandTypeEnum:
+      enum:
+      - CUY_DEATH
+      type: string
+      description: '* `CUY_DEATH` - CUY_DEATH'
+    CuyDispatchCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyDispatchCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/MovePayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyDispatchCommandTypeEnum:
+      enum:
+      - CUY_DISPATCH
+      type: string
+      description: '* `CUY_DISPATCH` - CUY_DISPATCH'
+    CuyMoveCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyMoveCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/MovePayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyMoveCommandTypeEnum:
+      enum:
+      - CUY_MOVE
+      type: string
+      description: '* `CUY_MOVE` - CUY_MOVE'
+    CuyOpenCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyOpenCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/OpeningPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyOpenCommandTypeEnum:
+      enum:
+      - CUY_OPEN
+      type: string
+      description: '* `CUY_OPEN` - CUY_OPEN'
+    CuyPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        results: {}
+      required:
+      - count
+      - next
+      - results
+    CuyQualityEnum:
+      enum:
+      - A
+      - B
+      - C
+      - SIN_CLASIFICAR
+      type: string
+      description: |-
+        * `A` - A
+        * `B` - B
+        * `C` - C
+        * `SIN_CLASIFICAR` - SIN_CLASIFICAR
+    CuyReceiveCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyReceiveCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/TransferPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyReceiveCommandTypeEnum:
+      enum:
+      - CUY_RECEIVE
+      type: string
+      description: '* `CUY_RECEIVE` - CUY_RECEIVE'
+    CuyReclassCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyReclassCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/ReclassPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyReclassCommandTypeEnum:
+      enum:
+      - CUY_RECLASS
+      type: string
+      description: '* `CUY_RECLASS` - CUY_RECLASS'
+    CuyRedirectCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyRedirectCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/RedirectPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyRedirectCommandTypeEnum:
+      enum:
+      - CUY_REDIRECT
+      type: string
+      description: '* `CUY_REDIRECT` - CUY_REDIRECT'
+    CuyReopenCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyReopenCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/DailyPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyReopenCommandTypeEnum:
+      enum:
+      - CUY_REOPEN
+      type: string
+      description: '* `CUY_REOPEN` - CUY_REOPEN'
+    CuyResolveCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyResolveCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/ResolvePayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyResolveCommandTypeEnum:
+      enum:
+      - CUY_RESOLVE
+      type: string
+      description: '* `CUY_RESOLVE` - CUY_RESOLVE'
+    CuyReviewCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyReviewCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/ReviewPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyReviewCommandTypeEnum:
+      enum:
+      - CUY_REVIEW
+      type: string
+      description: '* `CUY_REVIEW` - CUY_REVIEW'
+    CuyWeanCommandRequest:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        device_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/CuyWeanCommandTypeEnum'
+        entity_id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        expected_version:
+          type: integer
+          minimum: 1
+          nullable: true
+        depends_on:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+        payload:
+          $ref: '#/components/schemas/WeanPayloadRequest'
+      required:
+      - device_id
+      - entity_id
+      - event_id
+      - occurred_at
+      - payload
+      - type
+    CuyWeanCommandTypeEnum:
+      enum:
+      - CUY_WEAN
+      type: string
+      description: '* `CUY_WEAN` - CUY_WEAN'
+    DailyPayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        shed_id:
+          type: string
+          format: uuid
+      required:
+      - date
+      - reason
+      - shed_id
+    Dashboard:
+      type: object
+      properties:
+        updated_at:
+          type: string
+          format: date-time
+        population:
+          type: integer
+        in_transit:
+          type: integer
+        pens:
+          type: array
+          items:
+            $ref: '#/components/schemas/PenOutput'
+        indicators: {}
+        alerts: {}
+      required:
+      - alerts
+      - in_transit
+      - indicators
+      - pens
+      - population
+      - updated_at
+    DeathPayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BucketInputRequest'
+        cause:
+          type: string
+          minLength: 1
+          default: desconocida
+          maxLength: 240
+      required:
+      - date
+      - items
+      - reason
     Decision:
       type: object
       properties:
@@ -4986,6 +6985,82 @@ components:
       - quantity
       - responsible_id
       - turn_id
+    LotInputRequest:
+      type: object
+      properties:
+        provenance:
+          type: string
+          minLength: 1
+          maxLength: 240
+        born_from:
+          type: string
+          format: date
+          nullable: true
+        born_until:
+          type: string
+          format: date
+          nullable: true
+        installed_on:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - provenance
+    LotOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        provenance:
+          type: string
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        source_occupation_id:
+          type: string
+          format: uuid
+          nullable: true
+        opened_on:
+          type: string
+          format: date
+        born_from:
+          type: string
+          format: date
+          nullable: true
+        born_until:
+          type: string
+          format: date
+          nullable: true
+        installed_on:
+          type: string
+          format: date
+          nullable: true
+        age_days_min:
+          type: integer
+          nullable: true
+        age_days_max:
+          type: integer
+          nullable: true
+        rearing_days:
+          type: integer
+        reproductive_days:
+          type: integer
+          nullable: true
+      required:
+      - age_days_max
+      - age_days_min
+      - born_from
+      - born_until
+      - id
+      - installed_on
+      - opened_on
+      - parent_id
+      - provenance
+      - rearing_days
+      - reproductive_days
+      - source_occupation_id
     LotTrace:
       type: object
       properties:
@@ -5677,6 +7752,32 @@ components:
       required:
       - id
       - name
+    MovePayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        source_id:
+          type: string
+          format: uuid
+        destination_id:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BucketInputRequest'
+      required:
+      - date
+      - destination_id
+      - items
+      - reason
+      - source_id
     Notification:
       type: object
       properties:
@@ -5747,6 +7848,31 @@ components:
       - previous
       - results
       - unread_count
+    OccupationOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        started_on:
+          type: string
+          format: date
+        closed_on:
+          type: string
+          format: date
+          nullable: true
+        lot:
+          $ref: '#/components/schemas/LotOutput'
+        balances:
+          type: array
+          items:
+            $ref: '#/components/schemas/BalanceOutput'
+      required:
+      - balances
+      - closed_on
+      - id
+      - lot
+      - started_on
     OfflineBatchInputRequest:
       type: object
       properties:
@@ -5760,6 +7886,8 @@ components:
       oneOf:
       - $ref: '#/components/schemas/CorrectionAcceptCommandRequest'
       - $ref: '#/components/schemas/CorrectionRejectCommandRequest'
+      - $ref: '#/components/schemas/CuyBirthCommandRequest'
+      - $ref: '#/components/schemas/CuyDeathCommandRequest'
       - $ref: '#/components/schemas/MilkingConfirmCommandRequest'
       - $ref: '#/components/schemas/MilkingCreateCommandRequest'
       - $ref: '#/components/schemas/MilkingUpdateCommandRequest'
@@ -5773,6 +7901,8 @@ components:
         mapping:
           CORRECTION_ACCEPT: '#/components/schemas/CorrectionAcceptCommandRequest'
           CORRECTION_REJECT: '#/components/schemas/CorrectionRejectCommandRequest'
+          CUY_BIRTH: '#/components/schemas/CuyBirthCommandRequest'
+          CUY_DEATH: '#/components/schemas/CuyDeathCommandRequest'
           MILKING_CONFIRM: '#/components/schemas/MilkingConfirmCommandRequest'
           MILKING_CREATE: '#/components/schemas/MilkingCreateCommandRequest'
           MILKING_UPDATE: '#/components/schemas/MilkingUpdateCommandRequest'
@@ -5781,6 +7911,45 @@ components:
           TRANSFER_RECEIVE: '#/components/schemas/TransferReceiveCommandRequest'
           TRANSFER_SEND: '#/components/schemas/TransferSendCommandRequest'
           TRANSFER_UPDATE: '#/components/schemas/TransferUpdateCommandRequest'
+    OpeningGroupInputRequest:
+      type: object
+      properties:
+        lot:
+          $ref: '#/components/schemas/LotInputRequest'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BucketInputRequest'
+      required:
+      - items
+      - lot
+    OpeningPayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        pen_id:
+          type: string
+          format: uuid
+        lot:
+          $ref: '#/components/schemas/LotInputRequest'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BucketInputRequest'
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpeningGroupInputRequest'
+      required:
+      - date
+      - pen_id
+      - reason
     OperationResult:
       type: object
       properties:
@@ -6490,6 +8659,66 @@ components:
           maxLength: 150
         is_active:
           type: boolean
+    PenOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        shed_id:
+          type: string
+          format: uuid
+        shed:
+          type: string
+        center_id:
+          type: string
+          format: uuid
+        center:
+          type: string
+        capacity:
+          type: integer
+        purpose:
+          $ref: '#/components/schemas/PurposeEnum'
+        active:
+          type: boolean
+        population:
+          type: integer
+        totals:
+          type: object
+          additionalProperties:
+            type: integer
+        overcapacity:
+          type: boolean
+        occupations:
+          type: array
+          items:
+            $ref: '#/components/schemas/OccupationOutput'
+        last_count:
+          type: string
+          format: date
+          nullable: true
+        last_close:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - active
+      - capacity
+      - center
+      - center_id
+      - code
+      - id
+      - last_close
+      - last_count
+      - occupations
+      - overcapacity
+      - population
+      - purpose
+      - shed
+      - shed_id
+      - totals
     PendingApprover:
       type: object
       properties:
@@ -6501,6 +8730,22 @@ components:
       required:
       - function
       - user_id
+    PensPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PenOutput'
+      required:
+      - count
+      - next
+      - results
     PresentationInput:
       type: object
       properties:
@@ -6648,6 +8893,20 @@ components:
         * `BORRADOR` - BORRADOR
         * `CONFIRMADA` - CONFIRMADA
         * `ANULADA` - ANULADA
+    PurposeEnum:
+      enum:
+      - MATERNIDAD
+      - RECRIA_MACHOS
+      - RECRIA_HEMBRAS
+      - ACABADO
+      - ENFERMERIA
+      type: string
+      description: |-
+        * `MATERNIDAD` - Empadre / Maternidad
+        * `RECRIA_MACHOS` - Recría Machos
+        * `RECRIA_HEMBRAS` - Recría Hembras
+        * `ACABADO` - Venta / Acabado
+        * `ENFERMERIA` - Enfermería / Descarte
     PushConfig:
       type: object
       properties:
@@ -6712,6 +8971,27 @@ components:
       - reason
       - receiver_id
       - version_id
+    ReclassPayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BucketInputRequest'
+        new_quality:
+          $ref: '#/components/schemas/CuyQualityEnum'
+      required:
+      - date
+      - items
+      - new_quality
+      - reason
     RectifyPayloadRequest:
       type: object
       properties:
@@ -6730,6 +9010,40 @@ components:
       - details
       - reason
       - version_id
+    RedirectPayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        transfer_id:
+          type: string
+          format: uuid
+        destination_id:
+          type: string
+          format: uuid
+      required:
+      - date
+      - destination_id
+      - reason
+      - transfer_id
+    RefreshPayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+      - date
+      - reason
     RejectPayloadRequest:
       type: object
       properties:
@@ -6753,6 +9067,57 @@ components:
           maxLength: 1024
       required:
       - temporary_password
+    ResolvePayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        alert_id:
+          type: string
+          format: uuid
+      required:
+      - alert_id
+      - date
+      - reason
+    ResourceEnum:
+      enum:
+      - enable
+      - shed
+      - pen
+      - grant
+      - policy
+      type: string
+      description: |-
+        * `enable` - enable
+        * `shed` - shed
+        * `pen` - pen
+        * `grant` - grant
+        * `policy` - policy
+    ReviewPayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        count_id:
+          type: string
+          format: uuid
+        approve:
+          type: boolean
+      required:
+      - approve
+      - count_id
+      - date
+      - reason
     RevisePayloadRequest:
       type: object
       properties:
@@ -6830,12 +9195,14 @@ components:
       - TRANSPORTE
       - RECEPCION
       - ADMIN
+      - GALPONERO
       type: string
       description: |-
         * `PRODUCCION` - Produccion
         * `TRANSPORTE` - Transporte
         * `RECEPCION` - Recepcion
         * `ADMIN` - Admin
+        * `GALPONERO` - Galponero
     ScopeEnum:
       enum:
       - GLOBAL
@@ -6852,6 +9219,43 @@ components:
       description: |-
         * `HEMBRA` - Hembra
         * `MACHO` - Macho
+    ShedOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        center_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        active:
+          type: boolean
+      required:
+      - active
+      - center_id
+      - code
+      - id
+      - name
+    ShedsPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShedOutput'
+      required:
+      - count
+      - next
+      - results
     SnapshotResponse:
       type: object
       properties:
@@ -7334,6 +9738,23 @@ components:
       - records
       - synchronized_only
       - timezone
+    TransferPayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        transfer_id:
+          type: string
+          format: uuid
+      required:
+      - date
+      - reason
+      - transfer_id
     TransferPickupCommandRequest:
       type: object
       properties:
@@ -7756,6 +10177,37 @@ components:
           minLength: 1
           maxLength: 2000
       required:
+      - reason
+    WeanPayloadRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        occupation_id:
+          type: string
+          format: uuid
+        quality:
+          allOf:
+          - $ref: '#/components/schemas/CuyQualityEnum'
+          default: SIN_CLASIFICAR
+        quantity:
+          type: integer
+          maximum: 1000000
+          minimum: 1
+        destinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/BucketInputRequest'
+      required:
+      - date
+      - destinations
+      - occupation_id
+      - quantity
       - reason
   securitySchemes:
     cookieAuth:

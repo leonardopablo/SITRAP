@@ -5,6 +5,8 @@ from apps.common.errors import DomainError
 from .models import Notification
 
 EVENT_TYPES = {
+    "CUY_ALERT",
+    "CUY_DIFFERENCE",
     "PICKUP_REQUESTED",
     "PICKUP_REQUEST_UPDATED",
     "TRANSFER_CANCELLED",

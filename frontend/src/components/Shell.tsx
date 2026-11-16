@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { Link, Navigate, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
 import { roleLabels, useWorkspace } from '../auth/workspace'
 import { Button, Dialog, Notice } from './ui'
@@ -75,6 +75,7 @@ export function Shell() {
 
 export function TodayPage() {
   const { assignment } = useWorkspace()
+  if (assignment?.role === 'GALPONERO') return <Navigate to="/cuyes" replace />
   return <section className="card"><h1>{assignment?.role === 'ADMIN' ? 'Resumen administrativo' : 'Hoy'}</h1>
     <p>{new Intl.DateTimeFormat('es-PE', { dateStyle: 'full', timeZone: 'America/Lima' }).format(new Date())}</p>
     <Notice>{assignment ? `Espacio de ${roleLabels[assignment.role].toLowerCase()}. Consulta y confirma solo los registros correspondientes a tu cuenta.` : 'No tienes asignaciones activas. Contacta al administrador.'}</Notice>

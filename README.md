@@ -1,6 +1,14 @@
 # SITRAP · integración local del MVP
 
-La rama `integracion-mvp` reúne Django/DRF y la PWA React. **No es un despliegue**.
+## Inventario de cuyes · Etapa 1
+
+Módulo independiente por galpón/poza, sin alterar los flujos de leche.
+Guía de configuración, conteo físico inicial, operaciones, permisos, migraciones
+y pruebas: [docs/CUYES_ETAPA1.md](docs/CUYES_ETAPA1.md).
+No se precargan saldos: la apertura exige conteo real por poza.
+
+El proyecto integra Django/DRF y la PWA React; `main` conserva la base integrada.
+Las mejoras se desarrollan y verifican en ramas separadas. **No es un despliegue**.
 La API real es el modo predeterminado (`VITE_API_MODE=http`); el modo `mock`
 solo sirve para demostraciones/pruebas aisladas. Las cuatro especificaciones
 `SITRAP_0*.md` siguen siendo la fuente de reglas de negocio.

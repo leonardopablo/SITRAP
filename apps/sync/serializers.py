@@ -9,6 +9,9 @@ from apps.sync.models import Device, SyncOperation
 
 # Executable command catalogue. Payload validators arrive with each domain task.
 COMMAND_TYPES = (
+    "CUY_OPEN", "CUY_BIRTH", "CUY_DEATH", "CUY_WEAN", "CUY_MOVE", "CUY_DISPATCH",
+    "CUY_RECEIVE", "CUY_REDIRECT", "CUY_RECLASS", "CUY_COUNT", "CUY_REVIEW",
+    "CUY_CLOSE", "CUY_REOPEN", "CUY_RESOLVE", "CUY_ALERTS", "CUY_COMPENSATE",
     "MILKING_CREATE",
     "MILKING_UPDATE",
     "MILKING_CONFIRM",

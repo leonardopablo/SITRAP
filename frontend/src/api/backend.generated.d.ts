@@ -260,6 +260,230 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/cuyes/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_alerts_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/balances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_balances_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/commands": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["cuyes_commands_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_config_retrieve"];
+        put?: never;
+        post: operations["cuyes_config_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_counts_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/daily-reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_daily_reports_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_dashboard_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/destinations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_destinations_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_history_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/kardex": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_kardex_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/pens": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_pens_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/pens/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_pen_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/sheds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_sheds_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cuyes/transfers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuyes_transfers_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/devices": {
         parameters: {
             query?: never;
@@ -1171,6 +1395,11 @@ export interface components {
             /** Format: date-time */
             ends_at?: string | null;
         };
+        BalanceOutput: {
+            category: components["schemas"]["CategoryEnum"];
+            quality: components["schemas"]["CuyQualityEnum"];
+            quantity: number;
+        };
         BatchOperationResult: {
             /** Format: uuid */
             event_id: string;
@@ -1201,6 +1430,26 @@ export interface components {
             results: components["schemas"]["BatchOperationResult"][];
             reprocessed: components["schemas"]["BatchOperationResult"][];
         };
+        BirthPayloadRequest: {
+            /** Format: date */
+            date: string;
+            reason: string;
+            /** Format: uuid */
+            occupation_id: string;
+            live: number;
+            /** @default 0 */
+            stillborn: number;
+        };
+        BucketInputRequest: {
+            /** Format: uuid */
+            occupation_id?: string;
+            /** Format: uuid */
+            pen_id?: string;
+            category: components["schemas"]["CategoryEnum"];
+            /** @default SIN_CLASIFICAR */
+            quality: components["schemas"]["CuyQualityEnum"];
+            quantity: number;
+        };
         CSRF: {
             csrf_token: string;
         };
@@ -1209,6 +1458,13 @@ export interface components {
             /** Format: uuid */
             location_id: string | null;
         };
+        /**
+         * @description * `MACHO` - MACHO
+         *     * `HEMBRA` - HEMBRA
+         *     * `LACTANTE` - LACTANTE
+         * @enum {string}
+         */
+        CategoryEnum: "MACHO" | "HEMBRA" | "LACTANTE";
         CenterProductInput: {
             /** Format: uuid */
             id: string;
@@ -1239,6 +1495,46 @@ export interface components {
             picked_up_liters: string;
             /** Format: decimal */
             received_liters: string;
+        };
+        CompensatePayloadRequest: {
+            /** Format: date */
+            date: string;
+            reason: string;
+            /** Format: uuid */
+            movement_id: string;
+        };
+        ConfigInputRequest: {
+            resource: components["schemas"]["ResourceEnum"];
+            /** Format: uuid */
+            id: string;
+            reason: string;
+            /** Format: uuid */
+            center_id?: string;
+            /** Format: uuid */
+            shed_id?: string;
+            /** Format: uuid */
+            assignment_id?: string;
+            code?: string;
+            name?: string;
+            /** @default true */
+            active: boolean;
+            capacity?: number;
+            purpose?: components["schemas"]["PurposeEnum"];
+            reproductive_months?: number;
+            /** Format: decimal */
+            minimum_weaned_per_female?: string;
+        };
+        ConfigOutput: {
+            centers: {
+                [key: string]: unknown;
+            }[];
+            enabled_centers: string[];
+            policies: {
+                [key: string]: unknown;
+            }[];
+            grants: {
+                [key: string]: unknown;
+            }[];
         };
         Correction: {
             /** Format: uuid */
@@ -1404,6 +1700,14 @@ export interface components {
          * @enum {string}
          */
         CorrectionWithdrawCommandTypeEnum: "CORRECTION_WITHDRAW";
+        CountPayloadRequest: {
+            /** Format: date */
+            date: string;
+            reason: string;
+            /** Format: uuid */
+            pen_id: string;
+            items: components["schemas"]["BucketInputRequest"][];
+        };
         CowDetail: {
             /** Format: uuid */
             animal_id: string;
@@ -1436,6 +1740,412 @@ export interface components {
             username: string;
             name: string;
             temporary_password: string;
+        };
+        CuyAlertsCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_ALERTS";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["RefreshPayloadRequest"];
+        };
+        /**
+         * @description * `CUY_ALERTS` - CUY_ALERTS
+         * @enum {string}
+         */
+        CuyAlertsCommandTypeEnum: "CUY_ALERTS";
+        CuyBirthCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_BIRTH";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["BirthPayloadRequest"];
+        };
+        /**
+         * @description * `CUY_BIRTH` - CUY_BIRTH
+         * @enum {string}
+         */
+        CuyBirthCommandTypeEnum: "CUY_BIRTH";
+        CuyCloseCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_CLOSE";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["DailyPayloadRequest"];
+        };
+        /**
+         * @description * `CUY_CLOSE` - CUY_CLOSE
+         * @enum {string}
+         */
+        CuyCloseCommandTypeEnum: "CUY_CLOSE";
+        CuyCommandRequest: components["schemas"]["CuyOpenCommandRequest"] | components["schemas"]["CuyBirthCommandRequest"] | components["schemas"]["CuyDeathCommandRequest"] | components["schemas"]["CuyWeanCommandRequest"] | components["schemas"]["CuyMoveCommandRequest"] | components["schemas"]["CuyDispatchCommandRequest"] | components["schemas"]["CuyReceiveCommandRequest"] | components["schemas"]["CuyRedirectCommandRequest"] | components["schemas"]["CuyReclassCommandRequest"] | components["schemas"]["CuyCountCommandRequest"] | components["schemas"]["CuyReviewCommandRequest"] | components["schemas"]["CuyCloseCommandRequest"] | components["schemas"]["CuyReopenCommandRequest"] | components["schemas"]["CuyResolveCommandRequest"] | components["schemas"]["CuyAlertsCommandRequest"] | components["schemas"]["CuyCompensateCommandRequest"];
+        CuyCompensateCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_COMPENSATE";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["CompensatePayloadRequest"];
+        };
+        /**
+         * @description * `CUY_COMPENSATE` - CUY_COMPENSATE
+         * @enum {string}
+         */
+        CuyCompensateCommandTypeEnum: "CUY_COMPENSATE";
+        CuyCountCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_COUNT";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["CountPayloadRequest"];
+        };
+        /**
+         * @description * `CUY_COUNT` - CUY_COUNT
+         * @enum {string}
+         */
+        CuyCountCommandTypeEnum: "CUY_COUNT";
+        CuyDeathCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_DEATH";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["DeathPayloadRequest"];
+        };
+        /**
+         * @description * `CUY_DEATH` - CUY_DEATH
+         * @enum {string}
+         */
+        CuyDeathCommandTypeEnum: "CUY_DEATH";
+        CuyDispatchCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_DISPATCH";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["MovePayloadRequest"];
+        };
+        /**
+         * @description * `CUY_DISPATCH` - CUY_DISPATCH
+         * @enum {string}
+         */
+        CuyDispatchCommandTypeEnum: "CUY_DISPATCH";
+        CuyMoveCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_MOVE";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["MovePayloadRequest"];
+        };
+        /**
+         * @description * `CUY_MOVE` - CUY_MOVE
+         * @enum {string}
+         */
+        CuyMoveCommandTypeEnum: "CUY_MOVE";
+        CuyOpenCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_OPEN";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["OpeningPayloadRequest"];
+        };
+        /**
+         * @description * `CUY_OPEN` - CUY_OPEN
+         * @enum {string}
+         */
+        CuyOpenCommandTypeEnum: "CUY_OPEN";
+        CuyPage: {
+            count: number;
+            next: string | null;
+            results: unknown;
+        };
+        /**
+         * @description * `A` - A
+         *     * `B` - B
+         *     * `C` - C
+         *     * `SIN_CLASIFICAR` - SIN_CLASIFICAR
+         * @enum {string}
+         */
+        CuyQualityEnum: "A" | "B" | "C" | "SIN_CLASIFICAR";
+        CuyReceiveCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_RECEIVE";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["TransferPayloadRequest"];
+        };
+        /**
+         * @description * `CUY_RECEIVE` - CUY_RECEIVE
+         * @enum {string}
+         */
+        CuyReceiveCommandTypeEnum: "CUY_RECEIVE";
+        CuyReclassCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_RECLASS";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["ReclassPayloadRequest"];
+        };
+        /**
+         * @description * `CUY_RECLASS` - CUY_RECLASS
+         * @enum {string}
+         */
+        CuyReclassCommandTypeEnum: "CUY_RECLASS";
+        CuyRedirectCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_REDIRECT";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["RedirectPayloadRequest"];
+        };
+        /**
+         * @description * `CUY_REDIRECT` - CUY_REDIRECT
+         * @enum {string}
+         */
+        CuyRedirectCommandTypeEnum: "CUY_REDIRECT";
+        CuyReopenCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_REOPEN";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["DailyPayloadRequest"];
+        };
+        /**
+         * @description * `CUY_REOPEN` - CUY_REOPEN
+         * @enum {string}
+         */
+        CuyReopenCommandTypeEnum: "CUY_REOPEN";
+        CuyResolveCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_RESOLVE";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["ResolvePayloadRequest"];
+        };
+        /**
+         * @description * `CUY_RESOLVE` - CUY_RESOLVE
+         * @enum {string}
+         */
+        CuyResolveCommandTypeEnum: "CUY_RESOLVE";
+        CuyReviewCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_REVIEW";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["ReviewPayloadRequest"];
+        };
+        /**
+         * @description * `CUY_REVIEW` - CUY_REVIEW
+         * @enum {string}
+         */
+        CuyReviewCommandTypeEnum: "CUY_REVIEW";
+        CuyWeanCommandRequest: {
+            /** Format: uuid */
+            event_id: string;
+            /** Format: uuid */
+            device_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "CUY_WEAN";
+            /** Format: uuid */
+            entity_id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            expected_version?: number | null;
+            depends_on?: string[];
+            payload: components["schemas"]["WeanPayloadRequest"];
+        };
+        /**
+         * @description * `CUY_WEAN` - CUY_WEAN
+         * @enum {string}
+         */
+        CuyWeanCommandTypeEnum: "CUY_WEAN";
+        DailyPayloadRequest: {
+            /** Format: date */
+            date: string;
+            reason: string;
+            /** Format: uuid */
+            shed_id: string;
+        };
+        Dashboard: {
+            /** Format: date-time */
+            updated_at: string;
+            population: number;
+            in_transit: number;
+            pens: components["schemas"]["PenOutput"][];
+            indicators: unknown;
+            alerts: unknown;
+        };
+        DeathPayloadRequest: {
+            /** Format: date */
+            date: string;
+            reason: string;
+            items: components["schemas"]["BucketInputRequest"][];
+            /** @default desconocida */
+            cause: string;
         };
         Decision: {
             /** Format: uuid */
@@ -1590,6 +2300,36 @@ export interface components {
             production_state: components["schemas"]["ProductionStateEnum"];
             /** Format: date-time */
             created_at: string;
+        };
+        LotInputRequest: {
+            provenance: string;
+            /** Format: date */
+            born_from?: string | null;
+            /** Format: date */
+            born_until?: string | null;
+            /** Format: date */
+            installed_on?: string | null;
+        };
+        LotOutput: {
+            /** Format: uuid */
+            id: string;
+            provenance: string;
+            /** Format: uuid */
+            parent_id: string | null;
+            /** Format: uuid */
+            source_occupation_id: string | null;
+            /** Format: date */
+            opened_on: string;
+            /** Format: date */
+            born_from: string | null;
+            /** Format: date */
+            born_until: string | null;
+            /** Format: date */
+            installed_on: string | null;
+            age_days_min: number | null;
+            age_days_max: number | null;
+            rearing_days: number;
+            reproductive_days: number | null;
         };
         LotTrace: {
             lot: components["schemas"]["LotTraceOrigin"];
@@ -1892,6 +2632,16 @@ export interface components {
             id: string;
             name: string;
         };
+        MovePayloadRequest: {
+            /** Format: date */
+            date: string;
+            reason: string;
+            /** Format: uuid */
+            source_id: string;
+            /** Format: uuid */
+            destination_id: string;
+            items: components["schemas"]["BucketInputRequest"][];
+        };
         Notification: {
             /** Format: uuid */
             readonly id: string;
@@ -1919,10 +2669,34 @@ export interface components {
             unread_count: number;
             results: components["schemas"]["Notification"][];
         };
+        OccupationOutput: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date */
+            started_on: string;
+            /** Format: date */
+            closed_on: string | null;
+            lot: components["schemas"]["LotOutput"];
+            balances: components["schemas"]["BalanceOutput"][];
+        };
         OfflineBatchInputRequest: {
             events: components["schemas"]["OfflineCommandRequest"][];
         };
-        OfflineCommandRequest: components["schemas"]["CorrectionAcceptCommandRequest"] | components["schemas"]["CorrectionRejectCommandRequest"] | components["schemas"]["MilkingConfirmCommandRequest"] | components["schemas"]["MilkingCreateCommandRequest"] | components["schemas"]["MilkingUpdateCommandRequest"] | components["schemas"]["TransferCreateCommandRequest"] | components["schemas"]["TransferPickupCommandRequest"] | components["schemas"]["TransferReceiveCommandRequest"] | components["schemas"]["TransferSendCommandRequest"] | components["schemas"]["TransferUpdateCommandRequest"];
+        OfflineCommandRequest: components["schemas"]["CorrectionAcceptCommandRequest"] | components["schemas"]["CorrectionRejectCommandRequest"] | components["schemas"]["CuyBirthCommandRequest"] | components["schemas"]["CuyDeathCommandRequest"] | components["schemas"]["MilkingConfirmCommandRequest"] | components["schemas"]["MilkingCreateCommandRequest"] | components["schemas"]["MilkingUpdateCommandRequest"] | components["schemas"]["TransferCreateCommandRequest"] | components["schemas"]["TransferPickupCommandRequest"] | components["schemas"]["TransferReceiveCommandRequest"] | components["schemas"]["TransferSendCommandRequest"] | components["schemas"]["TransferUpdateCommandRequest"];
+        OpeningGroupInputRequest: {
+            lot: components["schemas"]["LotInputRequest"];
+            items: components["schemas"]["BucketInputRequest"][];
+        };
+        OpeningPayloadRequest: {
+            /** Format: date */
+            date: string;
+            reason: string;
+            /** Format: uuid */
+            pen_id: string;
+            lot?: components["schemas"]["LotInputRequest"];
+            items?: components["schemas"]["BucketInputRequest"][];
+            groups?: components["schemas"]["OpeningGroupInputRequest"][];
+        };
         OperationResult: {
             /** Format: uuid */
             event_id: string;
@@ -2322,10 +3096,39 @@ export interface components {
             name?: string;
             is_active?: boolean;
         };
+        PenOutput: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            /** Format: uuid */
+            shed_id: string;
+            shed: string;
+            /** Format: uuid */
+            center_id: string;
+            center: string;
+            capacity: number;
+            purpose: components["schemas"]["PurposeEnum"];
+            active: boolean;
+            population: number;
+            totals: {
+                [key: string]: number;
+            };
+            overcapacity: boolean;
+            occupations: components["schemas"]["OccupationOutput"][];
+            /** Format: date */
+            last_count: string | null;
+            /** Format: date */
+            last_close: string | null;
+        };
         PendingApprover: {
             function: components["schemas"]["FunctionEnum"];
             /** Format: uuid */
             user_id: string;
+        };
+        PensPage: {
+            count: number;
+            next: string | null;
+            results: components["schemas"]["PenOutput"][];
         };
         PresentationInput: {
             /** Format: uuid */
@@ -2392,6 +3195,15 @@ export interface components {
          * @enum {string}
          */
         ProductionStateEnum: "BORRADOR" | "CONFIRMADA" | "ANULADA";
+        /**
+         * @description * `MATERNIDAD` - Empadre / Maternidad
+         *     * `RECRIA_MACHOS` - Recría Machos
+         *     * `RECRIA_HEMBRAS` - Recría Hembras
+         *     * `ACABADO` - Venta / Acabado
+         *     * `ENFERMERIA` - Enfermería / Descarte
+         * @enum {string}
+         */
+        PurposeEnum: "MATERNIDAD" | "RECRIA_MACHOS" | "RECRIA_HEMBRAS" | "ACABADO" | "ENFERMERIA";
         PushConfig: {
             enabled: boolean;
             vapid_public_key: string | null;
@@ -2418,10 +3230,31 @@ export interface components {
             receiver_id: string;
             reason: string;
         };
+        ReclassPayloadRequest: {
+            /** Format: date */
+            date: string;
+            reason: string;
+            items: components["schemas"]["BucketInputRequest"][];
+            new_quality: components["schemas"]["CuyQualityEnum"];
+        };
         RectifyPayloadRequest: {
             /** Format: uuid */
             version_id: string;
             details: components["schemas"]["CowDetailRequest"][];
+            reason: string;
+        };
+        RedirectPayloadRequest: {
+            /** Format: date */
+            date: string;
+            reason: string;
+            /** Format: uuid */
+            transfer_id: string;
+            /** Format: uuid */
+            destination_id: string;
+        };
+        RefreshPayloadRequest: {
+            /** Format: date */
+            date: string;
             reason: string;
         };
         RejectPayloadRequest: {
@@ -2431,6 +3264,30 @@ export interface components {
         };
         ResetPasswordRequest: {
             temporary_password: string;
+        };
+        ResolvePayloadRequest: {
+            /** Format: date */
+            date: string;
+            reason: string;
+            /** Format: uuid */
+            alert_id: string;
+        };
+        /**
+         * @description * `enable` - enable
+         *     * `shed` - shed
+         *     * `pen` - pen
+         *     * `grant` - grant
+         *     * `policy` - policy
+         * @enum {string}
+         */
+        ResourceEnum: "enable" | "shed" | "pen" | "grant" | "policy";
+        ReviewPayloadRequest: {
+            /** Format: date */
+            date: string;
+            reason: string;
+            /** Format: uuid */
+            count_id: string;
+            approve: boolean;
         };
         RevisePayloadRequest: {
             /** Format: uuid */
@@ -2466,9 +3323,10 @@ export interface components {
          *     * `TRANSPORTE` - Transporte
          *     * `RECEPCION` - Recepcion
          *     * `ADMIN` - Admin
+         *     * `GALPONERO` - Galponero
          * @enum {string}
          */
-        RoleEnum: "PRODUCCION" | "TRANSPORTE" | "RECEPCION" | "ADMIN";
+        RoleEnum: "PRODUCCION" | "TRANSPORTE" | "RECEPCION" | "ADMIN" | "GALPONERO";
         /**
          * @description * `GLOBAL` - Global
          *     * `UBICACION` - Ubicacion
@@ -2481,6 +3339,20 @@ export interface components {
          * @enum {string}
          */
         SexEnum: "HEMBRA" | "MACHO";
+        ShedOutput: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            center_id: string;
+            code: string;
+            name: string;
+            active: boolean;
+        };
+        ShedsPage: {
+            count: number;
+            next: string | null;
+            results: components["schemas"]["ShedOutput"][];
+        };
         SnapshotResponse: {
             /** Format: date-time */
             snapshot_at: string;
@@ -2683,6 +3555,13 @@ export interface components {
             received_count: number;
             days: components["schemas"]["TransferDay"][];
             records: components["schemas"]["TransferMetricRow"][];
+        };
+        TransferPayloadRequest: {
+            /** Format: date */
+            date: string;
+            reason: string;
+            /** Format: uuid */
+            transfer_id: string;
         };
         TransferPickupCommandRequest: {
             /** Format: uuid */
@@ -2892,6 +3771,17 @@ export interface components {
         };
         VoidPayloadRequest: {
             reason: string;
+        };
+        WeanPayloadRequest: {
+            /** Format: date */
+            date: string;
+            reason: string;
+            /** Format: uuid */
+            occupation_id: string;
+            /** @default SIN_CLASIFICAR */
+            quality: components["schemas"]["CuyQualityEnum"];
+            quantity: number;
+            destinations: components["schemas"]["BucketInputRequest"][];
         };
     };
     responses: never;
@@ -3812,6 +4702,875 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TransferCommandError"];
+                };
+            };
+        };
+    };
+    cuyes_alerts_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                end?: string;
+                limit?: number;
+                offset?: number;
+                pen_id?: string;
+                shed_id?: string;
+                start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CuyPage"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_balances_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                end?: string;
+                limit?: number;
+                offset?: number;
+                pen_id?: string;
+                shed_id?: string;
+                start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PensPage"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_commands_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["CuyCommandRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CuyCommandRequest"];
+                "multipart/form-data": components["schemas"]["CuyCommandRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OperationResult"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_config_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConfigOutput"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_config_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfigInputRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ConfigInputRequest"];
+                "multipart/form-data": components["schemas"]["ConfigInputRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_counts_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                end?: string;
+                limit?: number;
+                offset?: number;
+                pen_id?: string;
+                shed_id?: string;
+                start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CuyPage"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_daily_reports_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                end?: string;
+                limit?: number;
+                offset?: number;
+                pen_id?: string;
+                shed_id?: string;
+                start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CuyPage"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_dashboard_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                end?: string;
+                limit?: number;
+                offset?: number;
+                pen_id?: string;
+                shed_id?: string;
+                start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Dashboard"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_destinations_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                end?: string;
+                limit?: number;
+                offset?: number;
+                pen_id?: string;
+                shed_id?: string;
+                start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CuyPage"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_history_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                end?: string;
+                limit?: number;
+                offset?: number;
+                pen_id?: string;
+                shed_id?: string;
+                start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CuyPage"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_kardex_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                end?: string;
+                limit?: number;
+                offset?: number;
+                pen_id?: string;
+                shed_id?: string;
+                start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CuyPage"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_pens_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                end?: string;
+                limit?: number;
+                offset?: number;
+                pen_id?: string;
+                shed_id?: string;
+                start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PensPage"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_pen_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PenOutput"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_sheds_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                end?: string;
+                limit?: number;
+                offset?: number;
+                pen_id?: string;
+                shed_id?: string;
+                start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShedsPage"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cuyes_transfers_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                end?: string;
+                limit?: number;
+                offset?: number;
+                pen_id?: string;
+                shed_id?: string;
+                start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CuyPage"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
                 };
             };
         };

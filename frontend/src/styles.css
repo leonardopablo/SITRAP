@@ -238,3 +238,13 @@ dialog::backdrop { background: #0008; }
   .help-guide__link { width: 100%; }
   .calendar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+.cuy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 1rem; }
+.cuy-grid button { text-align: left; color: inherit; cursor: pointer; }
+.cuy-grid button[aria-pressed="true"] { outline: 3px solid var(--color-primary, #246842); }
+.cuyes-module label { display: grid; gap: .5rem; font-weight: 600; }
+.cuyes-module input, .cuyes-module select { width: 100%; min-width: 0; min-height: 48px; padding: .75rem; font: inherit; border: 1px solid var(--color-border-control); border-radius: var(--radius-control); background: var(--color-surface); color: inherit; }
+.cuyes-module input[type="checkbox"] { width: 24px; min-height: 24px; }
+.cuyes-module label:has(input[type="checkbox"]) { display: flex; align-items: center; }
+.cuyes-module fieldset { min-width: 0; }
+.cuyes-module p, .cuyes-module small, .cuyes-module summary { overflow-wrap: anywhere; }
+.cuyes-module summary { cursor: pointer; min-height: 44px; padding-block: .5rem; }

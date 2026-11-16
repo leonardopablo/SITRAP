@@ -1,9 +1,11 @@
 import type { components } from './generated'
-export type Role = components['schemas']['Role']
-export type Assignment = components['schemas']['Assignment']
-export type Account = components['schemas']['Account']
+import type { components as Backend } from './backend.generated'
+import type { CuyType } from '../cuyes/types'
+export type Role = Backend['schemas']['RoleEnum']
+export type Assignment = Omit<components['schemas']['Assignment'], 'role'> & { role: Role }
+export type Account = Omit<components['schemas']['Account'], 'assignments'> & { assignments: Assignment[] }
 export type ErrorBody = components['schemas']['ErrorBody']
-export type CommandType = components['schemas']['CommandType']
-export type Command = components['schemas']['Command']
+export type CommandType = components['schemas']['CommandType'] | CuyType
+export type Command = Omit<components['schemas']['Command'], 'type'> & { type: CommandType }
 export type Acknowledgement = components['schemas']['Acknowledgement']
 export interface Page<T> { results: T[]; next: string | null; count: number }

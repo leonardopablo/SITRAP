@@ -15,6 +15,8 @@ from .serializers import EnvelopeSerializer
 from .services import ensure_actor, normalize, owned_device
 
 OFFLINE_TYPES = {
+    "CUY_BIRTH",
+    "CUY_DEATH",
     "MILKING_CREATE",
     "MILKING_UPDATE",
     "MILKING_CONFIRM",

@@ -71,3 +71,17 @@ Sesiones/CSRF fallidos no crean operaciones. Una cuenta distinta no puede usar e
 dispositivo ni la cola anterior. Cuenta/dispositivo inactivos y permisos revocados
 bloquean aplicación; no purgar ni cambiar silenciosamente los UUID. Una revocación
 no se remedia reescribiendo expected_version ni transfiriendo registros de usuario.
+
+## Ampliación Cuyes · Etapa 1
+
+`CUY_BIRTH` y `CUY_DEATH` se admiten en `/sync/events` con los mismos sobres,
+dispositivos, hashes y acuses. El payload conserva fecha operativa y ocupación.
+Se revalidan autorización por galpón, habilitación, parte cerrado y saldo.
+Las demás acciones CUY_* requieren `/cuyes/commands` con conexión.
+
+Bootstrap/changes incluye `cuy_shed` y `cuy_pen` con ocupaciones y saldos confirmados
+solo del ámbito vigente; no descarga los saldos de destinos intercentro ajenos.
+El hash incluye autorizaciones de galpón y habilitación actual. Su revocación
+invalida páginas incompletas y emite tombstones en la siguiente descarga completa.
+La cola no se borra ni se transfiere a otra cuenta. Más reglas y guía en
+[CUYES_ETAPA1.md](CUYES_ETAPA1.md).

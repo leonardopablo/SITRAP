@@ -3,7 +3,7 @@ import type { Command, ErrorBody } from '../api/types'
 import { downloadedOnly, onlineOnly } from '../api/commands'
 
 export type LocalStatus = 'PENDIENTE' | 'ENVIANDO' | 'APLICADA' | 'REQUIERE_SESION' | 'ESPERA_DEPENDENCIA' | 'RECHAZADA'
-export interface LocalEvent { event_id: string; account_id: string; device_id: string; command: Command; status: LocalStatus; created_at: string; updated_at: string; error?: ErrorBody; result?: unknown }
+export interface LocalEvent { event_id: string; account_id: string; device_id: string; command: Command; status: LocalStatus; created_at: string; updated_at: string; error?: ErrorBody; result?: unknown; reviewed_at?: string; review_reason?: string }
 export interface AuthorizedCopy { key: string; account_id: string; kind: string; entity_id: string; document: unknown; downloaded_at: string }
 export interface DeviceRecord { account_id: string; device_id: string; registered: boolean; prepared_until: string | null; cursor?: string; needs_revoke?: boolean }
 export interface FieldNote { id: string; account_id: string; text: string; created_at: string; linked_transfer_id?: string; linked_at?: string }
@@ -44,6 +44,17 @@ export async function enqueue(accountId: string, command: Command, storage: Sitr
   const device = await storage.devices.get(accountId)
   if (device?.device_id !== command.device_id) throw new Error('El dispositivo no corresponde a esta cuenta.')
   if (!device.registered || !device.prepared_until || Date.now() >= Date.parse(device.prepared_until)) throw new Error('La preparación offline falta o venció; renueva acceso antes de registrar operaciones.')
+  if (command.type.startsWith('CUY_')) {
+    if (!['CUY_BIRTH', 'CUY_DEATH'].includes(command.type)) throw new Error('Esta acción de Cuyes requiere conexión.')
+    const penId = command.payload.pen_scope_id
+    // pen_scope_id is local context, never added to the immutable server payload.
+    if (penId) throw new Error('No agregues campos locales al comando.')
+    const copies = await storage.copies.where('[account_id+kind]').equals([accountId, 'cuy_pen']).toArray()
+    const ids = command.type === 'CUY_BIRTH' ? [command.payload.occupation_id] : (command.payload.items as { occupation_id: string }[]).map(item => item.occupation_id)
+    for (const id of ids) {
+      if (!copies.some(copy => (copy.document as { occupations: { id: string }[] }).occupations.some(occ => occ.id === id))) throw new Error('Descarga primero la poza autorizada antes de registrar una novedad.')
+    }
+  }
   if (downloadedOnly.has(command.type)) {
     const kind = command.type.startsWith('CORRECTION') ? 'correction' : 'transfer'
     const copy = await readCopy(accountId, kind, command.entity_id, storage)

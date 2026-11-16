@@ -48,6 +48,9 @@ def scope_hash(actor):
             .values("id", "role_id", "scope", "location_id", "starts_at", "ends_at")
         )
     )
+    from apps.cuyes.reports import scope_data
+
+    value += snapshot(scope_data(actor))
     return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
 
 
@@ -65,6 +68,10 @@ def collect(actor):
             )
 
     add("me", actor.id, MeSerializer(actor).data)
+    from apps.cuyes.reports import sync_entries
+
+    for kind, entity_id, data in sync_entries(actor):
+        add(kind, entity_id, data)
     for type, query in [
         ("location", scoped_locations(actor)),
         ("product", scoped_products(actor)),

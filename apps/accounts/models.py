@@ -18,13 +18,14 @@ class Role(models.Model):
         TRANSPORTE = "TRANSPORTE"
         RECEPCION = "RECEPCION"
         ADMIN = "ADMIN"
+        GALPONERO = "GALPONERO"
 
     code = models.CharField(primary_key=True, max_length=16, choices=Code.choices)
 
     class Meta:
         constraints = [
             models.CheckConstraint(
-                condition=Q(code__in=["PRODUCCION", "TRANSPORTE", "RECEPCION", "ADMIN"]),
+                condition=Q(code__in=["PRODUCCION", "TRANSPORTE", "RECEPCION", "ADMIN", "GALPONERO"]),
                 name="role_known_code",
             ),
         ]

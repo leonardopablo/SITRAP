@@ -33,7 +33,7 @@ export function InboxBell() {
   useInboxRefresh()
   return <Link to="/avisos" aria-label={`Avisos${data ? `, ${data.unread_count} no leídos` : ''}`}>Avisos {data ? `(${data.unread_count})` : isError ? '(!)' : '(…)'} </Link>
 }
-function destination(item: Notification) { return item.entity_type === 'correction' ? `/correcciones/${encodeURIComponent(item.entity_id)}` : `/entregas/${encodeURIComponent(item.entity_id)}` }
+function destination(item: Notification) { return item.entity_type === 'cuy_pen' ? '/cuyes' : item.entity_type === 'correction' ? `/correcciones/${encodeURIComponent(item.entity_id)}` : `/entregas/${encodeURIComponent(item.entity_id)}` }
 export function InboxPage() {
   const { account } = useAuth()
   const online = useConnection()
@@ -59,7 +59,7 @@ export function InboxPage() {
     {actionError && <Notice tone="error">{actionError}</Notice>}
     {list.map(item => <article className="card stack" key={item.id}><div className="row"><strong>{item.title}</strong><span className="badge">{item.read_at ? 'Leído' : 'No leído'}</span></div><p>{item.text}</p>
       <p className="help">{new Intl.DateTimeFormat('es-PE', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Lima' }).format(new Date(item.created_at))}</p>
-      <div className="row"><Link className="button secondary" to={destination(item)}>{item.entity_type === 'correction' ? 'Ver corrección' : 'Ver entrega'}</Link>
+      <div className="row"><Link className="button secondary" to={destination(item)}>{item.entity_type === 'cuy_pen' ? 'Ver Cuyes' : item.entity_type === 'correction' ? 'Ver corrección' : 'Ver entrega'}</Link>
       {!item.read_at && <Button disabled={!online} busy={reading === item.id} onClick={() => void markRead(item.id)}>Marcar leído</Button>}</div>
     </article>)}
     {data?.next && <Notice>Hay más avisos. La paginación completa se conectará cuando esté disponible B18/OpenAPI.</Notice>}
