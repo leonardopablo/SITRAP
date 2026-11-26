@@ -6,6 +6,7 @@ import { Notice } from '../components/ui'
 type Guide = { title: string; summary: string; to?: string; steps: string[]; caution?: string }
 
 const guides: Record<Role, Guide[]> = {
+  DIRECTOR: [{ title: 'Panel de Dirección', summary: 'Consulta de indicadores confirmados.', to: '/direccion', steps: ['Selecciona el período y el centro.', 'Revisa los indicadores y su trazabilidad.'], caution: 'El acceso es de solo lectura.' }],
   GALPONERO: [{ title: 'Inventario de cuyes', summary: 'Trabajo por galpón, poza y lote.', to: '/cuyes', steps: ['Selecciona tu galpón y la poza.', 'La apertura sale del conteo físico, nunca de una cifra estimada.', 'Registra nacimientos y mortalidad; sin conexión se guardan como pendientes.', 'Destetes, traslados y conteos requieren conexión.', 'Sincroniza y revisa rechazos antes de cerrar el parte, incluso con cero novedades.'], caution: 'El saldo confirmado no incluye novedades pendientes de otros teléfonos.' }],
   PRODUCCION: [
     { title: 'Hoy', summary: 'Reúne los accesos para comenzar el trabajo del día.', to: '/hoy', steps: ['Comprueba que aparezcan tu nombre, Producción y el centro correcto.', 'Entra a registrar el ordeño o a preparar una entrega desde los enlaces de la pantalla.'] },

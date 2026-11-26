@@ -692,6 +692,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/direction/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["direction_dashboard_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -2412,6 +2428,21 @@ export interface components {
             id: string;
             name: string;
         };
+        DirectionOutput: {
+            /** Format: date */
+            start: string;
+            /** Format: date */
+            end: string;
+            /** Format: date-time */
+            refreshed_at: string;
+            demo: boolean;
+            centers: {
+                [key: string]: unknown;
+            }[];
+            results: {
+                [key: string]: unknown;
+            }[];
+        };
         DraftPayloadRequest: {
             /** Format: uuid */
             version_id: string;
@@ -3638,9 +3669,10 @@ export interface components {
          *     * `RECEPCION` - Recepcion
          *     * `ADMIN` - Admin
          *     * `GALPONERO` - Galponero
+         *     * `DIRECTOR` - Director
          * @enum {string}
          */
-        RoleEnum: "PRODUCCION" | "TRANSPORTE" | "RECEPCION" | "ADMIN" | "GALPONERO";
+        RoleEnum: "PRODUCCION" | "TRANSPORTE" | "RECEPCION" | "ADMIN" | "GALPONERO" | "DIRECTOR";
         SaleArriveCommandRequest: {
             /** Format: uuid */
             event_id: string;
@@ -7382,6 +7414,45 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    direction_dashboard_retrieve: {
+        parameters: {
+            query?: {
+                center_id?: string;
+                end?: string;
+                start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DirectionOutput"];
                 };
             };
             403: {

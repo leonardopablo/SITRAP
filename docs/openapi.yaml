@@ -2845,6 +2845,48 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: ''
+  /api/v1/direction/dashboard:
+    get:
+      operationId: direction_dashboard_retrieve
+      parameters:
+      - in: query
+        name: center_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date
+      tags:
+      - direction
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectionOutput'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/health:
     get:
       operationId: health_retrieve
@@ -7768,6 +7810,37 @@ components:
       required:
       - id
       - name
+    DirectionOutput:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+        refreshed_at:
+          type: string
+          format: date-time
+        demo:
+          type: boolean
+        centers:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        results:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - centers
+      - demo
+      - end
+      - refreshed_at
+      - results
+      - start
     DraftPayloadRequest:
       type: object
       properties:
@@ -10474,6 +10547,7 @@ components:
       - RECEPCION
       - ADMIN
       - GALPONERO
+      - DIRECTOR
       type: string
       description: |-
         * `PRODUCCION` - Produccion
@@ -10481,6 +10555,7 @@ components:
         * `RECEPCION` - Recepcion
         * `ADMIN` - Admin
         * `GALPONERO` - Galponero
+        * `DIRECTOR` - Director
     SaleArriveCommandRequest:
       type: object
       properties:

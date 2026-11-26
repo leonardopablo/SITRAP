@@ -7,6 +7,7 @@ from apps.catalog.models import Location
 from apps.common.errors import DomainError
 
 ROLE_CAPABILITIES = {
+    "DIRECTOR": ("read_direction",),
     "GALPONERO": ("read_cuyes", "record_cuyes", "close_cuyes_day", "prepare_cuy_sales", "dispatch_cuy_sales"),
     "PRODUCCION": (
         "record_production",
@@ -18,6 +19,7 @@ ROLE_CAPABILITIES = {
     "RECEPCION": ("receive", "approve_reception_correction", "read_assigned_transfers"),
 }
 ADMIN_CAPABILITIES = (
+    "read_direction",
     "manage_cuy_sales",
     "manage_cuyes",
     "manage_accounts",

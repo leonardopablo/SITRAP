@@ -5,9 +5,10 @@ import type { Assignment, Role } from '../api/types'
 import { useAuth } from './AuthProvider'
 import { Notice } from '../components/ui'
 
-export const roleLabels: Record<Role, string> = { PRODUCCION: 'Producción', TRANSPORTE: 'Transporte', RECEPCION: 'Recepción', ADMIN: 'Administración', GALPONERO: 'Cuyes · Galponero' }
+export const roleLabels: Record<Role, string> = { PRODUCCION: 'Producción', TRANSPORTE: 'Transporte', RECEPCION: 'Recepción', ADMIN: 'Administración', GALPONERO: 'Cuyes · Galponero', DIRECTOR: 'Dirección DIPROBSA' }
 export type NavIconName = 'home' | 'production' | 'cows' | 'history' | 'transport' | 'pending' | 'reception' | 'admin' | 'trace' | 'users' | 'catalog' | 'help'
 export const navigation: Record<Role, { to: string; label: string; icon: NavIconName }[]> = {
+  DIRECTOR: [{ to: '/direccion', label: 'Dirección', icon: 'home' }],
   GALPONERO: [{ to: '/cuyes', label: 'Cuyes', icon: 'home' }, { to: '/cuyes/ventas', label: 'Ventas', icon: 'pending' }, { to: '/sincronizacion', label: 'Sincronización', icon: 'pending' }, { to: '/ayuda', label: 'Ayuda', icon: 'help' }],
   PRODUCCION: [{ to: '/hoy', label: 'Hoy', icon: 'home' }, { to: '/produccion', label: 'Producción', icon: 'production' }, { to: '/vacas', label: 'Vacas', icon: 'cows' }, { to: '/historial', label: 'Historial', icon: 'history' }, { to: '/ayuda', label: 'Ayuda', icon: 'help' }],
   TRANSPORTE: [{ to: '/hoy', label: 'Hoy', icon: 'home' }, { to: '/diario', label: 'Diario', icon: 'transport' }, { to: '/pendientes', label: 'Pendientes', icon: 'pending' }, { to: '/cuyes/ventas', label: 'Viajes de cuyes', icon: 'transport' }, { to: '/ayuda', label: 'Ayuda', icon: 'help' }],

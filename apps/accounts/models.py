@@ -19,13 +19,14 @@ class Role(models.Model):
         RECEPCION = "RECEPCION"
         ADMIN = "ADMIN"
         GALPONERO = "GALPONERO"
+        DIRECTOR = "DIRECTOR"
 
     code = models.CharField(primary_key=True, max_length=16, choices=Code.choices)
 
     class Meta:
         constraints = [
             models.CheckConstraint(
-                condition=Q(code__in=["PRODUCCION", "TRANSPORTE", "RECEPCION", "ADMIN", "GALPONERO"]),
+                condition=Q(code__in=["PRODUCCION", "TRANSPORTE", "RECEPCION", "ADMIN", "GALPONERO", "DIRECTOR"]),
                 name="role_known_code",
             ),
         ]
@@ -50,8 +51,8 @@ class RoleAssignment(models.Model):
         constraints = [
             models.CheckConstraint(
                 condition=(
-                    Q(scope="GLOBAL", location__isnull=True, role_id="ADMIN")
-                    | Q(scope="UBICACION", location__isnull=False)
+                    Q(scope="GLOBAL", location__isnull=True, role_id__in=["ADMIN", "DIRECTOR"])
+                    | (Q(scope="UBICACION", location__isnull=False) & ~Q(role_id="DIRECTOR"))
                 ),
                 name="assignment_scope_valid",
             ),

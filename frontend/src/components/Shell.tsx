@@ -23,7 +23,7 @@ export function Shell() {
   const [confirm, setConfirm] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
   useEffect(() => {
-    if (!account || apiMode !== 'http') return
+    if (!account || apiMode !== 'http' || assignment?.role === 'DIRECTOR') return
     let working = false
     const update = async () => {
       if (working || !navigator.onLine || document.hidden) return
@@ -35,7 +35,7 @@ export function Shell() {
     const focus = () => void update()
     window.addEventListener('focus', focus); window.addEventListener('online', focus)
     return () => { window.removeEventListener('focus', focus); window.removeEventListener('online', focus) }
-  }, [account?.id])
+  }, [account?.id, assignment?.role])
   async function closeSession() {
     setBusy(true); setError('')
     try {
@@ -59,7 +59,7 @@ export function Shell() {
             {account?.assignments.map(item => <option key={item.id} value={item.id}>{roleLabels[item.role]} · {item.location_name}</option>)}
           </select></div>}
           <Link to="/cuenta/clave">Cambiar contraseña</Link>
-          <SyncStatus />
+           {assignment?.role !== 'DIRECTOR' && <SyncStatus />}
           <InboxBell />
           <Link to="/preferencias/avisos">Notificaciones del teléfono</Link>
           <Button variant="secondary" busy={busy} onClick={async () => { if (account && await pendingCount(account.id)) setConfirm(true); else await closeSession() }}>Cerrar sesión</Button>
@@ -76,6 +76,7 @@ export function Shell() {
 export function TodayPage() {
   const { assignment } = useWorkspace()
   if (assignment?.role === 'GALPONERO') return <Navigate to="/cuyes" replace />
+  if (assignment?.role === 'DIRECTOR') return <Navigate to="/direccion" replace />
   return <section className="card"><h1>{assignment?.role === 'ADMIN' ? 'Resumen administrativo' : 'Hoy'}</h1>
     <p>{new Intl.DateTimeFormat('es-PE', { dateStyle: 'full', timeZone: 'America/Lima' }).format(new Date())}</p>
     <Notice>{assignment ? `Espacio de ${roleLabels[assignment.role].toLowerCase()}. Consulta y confirma solo los registros correspondientes a tu cuenta.` : 'No tienes asignaciones activas. Contacta al administrador.'}</Notice>
@@ -90,7 +91,8 @@ export function TodayPage() {
     {assignment?.role === 'PRODUCCION' && <p><Link to="/analisis">Analizar producción por vaca</Link></p>}
     {assignment?.role === 'PRODUCCION' && <p><Link to="/informes/produccion">Descargar PDF de producción</Link></p>}
     {(assignment?.role === 'TRANSPORTE' || assignment?.role === 'RECEPCION') && <p><Link to="/informes/entregas">Descargar PDF de {assignment.role === 'TRANSPORTE' ? 'transporte' : 'recepciones'}</Link></p>}
-    {assignment?.role === 'ADMIN' && <p><Link to="/administracion/usuarios">Administrar usuarios y ámbitos</Link></p>}
+     {assignment?.role === 'ADMIN' && <p><Link to="/administracion/usuarios">Administrar usuarios y ámbitos</Link></p>}
+     {assignment?.role === 'ADMIN' && <p><Link to="/direccion">Consultar panel de Dirección DIPROBSA</Link></p>}
     {assignment?.role === 'ADMIN' && <p><Link to="/administracion/catalogos">Administrar catálogos</Link></p>}
     {assignment?.role === 'ADMIN' && <p><Link to="/administracion/reasignar">Reasignar receptor permitido</Link></p>}
   </section>

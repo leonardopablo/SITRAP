@@ -56,6 +56,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 SESSION_COOKIE_AGE = env.int("SESSION_COOKIE_AGE", default=43200)
+SITRAP_DEMO_MODE = env.bool("SITRAP_DEMO_MODE", default=False)
+if SITRAP_DEMO_MODE:
+    if not str(DATABASES["default"]["NAME"]).startswith("sitrap_demo_"):
+        raise ImproperlyConfigured("El modo demostración requiere una base aislada.")
+    SESSION_COOKIE_NAME = "sitrap_demo_session"
+    CSRF_COOKIE_NAME = "sitrap_demo_csrf"
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SAMESITE = "Lax"

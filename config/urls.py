@@ -9,12 +9,14 @@ from apps.accounts.admin_api import (
     UsersView,
 )
 from apps.accounts.options import AssignmentOptionsView
+from apps.reports.direction import DirectionView
 from apps.sync.batch_views import SyncEventsView
 from apps.sync.snapshot_views import BootstrapView, ChangesView
 from apps.sync.views import CurrentDeviceView, DeviceView
 from config.views import HealthView
 
 urlpatterns = [
+    path("api/v1/direction/dashboard", DirectionView.as_view()),
     path("api/v1/cuyes/", include("apps.cuyes.urls")),
     path("api/v1/", include("apps.reports.urls")),
     path("api/v1/sync/events", SyncEventsView.as_view()),

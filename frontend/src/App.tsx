@@ -36,6 +36,7 @@ import { HelpPage } from './help/HelpPage'
 const CuyesPage = lazy(() => import('./cuyes/CuyesPage').then(module => ({ default: module.CuyesPage })))
 const SalesPage = lazy(() => import('./cuyes/SalesPage').then(module => ({ default: module.SalesPage })))
 const MilkAnalytics = lazy(() => import('./reports/MilkAnalytics').then(module => ({ default: module.MilkAnalytics })))
+const DirectionDashboard = lazy(() => import('./reports/DirectionDashboard').then(module => ({ default: module.DirectionDashboard })))
 
 export function App() {
   const { pathname } = useLocation()
@@ -44,6 +45,7 @@ export function App() {
     <a className="skip-link" href="#contenido">Saltar al contenido</a>
     <header className={authScreen ? 'auth-header' : undefined}><Link to="/" aria-label="SITRAP, inicio"><Logo /></Link><PwaControls /></header>
     <main id="contenido" tabIndex={-1}>
+      {import.meta.env.VITE_SITRAP_DEMO === '1' && <Notice tone="warning">Demostración · Datos ficticios. No registrar operaciones reales en este entorno.</Notice>}
       {apiMode === 'mock' && <Notice tone="warning">Modo simulado · Los datos no están guardados en el servidor SITRAP.</Notice>}
       <Routes>
         <Route path="/" element={<section className="card form"><Illustration kind="route" /><h1>Cada producto tiene una historia</h1><p>Seguimos el camino de la leche, desde su origen.</p><Link className="button" to="/acceso">Ingresar</Link></section>} />
@@ -52,6 +54,7 @@ export function App() {
           <Route path="/cuenta/clave" element={<PasswordPage />} />
           <Route element={<Shell />}>
             <Route path="/hoy" element={<TodayPage />} />
+            <Route element={<RequireRole roles={['ADMIN', 'DIRECTOR']} />}><Route path="/direccion" element={<Suspense fallback={<Notice>Cargando indicadores…</Notice>}><DirectionDashboard /></Suspense>} /></Route>
             <Route element={<RequireRole roles={['ADMIN', 'GALPONERO', 'TRANSPORTE']} />}><Route path="/cuyes/ventas" element={<Suspense fallback={<Notice>Cargando ventas…</Notice>}><SalesPage /></Suspense>} /></Route>
             <Route element={<RequireRole roles={['GALPONERO', 'ADMIN']} />}><Route path="/cuyes" element={<Suspense fallback={<Notice>Cargando Cuyes…</Notice>}><CuyesPage /></Suspense>} /></Route>
             <Route element={<RequireRole roles={['TRANSPORTE']} />}><Route path="/recogidas" element={<TransportToday />} /></Route>
