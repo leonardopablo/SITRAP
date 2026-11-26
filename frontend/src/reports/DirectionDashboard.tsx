@@ -61,7 +61,7 @@ export function DirectionDashboard() {
     <div className="card row">
       <label>Desde<input type="date" max={end || today} value={start} onChange={e => setStart(e.target.value)} /></label>
       <label>Hasta<input type="date" min={start} max={today} value={end} onChange={e => setEnd(e.target.value)} /></label>
-      <label>Centro<select value={center} onChange={e => setCenter(e.target.value)}>
+      <label>Centro<select aria-label="Centro" value={center} onChange={e => setCenter(e.target.value)}>
         <option value="">Todos los centros</option>{query.data?.centers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
       </select></label>
       <button className="button secondary" disabled={!valid || query.isFetching} onClick={() => void query.refetch()}>Actualizar indicadores</button>

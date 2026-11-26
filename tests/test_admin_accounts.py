@@ -180,8 +180,9 @@ def test_recovery_creates_new_audited_assignment_only_when_none_active(user):
 
     make_admin(user)
     old = RoleAssignment.objects.get(user=user, role_id="ADMIN")
+    old.starts_at -= timedelta(seconds=1)
     old.ends_at = timezone.now()
-    old.save(update_fields=["ends_at"])
+    old.save(update_fields=["starts_at", "ends_at"])
     with pytest.raises(CommandError):
         call_command("recover_admin", username=user.username)
     call_command("recover_admin", username=user.username, confirm_no_admin=True)
